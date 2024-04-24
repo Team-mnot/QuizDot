@@ -1,5 +1,6 @@
 package com.mnot.quizdot.domain.member.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,7 +19,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 
-// TODO : cascade
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -46,11 +46,14 @@ public class Member {
     @ColumnDefault(value = "0")
     private int point;
 
-    @OneToMany(mappedBy = "member")
-    private List<Title> titles = new ArrayList<>();
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<MemberTitle> titles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member")
-    private List<Avatar> avatars = new ArrayList<>();
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<MemberAvatar> avatars = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<MultiRecord> multiRecords = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -58,7 +61,7 @@ public class Member {
     @CreatedDate
     private LocalDateTime createTime;
 
-    @ColumnDefault(value = "#000000")
+    @ColumnDefault(value = "000000")
     private String nicknameColor;
 
     @Builder

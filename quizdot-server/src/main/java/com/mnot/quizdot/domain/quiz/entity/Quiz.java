@@ -1,9 +1,17 @@
 package com.mnot.quizdot.domain.quiz.entity;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,21 +20,36 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Quiz {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(length = 512)
     private String question;
 
-    // 문제 형태 - 텍스트 / 텍스트 + 이미지 / OX st
+    @Enumerated(EnumType.STRING)
     private QuestionType questionType;
 
-    // 문제 카테고리 - 시사 / 경제 st
+    @Enumerated(EnumType.STRING)
     private CategoryType category;
 
     private String hint;
 
-    private String path;
+    private String imagePath;
 
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
+    private List<Answer> answers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
+    private List<History> histories = new ArrayList<>();
+
+    @Builder
+    public Quiz(String question, QuestionType questionType, CategoryType category, String hint,
+        String imagePath) {
+        this.question = question;
+        this.questionType = questionType;
+        this.category = category;
+        this.hint = hint;
+        this.imagePath = imagePath;
+    }
 }

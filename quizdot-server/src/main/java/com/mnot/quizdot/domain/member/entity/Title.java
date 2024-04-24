@@ -19,11 +19,11 @@ public class Title {
 
     private String title;
 
-    private String condition;
+    private String requirement;
 
     @Builder
-    public Title(String title, String condition) {
+    public Title(String title, String requirement) {
         this.title = title;
-        this.condition = condition;
+        this.requirement = requirement;
     }
 }
