@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 
 import { MainPage } from '@/pages/main';
 import { LobbyPage } from '@/pages/lobby';
+import { MultiModePage } from '@/pages/multimode';
 
 export const router = createBrowserRouter([
   {
@@ -11,5 +12,9 @@ export const router = createBrowserRouter([
   {
     path: '/lobby',
     element: <LobbyPage />,
+  },
+  {
+    path: '/multimode',
+    element: <MultiModePage />,
   },
 ]);
