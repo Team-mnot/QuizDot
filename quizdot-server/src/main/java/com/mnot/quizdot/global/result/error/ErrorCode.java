@@ -6,7 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
-
     //Global
     INTERNAL_SERVER_ERROR(500, "내부 서버 오류입니다."),
     METHOD_NOT_ALLOWED(405, "허용되지 않은 HTTP method입니다."),
@@ -16,9 +15,12 @@ public enum ErrorCode {
     HTTP_HEADER_INVALID(400, "request header가 유효하지 않습니다."),
     ENTITY_NOT_FOUNT(500, "존재하지 않는 Entity입니다."),
     FORBIDDEN_ERROR(403, "작업을 수행하기 위한 권한이 없습니다."),
-    IS_NOT_IMAGE(400, "이미지가 아닙니다.");
+    IS_NOT_IMAGE(400, "이미지가 아닙니다."),
 
+    // Member
+    EXISTS_ID_ERROR(400, "이미 존재하는 아이디입니다."),
+    EXISTS_NICKNAME_ERROR(400, "이미 존재하는 닉네임입니다."),
+    NOT_VALID_ERROR(400, "유효성 검사에서 걸림");
     private final int status;
     private final String message;
-
 }

@@ -9,8 +9,6 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 import com.mnot.quizdot.global.result.error.ErrorResponse.FieldError;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import jakarta.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +21,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
