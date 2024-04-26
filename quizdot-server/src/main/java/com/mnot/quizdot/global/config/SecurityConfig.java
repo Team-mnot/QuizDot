@@ -52,8 +52,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests((auth) -> auth
                 //해당 경로에는 누구나 접근 가능
-                .requestMatchers("/users/login", "/", "/users/join", "/swagger-ui/**",
-                    "/api-docs/**").permitAll()
+                .requestMatchers("/**").permitAll()
                 //그 외의 경로들은 인증받은 사람들만 접근 가능
                 .anyRequest().authenticated());
         //커스텀 로그인 필터 등록, UsernamePasswordAuthenticationFilter위치에 사용함.

@@ -17,10 +17,14 @@ public enum ErrorCode {
     FORBIDDEN_ERROR(403, "작업을 수행하기 위한 권한이 없습니다."),
     IS_NOT_IMAGE(400, "이미지가 아닙니다."),
 
+    //Room
+    ROOM_LIMIT_EXCEEDED(409, "채널 내 방 생성 한도를 초과하였습니다."),
+
     // Member
     EXISTS_ID_ERROR(400, "이미 존재하는 아이디입니다."),
     EXISTS_NICKNAME_ERROR(400, "이미 존재하는 닉네임입니다."),
     NOT_VALID_ERROR(400, "유효성 검사에서 걸림");
+    
     private final int status;
     private final String message;
 }
