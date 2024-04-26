@@ -64,10 +64,14 @@ public class CustomMemberDetail implements UserDetails {
         return member.getMultiRecords();
     }
 
+    //닉네임 색깔
     public String nicknameColor() {
         return member.getNicknameColor();
     }
 
+    public int getId() {
+        return member.getId();
+    }
 
     @Override
     public String getPassword() {

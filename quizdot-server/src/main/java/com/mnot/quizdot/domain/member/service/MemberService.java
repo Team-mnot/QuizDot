@@ -1,12 +1,13 @@
 package com.mnot.quizdot.domain.member.service;
 
-import com.mnot.quizdot.domain.member.dto.JoinDTO;
+import com.mnot.quizdot.domain.member.dto.JoinDto;
 import com.mnot.quizdot.domain.member.entity.Member;
 import com.mnot.quizdot.domain.member.entity.Role;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -21,7 +23,10 @@ public class MemberService {
     //비밀번호 암호화
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public void joinMember(JoinDTO joinDTO) {
+    public void joinMember(JoinDto joinDTO) {
+
+        log.info("회원 가입 서비스 : START");
+
         //폼에서 받아온 정보들
         String memberId = joinDTO.getMemberId();
         String password = joinDTO.getPassword();
@@ -37,7 +42,6 @@ public class MemberService {
         if (isExistNickname) {
             throw new BusinessException(ErrorCode.EXISTS_NICKNAME_ERROR);
         }
-
         //멤버 엔티티 생성
         Member member = Member.builder()
             .memberId(memberId)
@@ -49,5 +53,7 @@ public class MemberService {
 
         //멤버 엔티티 저장
         memberRepository.save(member);
+
+        log.info("회원 가입 서비스 : COMPLETE");
     }
 }
