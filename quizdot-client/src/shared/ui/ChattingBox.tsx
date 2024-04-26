@@ -1,14 +1,22 @@
-// src/pages/survival/components/ChattingBox.tsx
+// src/shared/ui//ChattingBox.tsx
 
-import React, { useEffect, useRef, useState } from 'react';
+import { Button } from '@/shared/ui';
+import { useEffect, useRef, useState } from 'react';
+
+const dummyUserData = {
+  nickname: '익찌릿찌릿',
+};
 
 export function ChattingBox() {
-  const [messages, setMessages] = useState<string[]>([]); // 채팅 메시지들을 상태로 관리
+  const [messages, setMessages] = useState<
+    { nickname: string; content: string }[]
+  >([]);
   const [input, setInput] = useState<string>(''); // 사용자 입력을 상태로 관리
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const sendMessage = () => {
-    const newMessages = [...messages, input];
+    const newMessage = { nickname: dummyUserData.nickname, content: input };
+    const newMessages = [...messages, newMessage];
     setMessages(newMessages);
     setInput('');
   };
@@ -25,12 +33,16 @@ export function ChattingBox() {
   return (
     <div className="fixed bottom-10 left-0 right-0 mx-auto max-w-3xl rounded-3xl bg-white p-4 shadow-lg">
       {/* 채팅 메시지 표시 영역 */}
-      <div className="chat-messages mb-2 h-36 overflow-auto" ref={chatContainerRef}>
+      <div
+        className="chat-messages mb-2 h-36 overflow-auto"
+        ref={chatContainerRef}
+      >
         {messages.length > 0 ? (
           messages.map((message, index) => (
-            <div key={index} className="chat-message break-words">
-              {/* 이 부분에서 각 메시지를 적절한 스타일로 표시합니다. */}
-              {message}
+            <div key={index} className="chat-message flex break-words">
+              {/* 이렇게 하려면 닉네임 6자 이하라던가 기준이 있어야 할 듯 */}
+              <div className="w-28">{message.nickname}</div> 
+              <div>{message.content}</div>
             </div>
           ))
         ) : (
@@ -41,7 +53,7 @@ export function ChattingBox() {
         )}
       </div>
 
-      <div className="flex max-w-3xl">
+      <div className="flex w-full">
         {/* 채팅 입력란 */}
         <input
           type="text"
@@ -53,12 +65,7 @@ export function ChattingBox() {
         />
 
         {/* 전송 버튼 */}
-        <button
-          onClick={sendMessage}
-          className="send-button ml-2 flex-shrink-0 rounded-r-md px-4 py-2 font-bold"
-        >
-          전송
-        </button>
+        <Button className="ml-2" label="전송" onClick={sendMessage} />
       </div>
     </div>
   );

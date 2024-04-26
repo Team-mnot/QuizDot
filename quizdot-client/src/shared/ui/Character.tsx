@@ -1,17 +1,17 @@
-//src/pages/survival/components/CharacterComponent.tsx
+//src/shared/ui/CharacterComponent.tsx
 
 export interface CharacterProps {
   imageUrl: string;
   title: string;
   nickname: string;
-  // score: number;
+  score: number;
 }
 
-export function CharacterComponent({
+export function Character({
   imageUrl,
   title,
   nickname,
-  // score, // 서바이벌모드에서 필요 없음
+  score, // 서바이벌모드에서 필요 없음
 }: CharacterProps) {
   return (
     <div className="m-2 flex w-36 flex-col items-center rounded-lg p-2">
@@ -26,7 +26,7 @@ export function CharacterComponent({
       <p className="mb-1 rounded-lg border-2 border-solid border-black px-2 text-xs text-gray-700">
         {nickname}
       </p>
-      {/* <div className='text-xs rounded-lg border-black border-solid border-2 px-2'>{score}</div> */}
+      <div className='text-xs rounded-lg border-black border-solid border-2 px-2'>{score}</div>
     </div>
   );
 }

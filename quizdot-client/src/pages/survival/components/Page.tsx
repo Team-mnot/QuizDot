@@ -1,7 +1,7 @@
 // src/pages/survival/components/Page.tsx
 import { useEffect } from 'react';
 import { CharacterPreview } from './CharacterPreview';
-import { ChattingBox } from './ChattingBox';
+import { ChattingBox } from '../../../shared/ui/ChattingBox';
 
 export function SurvivalPage() {
   useEffect(() => {

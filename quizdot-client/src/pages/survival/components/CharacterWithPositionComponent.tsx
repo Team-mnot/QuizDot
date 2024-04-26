@@ -14,7 +14,7 @@ export function CharacterWithPositionComponent({
   imageUrl,
   title,
   nickname,
-  score,
+  // score,
   position,
 }: CharacterWithPositionProps) {
   return (
@@ -30,7 +30,7 @@ export function CharacterWithPositionComponent({
         imageUrl={imageUrl}
         title={title}
         nickname={nickname}
-        score={score}
+        // score={score}
       />
     </div>
   );
