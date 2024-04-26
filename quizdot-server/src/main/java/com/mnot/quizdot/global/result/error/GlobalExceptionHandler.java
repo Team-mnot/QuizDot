@@ -4,9 +4,11 @@ import static com.mnot.quizdot.global.result.error.ErrorCode.HTTP_HEADER_INVALID
 import static com.mnot.quizdot.global.result.error.ErrorCode.HTTP_MESSAGE_NOT_READABLE;
 import static com.mnot.quizdot.global.result.error.ErrorCode.INPUT_VALUE_INVALID;
 import static com.mnot.quizdot.global.result.error.ErrorCode.INTERNAL_SERVER_ERROR;
+import static com.mnot.quizdot.global.result.error.ErrorCode.JSON_PROCESSING_ERROR;
 import static com.mnot.quizdot.global.result.error.ErrorCode.METHOD_NOT_ALLOWED;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mnot.quizdot.global.result.error.ErrorResponse.FieldError;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import jakarta.validation.ConstraintViolationException;
@@ -114,5 +116,13 @@ public class GlobalExceptionHandler {
         e.printStackTrace();
         final ErrorResponse response = ErrorResponse.of(INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler
+    protected ResponseEntity<ErrorResponse> handleJsonProcessingException(
+        // JSON 데이터를 처리하는 과정에서 발생하는 예외
+        JsonProcessingException e) {
+        final ErrorResponse response = ErrorResponse.of(JSON_PROCESSING_ERROR);
+        return new ResponseEntity<>(response, BAD_REQUEST);
     }
 }
