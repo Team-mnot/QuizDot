@@ -1,0 +1,56 @@
+package com.mnot.quizdot.domain.quiz.dto;
+
+import jakarta.persistence.Id;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+public class RoomInfoDto {
+
+    // 방 번호
+    @Id
+    private int roomNum;
+
+    // 제목
+    private String title;
+
+    // 공개 여부
+    private boolean isPublic;
+
+    // 비밀번호
+    private String password;
+
+    // 게임 모드
+    private String gameMode;
+
+    // 최대 인원
+    private int maxPeople;
+
+    // 문제 카테고리
+    private String category;
+
+    // 최대 퀴즈 개수
+    private int maxQuestion;
+
+    // 방장 회원 PK
+    private int hostId;
+
+    @Builder
+    public RoomInfoDto(int roomNum, String title, boolean isPublic, String password,
+        String gameMode,
+        int maxPeople, String category, int maxQuestion, int hostId) {
+        this.roomNum = roomNum;
+        this.title = title;
+        this.isPublic = isPublic;
+        this.password = password;
+        this.gameMode = gameMode;
+        this.maxPeople = maxPeople;
+        this.category = category;
+        this.maxQuestion = maxQuestion;
+        this.hostId = hostId;
+    }
+}
