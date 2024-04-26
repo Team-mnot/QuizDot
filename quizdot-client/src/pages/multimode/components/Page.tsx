@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { useOpenModal } from '@/shared/hooks';
 import { Button, Modal, Dropbox, Input, Progress } from '@/shared/ui';
-import { Ballon } from '@/shared/ui/ballon';
+import { Ballon } from '@/shared/ui/Ballon';
 
 export function MultiModePage() {
   const { isOpenModal, clickModal, closeModal } = useOpenModal();
