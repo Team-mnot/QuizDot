@@ -3,7 +3,7 @@ import { useOpenModal } from '@/shared/hooks';
 import { Button, Modal, Dropbox, Input, Progress } from '@/shared/ui';
 import { Ballon } from '@/shared/ui/Ballon';
 
-export function MultiModePage() {
+export function MultiPage() {
   const { isOpenModal, clickModal, closeModal } = useOpenModal();
 
   const options = ['0', '1', '2', '3', '4'];
