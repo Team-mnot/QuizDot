@@ -4,17 +4,22 @@
 
 import { CharacterProps } from '../api/types';
 
-export function CharacterComponent({imageUrl, title, nickname, score}: CharacterProps) {
+export function CharacterComponent({
+  imageUrl,
+  title,
+  nickname,
+  score,
+}: CharacterProps) { 
   return (
-    <div>
+    <div className="flex w-36 flex-col items-center rounded-lg m-2 p-2" >
       <img
         src={imageUrl}
         alt={nickname}
-        className="mb-2 h-24 w-24" // 이미지 크기를 150x150 픽셀로 고정
+        className="mb-2 h-20 w-20 rounded-full object-cover " // 이미지를 원형으로 만들고, object-cover로 이미지 비율 유지
       />
-      <p>{title}</p>
-      <p>{nickname}</p>
-      <p>{score}</p>
+      <p className='text-xs font-bold rounded-lg border-black border-solid border-2 px-2 mb-1'>{title}</p>
+      <p className='text-xs text-gray-700 rounded-lg border-black border-solid border-2 px-2 mb-1'>{nickname}</p>
+      <div className='text-xs rounded-lg border-black border-solid border-2 px-2'>{score}</div>
     </div>
   );
 }
