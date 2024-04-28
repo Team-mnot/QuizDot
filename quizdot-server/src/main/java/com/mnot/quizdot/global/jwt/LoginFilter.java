@@ -37,6 +37,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String memberId = request.getParameter("memberId");
         String password = request.getParameter("password");
 
+        log.info("로그인 필터 : {}", memberId);
+
         //검증하기 위해서는 토큰에 담은 뒤 토큰을 검증함
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
             memberId, password, null);
@@ -58,22 +60,24 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String memberId = customMemberDetail.getUsername();
 
         //유저 PK
-        int id = customMemberDetail.getId();
+//        int id = customMemberDetail.getId();
 
-        //인가정보 가져오기
+        //권한 가져오기
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority authority = iterator.next();
 
         //role 가져오기
         String role = authority.getAuthority();
-        log.info("role 값 : {}", role);
+
+        log.info("로그인 한 아이디 : {}", memberId);
+        log.info("로그인 한 role : {}", role);
 
         //토큰 발급
         String access = jwtUtil.createJwt("access", memberId, role, 60 * 60 * 10L);
         String refresh = jwtUtil.createJwt("refresh", memberId, role, 86400000L);
         RefreshToken refreshToken = RefreshToken.builder()
-            .id(id)
+            .memberId(memberId)
             .refreshToken(refresh)
             .build();
 
@@ -105,8 +109,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(24 * 60 * 60);
-        //cookie.setSecure(true);
-        //cookie.setPath("/");
         cookie.setHttpOnly(true);
 
         return cookie;

@@ -1,8 +1,8 @@
 package com.mnot.quizdot.domain.member.dto;
 
-import jakarta.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 
@@ -12,7 +12,7 @@ import org.springframework.data.redis.core.RedisHash;
 public class RefreshToken {
 
     @Id
-    private int id;
+    private String memberId;
 
     private String refreshToken;
 }

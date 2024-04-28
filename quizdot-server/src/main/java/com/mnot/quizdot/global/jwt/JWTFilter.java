@@ -28,9 +28,9 @@ public class JWTFilter extends OncePerRequestFilter {
         FilterChain filterChain) throws ServletException, IOException {
 
         //request에서 Authorization 헤더 찾기
-        String authorization = request.getHeader("Authorization");
+        String authorization = request.getHeader("access");
 
-        //헤더 검증, 없거나 접두사가 Bearer이 아니면
+        //헤더 검증
         if (authorization == null) {
             //다음 필터
             filterChain.doFilter(request, response);

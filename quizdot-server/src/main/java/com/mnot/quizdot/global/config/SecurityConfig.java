@@ -1,6 +1,7 @@
 package com.mnot.quizdot.global.config;
 
 import com.mnot.quizdot.domain.member.repository.RefreshTokenRedisRepository;
+import com.mnot.quizdot.global.jwt.CustomLogoutFilter;
 import com.mnot.quizdot.global.jwt.JWTFilter;
 import com.mnot.quizdot.global.jwt.JWTUtil;
 import com.mnot.quizdot.global.jwt.LoginFilter;
@@ -17,6 +18,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -54,7 +56,6 @@ public class SecurityConfig {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration configuration = new CorsConfiguration();
-
                         configuration.setAllowedOrigins(
                             //허용할 주소
                             Collections.singletonList("http://localhost:5173"));
@@ -88,10 +89,10 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests((auth) -> auth
                 //해당 경로에는 누구나 접근 가능
-                .requestMatchers("/users/login", "/", "/users/join", "/swagger-ui/**",
-                    "/api-docs/**", "/users/test").permitAll()
+                .requestMatchers("/**").permitAll()
                 //그 외의 경로들은 인증받은 사람들만 접근 가능
                 .anyRequest().authenticated());
+
         //커스텀 로그인 필터 등록, UsernamePasswordAuthenticationFilter위치에 사용함.
         http
             .addFilterAt(
@@ -101,6 +102,11 @@ public class SecurityConfig {
 
         http
             .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
+
+        //커스텀 로그아웃 필터 등록
+        http
+            .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshTokenRedisRepository),
+                LogoutFilter.class);
 
         //세션을 stateless상태로 설정함
         http
