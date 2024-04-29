@@ -1,6 +1,6 @@
 package com.mnot.quizdot.domain.quiz.controller;
 
-import com.mnot.quizdot.domain.quiz.entity.MessageDto;
+import com.mnot.quizdot.domain.quiz.dto.MessageDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;

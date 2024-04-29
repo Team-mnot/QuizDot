@@ -57,7 +57,7 @@ public class LobbyServiceImpl implements LobbyService {
 
         // 새로운 대기실 정보 생성하여 REDIS에 등록
         RoomInfoDto roomInfoDto = RoomInfoDto.builder()
-            .roomNum(roomNum)
+            .roomId(roomNum)
             .title(roomReq.getTitle())
             .isPublic(roomReq.isPublic())
             .password(roomReq.getPassword())
