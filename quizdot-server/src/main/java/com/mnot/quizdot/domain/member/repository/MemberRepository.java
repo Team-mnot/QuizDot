@@ -15,4 +15,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
 
     //로그인 했을 때 아이디로 유저 조회
     Member findByMemberId(String memberId);
+
+    void deleteByMemberId(String memberId);
+
 }

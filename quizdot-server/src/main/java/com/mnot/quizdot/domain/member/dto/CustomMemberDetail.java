@@ -1,12 +1,8 @@
 package com.mnot.quizdot.domain.member.dto;
 
 import com.mnot.quizdot.domain.member.entity.Member;
-import com.mnot.quizdot.domain.member.entity.MemberAvatar;
-import com.mnot.quizdot.domain.member.entity.MemberTitle;
-import com.mnot.quizdot.domain.member.entity.MultiRecord;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class CustomMemberDetail implements UserDetails {
 
     private final Member member;
+
 
     //role 반환
     @Override
@@ -29,45 +26,9 @@ public class CustomMemberDetail implements UserDetails {
         return collection;
     }
 
-    //닉네임
-    public String nickname() {
-        return member.getNickname();
+    public int getId() {
+        return member.getId();
     }
-
-    //레벨
-    public int level() {
-        return member.getLevel();
-    }
-
-    //경험치
-    public int exp() {
-        return member.getExp();
-    }
-
-    //포인트
-    public int point() {
-        return member.getPoint();
-    }
-
-    //칭호
-    public List<MemberTitle> titles() {
-        return member.getTitles();
-    }
-
-    //캐릭터
-    public List<MemberAvatar> avatars() {
-        return member.getAvatars();
-    }
-
-    //전적
-    public List<MultiRecord> multiRecords() {
-        return member.getMultiRecords();
-    }
-
-    public String nicknameColor() {
-        return member.getNicknameColor();
-    }
-
 
     @Override
     public String getPassword() {

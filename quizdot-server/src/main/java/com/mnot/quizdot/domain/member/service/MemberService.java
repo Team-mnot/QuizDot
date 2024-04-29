@@ -1,53 +1,32 @@
 package com.mnot.quizdot.domain.member.service;
 
-import com.mnot.quizdot.domain.member.dto.JoinDTO;
-import com.mnot.quizdot.domain.member.entity.Member;
-import com.mnot.quizdot.domain.member.entity.Role;
-import com.mnot.quizdot.domain.member.repository.MemberRepository;
-import com.mnot.quizdot.global.result.error.ErrorCode;
-import com.mnot.quizdot.global.result.error.exception.BusinessException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
+import com.mnot.quizdot.domain.member.dto.JoinDto;
 
-@Service
-@Transactional
-@RequiredArgsConstructor
-public class MemberService {
+public interface MemberService {
 
-    private final MemberRepository memberRepository;
+    //회원가입
+    void joinMember(JoinDto joinDto);
 
-    //비밀번호 암호화
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    //게스트로 로그인
+    void joinGuest();
 
-    public void joinMember(JoinDTO joinDTO) {
-        //폼에서 받아온 정보들
-        String memberId = joinDTO.getMemberId();
-        String password = joinDTO.getPassword();
-        String nickname = joinDTO.getNickname();
-        String hint = joinDTO.getHint();
-        //아이디 중복 확인
-        Boolean isExistId = memberRepository.existsByMemberId(memberId);
-        if (isExistId) {
-            throw new BusinessException(ErrorCode.EXISTS_ID_ERROR);
-        }
-        //닉네임 중복 확인
-        Boolean isExistNickname = memberRepository.existsByNickname(nickname);
-        if (isExistNickname) {
-            throw new BusinessException(ErrorCode.EXISTS_NICKNAME_ERROR);
-        }
+    //회원 탈퇴
+    void deleteMember(CustomMemberDetail member);
 
-        //멤버 엔티티 생성
-        Member member = Member.builder()
-            .memberId(memberId)
-            .password(bCryptPasswordEncoder.encode(password))
-            .nickname(nickname)
-            .hint(hint)
-            .role(Role.ROLE_USER)
-            .build();
+    //비밀번호 힌트 체크
+    void chkHint(String memberId, String hint);
 
-        //멤버 엔티티 저장
-        memberRepository.save(member);
-    }
+    //비밀번호 힌트 체크 후 비밀번호 설정
+    void findPassword(String memberId, String password, String passwordChk);
+
+    //기존 비밀번호 확인
+    void checkPassword(CustomMemberDetail member, String password);
+
+    //비밀번호 변경
+    void changePassword(CustomMemberDetail member, String password, String chkPassword);
+
+    //유저 정보 조회
+
+
 }
