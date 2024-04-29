@@ -25,7 +25,8 @@ public enum ErrorCode {
     EXPIRED_REFRESH_TOKEN(400, "refreshToken이 만료되었습니다."),
     IS_NOT_REFRESH_TOKEN(400, "refreshToken이 아닙니다."),
     IS_NOT_EXISTS_REFRESH_TOKEN(400, "refreshToken이 존재하지 않습니다."),
-    PASSWORD_DO_NOT_MATCH(400, "비밀번호가 일치하지 않습니다");
+    PASSWORD_DO_NOT_MATCH(400, "비밀번호가 일치하지 않습니다"),
+    HINT_DO_NOT_MATCH(400, "비밀번호 힌트가 일치하지 않습니다");
     private final int status;
     private final String message;
 }

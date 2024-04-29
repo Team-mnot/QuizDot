@@ -3,7 +3,6 @@ package com.mnot.quizdot.domain.member.controller;
 import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
 import com.mnot.quizdot.domain.member.dto.JoinDto;
 import com.mnot.quizdot.domain.member.dto.RefreshToken;
-import com.mnot.quizdot.domain.member.entity.Member;
 import com.mnot.quizdot.domain.member.repository.RefreshTokenRedisRepository;
 import com.mnot.quizdot.domain.member.service.MemberService;
 import com.mnot.quizdot.global.jwt.JWTUtil;
@@ -24,6 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,20 +68,40 @@ public class MemberController {
     //TODO : 회원 탈퇴
     @DeleteMapping("")
     @Operation(summary = "회원 탈퇴")
-    public ResponseEntity<ResultResponse> deleteMember(@AuthenticationPrincipal Member member) {
+    public ResponseEntity<ResultResponse> deleteMember(
+        @AuthenticationPrincipal CustomMemberDetail member) {
         memberService.deleteMember(member);
         return ResponseEntity.ok(ResultResponse.of(200, "회원 탈퇴가 완료되었습니다."));
     }
 
-    //TODO : 임시 비밀번호 발급 (프론트에서 아이디랑 비밀번호 힌트 어디에 담아서 줄건지 정하기 + 임시비밀번호 뭘로 해줄건지 정하기)
-//    @PostMapping("")
-//    @Operation(summary = "임시 비밀번호 발급")
-//    public ResponseEntity<ResultResponse> issueTempPwd(@RequestBody TempDto tempDto) {
-//        memberService.issueTempPwd(tempDto);
-//        return ResponseEntity.ok(ResultResponse.of(200, "임시 비밀번호가 발급되었습니다."));
-//    }
+    //TODO : 비밀번호 찾기
+    @PostMapping("")
+    @Operation(summary = "비밀번호 힌트 체크하기")
+    public ResponseEntity<ResultResponse> chkHint(
+        @RequestBody Map<String, String> requestBody) {
+        String memberId = requestBody.get("memberId");
+        String hint = requestBody.get("hint");
+        memberService.chkHint(memberId, hint);
+        return ResponseEntity.ok(ResultResponse.of(200, "비밀번호 힌트가 일치합니다."));
+    }
 
-    //TODO : 비밀번호 변경을 위한 기존 비밀번호 확인
+    /**
+     * 비밀번호 찾기 후 비밀번호 설정
+     */
+    @PostMapping("/pwd")
+    @Operation(summary = "비밀번호 힌트 확인 후 비밀번호 설정")
+    public ResponseEntity<ResultResponse> findPassword(
+        @RequestBody Map<String, String> requestBody) {
+        String memberId = requestBody.get("memberId");
+        String password = requestBody.get("password");
+        String passwordChk = requestBody.get("passwordChk");
+        memberService.findPassword(memberId, password, passwordChk);
+        return ResponseEntity.ok(ResultResponse.of(200, "비밀번호 찾기 완료됐습니다."));
+    }
+
+    /**
+     * 로그인 후 비밀번호 변경
+     */
     @PostMapping("/info/pwd-check")
     @Operation(summary = "기존 비밀번호 확인")
     public ResponseEntity<ResultResponse> checkPassword(
@@ -101,6 +122,16 @@ public class MemberController {
         String chkPassword = requestBody.get("chkPassword");
         memberService.changePassword(member, password, chkPassword);
         return ResponseEntity.ok(ResultResponse.of(200, "비밀번호가 변경되었습니다."));
+    }
+
+    /**
+     * 유저 정보 조회
+     */
+    @GetMapping("/info/{member_id}")
+    @Operation(summary = "유저 정보 조회")
+    public ResponseEntity<ResultResponse> getInfo(
+        @PathVariable("member_id") int member_id) {
+        return null;
     }
 
     @PostMapping("/reissue")

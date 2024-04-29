@@ -53,7 +53,7 @@ public class MemberServiceImpl implements MemberService {
             .memberId(memberId)
             .password(bCryptPasswordEncoder.encode(password))
             .nickname(nickname)
-            .hint(hint)
+            .hint(bCryptPasswordEncoder.encode(hint))
             .role(Role.ROLE_USER)
             .build();
         memberRepository.save(member);
@@ -82,14 +82,42 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void deleteMember(@AuthenticationPrincipal Member member) {
+    public void deleteMember(@AuthenticationPrincipal CustomMemberDetail member) {
+        log.info("회원 탈퇴 : START");
         //Id로 조회해서 없으면 에러 발생
-        if (!memberRepository.existsById(member.getId())) {
+        if (!memberRepository.existsByMemberId(member.getUsername())) {
             throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND);
         }
         //존재하면 삭제하고 종료
-        memberRepository.deleteById(member.getId());
+        memberRepository.deleteByMemberId(member.getUsername());
+
+        log.info("회원 탈퇴 : COMPLETE");
         return;
+    }
+
+    @Override
+    public void chkHint(String memberId, String hint) {
+        Member member = memberRepository.findByMemberId(memberId);
+        //힌트가 맞는지 확인하기
+        if (!bCryptPasswordEncoder.matches(hint, member.getHint())) {
+            //힌트가 다르면 에러 발생
+            throw new BusinessException(ErrorCode.HINT_DO_NOT_MATCH);
+        }
+        member.updateHint(bCryptPasswordEncoder.encode(hint));
+    }
+
+    @Override
+    public void findPassword(String memberId, String password, String passwordChk) {
+        Member member = memberRepository.findByMemberId(memberId);
+        if (member == null) {
+            throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND);
+        }
+        if (password.equals(passwordChk)) {
+            //비밀번호와 비밀번호 확인이 일치할때만 업데이트
+            member.updatePassword(bCryptPasswordEncoder.encode(password));
+        } else {
+            throw new BusinessException(ErrorCode.PASSWORD_DO_NOT_MATCH);
+        }
     }
 
     @Override

@@ -82,4 +82,8 @@ public class Member {
     public void updatePassword(String password) {
         this.password = password;
     }
+
+    public void updateHint(String hint) {
+        this.hint = hint;
+    }
 }
