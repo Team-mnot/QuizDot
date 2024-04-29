@@ -65,9 +65,9 @@ public class QuizServiceImpl implements QuizService {
         // 나의 제출 순위 조회
         String stageKey = String.format("rooms:%d:%d", roomId, questionId);
         if (redisTemplate.opsForList().lastIndexOf(stageKey, memberId) != null) {
-            throw new BusinessException(ErrorCode.SUBMIT_ALREDY_COMPLETE);
+            throw new BusinessException(ErrorCode.SUBMIT_ALREADY_COMPLETE);
         }
-        
+
         Long size = redisTemplate.opsForList().rightPush(stageKey, memberId);
 
         // 스테이지 점수 부여

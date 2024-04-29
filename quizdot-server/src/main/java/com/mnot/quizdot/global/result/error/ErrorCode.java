@@ -27,7 +27,7 @@ public enum ErrorCode {
     NOT_VALID_ERROR(400, "유효성 검사에서 걸림"),
 
     //Game
-    SUBMIT_ALREDY_COMPLETE(400, "이미 제출된 결과입니다.");
+    SUBMIT_ALREADY_COMPLETE(400, "이미 제출된 결과입니다.");
 
     private final int status;
     private final String message;
