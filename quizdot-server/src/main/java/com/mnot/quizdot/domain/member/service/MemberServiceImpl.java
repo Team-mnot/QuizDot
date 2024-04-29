@@ -112,11 +112,11 @@ public class MemberServiceImpl implements MemberService {
         if (member == null) {
             throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND);
         }
-        if (password.equals(passwordChk)) {
+        if (!password.equals(passwordChk)) {
             //비밀번호와 비밀번호 확인이 일치할때만 업데이트
-            member.updatePassword(bCryptPasswordEncoder.encode(password));
-        } else {
             throw new BusinessException(ErrorCode.PASSWORD_DO_NOT_MATCH);
+        } else {
+            member.updatePassword(bCryptPasswordEncoder.encode(password));
         }
     }
 
@@ -127,11 +127,11 @@ public class MemberServiceImpl implements MemberService {
         Member temp = memberRepository.findByMemberId(member.getUsername());
         log.info("서비스단 password : {}", password);
         log.info("커스텀 멤버 디테일 password : {}", temp.getPassword());
-        if (bCryptPasswordEncoder.matches(password, temp.getPassword())) {
+        if (!bCryptPasswordEncoder.matches(password, temp.getPassword())) {
             //일치한다면 ok 보내고 일치하지 않으면 에러 발생
-            return;
-        } else {
             throw new BusinessException(ErrorCode.PASSWORD_DO_NOT_MATCH);
+        } else {
+            return;
         }
     }
 

@@ -206,13 +206,6 @@ public class MemberController {
         return ResponseEntity.ok(ResultResponse.of(200, "accessToken 재발급 완료"));
     }
 
-//    @GetMapping("/info/{member_id}")
-//    public ResponseEntity<ResultResponse> getInfo(
-//        @PathVariable("member_id") int memberId,
-//        @AuthenticationPrincipal CustomMemberDetail member) {
-////        log.info(member.getUsername());
-//        return ResponseEntity.ok(ResultResponse.of(200, "유저 정보 조회 완료", memberService.getInfo()));
-//    }
 
     private Cookie createCookie(String key, String value) {
 

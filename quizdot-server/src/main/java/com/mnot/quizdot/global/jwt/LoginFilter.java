@@ -59,9 +59,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         //유저 아이디 가져오기
         String memberId = customMemberDetail.getUsername();
 
-        //유저 PK
-//        int id = customMemberDetail.getId();
-
         //권한 가져오기
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
@@ -102,7 +99,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         HttpServletResponse response, AuthenticationException failed) {
 
         response.setStatus(401);
-        
+
     }
 
     //쿠키 생성
