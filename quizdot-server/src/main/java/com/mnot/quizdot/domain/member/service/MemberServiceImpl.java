@@ -25,6 +25,7 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
     private final MultiRecordRepository multiRecordRepository;
+
     //비밀번호 암호화
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -150,6 +151,4 @@ public class MemberServiceImpl implements MemberService {
         //비밀번호 업데이트
         temp.updatePassword(bCryptPasswordEncoder.encode(password));
     }
-
-
 }
