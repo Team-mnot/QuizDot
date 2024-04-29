@@ -1,6 +1,5 @@
 package com.mnot.quizdot.domain.quiz.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -23,17 +22,14 @@ public class Answer {
 
     private String answer;
 
-    @Column(length = 512)
-    private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
 
     @Builder
-    public Answer(String answer, String description, Quiz quiz) {
+    public Answer(String answer, Quiz quiz) {
         this.answer = answer;
-        this.description = description;
         this.quiz = quiz;
     }
 }

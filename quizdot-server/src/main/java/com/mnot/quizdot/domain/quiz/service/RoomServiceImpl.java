@@ -21,7 +21,7 @@ public class RoomServiceImpl implements RoomService {
     private final static int MAX_CHANNEL = 8;
     private final static int MAX_ROOM = 1;
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate redisTemplate;
 
     private final ObjectMapper objectMapper;
     ConcurrentMap<Integer, boolean[]> roomNumList;
@@ -67,7 +67,7 @@ public class RoomServiceImpl implements RoomService {
             .hostId(hostId)
             .build();
 
-        String key = makeKey(channelId, roomNum);
+        String key = makeKey(roomNum);
         String obj = objectMapper.writeValueAsString(roomInfoDto);
         redisTemplate.opsForHash().put(key, "info", obj);
 
@@ -77,8 +77,8 @@ public class RoomServiceImpl implements RoomService {
             .build();
     }
 
-    private String makeKey(int channelId, int roomNum) {
-        return String.format("%d:rooms:%d", channelId, roomNum);
+    private String makeKey(int roomNum) {
+        return String.format("rooms:%d", roomNum);
     }
 
 }
