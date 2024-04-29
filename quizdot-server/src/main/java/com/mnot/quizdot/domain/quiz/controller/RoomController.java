@@ -1,6 +1,7 @@
 package com.mnot.quizdot.domain.quiz.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
 import com.mnot.quizdot.domain.quiz.dto.RoomReq;
 import com.mnot.quizdot.domain.quiz.dto.RoomRes;
 import com.mnot.quizdot.domain.quiz.service.RoomService;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,14 +27,13 @@ public class RoomController {
 
     @PostMapping("/channel/{channel_id}")
     @Operation(summary = "대기실 생성")
-    public ResponseEntity<ResultResponse> createRoom(
+    public ResponseEntity<ResultResponse> createRoom(Authentication authentication,
         @PathVariable("channel_id") int channelId, @RequestBody RoomReq roomReq)
         throws JsonProcessingException {
 
         // 방장 회원 PK
-//        TODO: Authentication로 회원 PK 가져오기
-//        CustomMemberDetail userDetails = (CustomMemberDetail) authentication.getPrincipal();
-//        int hostId = userDetails.getId();
+        CustomMemberDetail userDetails = (CustomMemberDetail) authentication.getPrincipal();
+        int hostId = userDetails.getId();
 
         // 대기실 생성
         RoomRes roomRes = roomService.createRoom(channelId, 1, roomReq);
