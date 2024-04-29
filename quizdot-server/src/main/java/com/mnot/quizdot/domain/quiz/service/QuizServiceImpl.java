@@ -6,6 +6,8 @@ import com.mnot.quizdot.domain.quiz.dto.QuizParam;
 import com.mnot.quizdot.domain.quiz.dto.QuizRes;
 import com.mnot.quizdot.domain.quiz.entity.CategoryType;
 import com.mnot.quizdot.domain.quiz.repository.QuizRepository;
+import com.mnot.quizdot.global.result.error.ErrorCode;
+import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -26,7 +28,7 @@ public class QuizServiceImpl implements QuizService {
     private final RedisTemplate redisTemplate;
 
     /**
-     * 퀴즈 문제 리스트 조회 중복 출제를 방지하기 위해 퀴즈 목록을 REDIS에서 관리
+     * 퀴즈 문제 리스트 조회 중복 출제를 방지하기 위해 퀴즈 목록을 REDIS에서 관리한다
      */
     @Override
     public QuizListRes getQuizzes(int roomId, QuizParam quizParam) {
@@ -53,6 +55,27 @@ public class QuizServiceImpl implements QuizService {
             .forEach(
                 (quizRes -> redisTemplate.opsForSet().add(key, String.valueOf(quizRes.getId()))));
         return new QuizListRes(quizListRes);
+    }
+
+    /**
+     * 문제를 맞힌 순서에 따라 현재 스테이지의 점수를 부여한다
+     */
+    @Override
+    public void updateScores(int roomId, int questionId, String memberId) {
+        // 나의 제출 순위 조회
+        String stageKey = String.format("rooms:%d:%d", roomId, questionId);
+        if (redisTemplate.opsForList().lastIndexOf(stageKey, memberId) != null) {
+            throw new BusinessException(ErrorCode.SUBMIT_ALREDY_COMPLETE);
+        }
+        
+        Long size = redisTemplate.opsForList().rightPush(stageKey, memberId);
+
+        // 스테이지 점수 부여
+        int score = (size >= 3) ? 70 : (int) (100 - (size * 10));
+        String boardKey = String.format("rooms:%d:board", roomId);
+        redisTemplate.opsForZSet().incrementScore(boardKey, memberId, score);
+
+        log.info("[updateScores] Member : {}, Rank : {}, Score : {}", memberId, size, score);
     }
 
 }

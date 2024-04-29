@@ -7,4 +7,5 @@ public interface QuizService {
 
     QuizListRes getQuizzes(int roomNum, QuizParam quizParam);
 
+    void updateScores(int roomId, int questionId, String memberId);
 }
