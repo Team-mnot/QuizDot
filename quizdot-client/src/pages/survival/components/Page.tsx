@@ -1,7 +1,9 @@
 // src/pages/survival/components/Page.tsx
+
 import { useEffect } from 'react';
 import { CharacterPreview } from './CharacterPreview';
 import { ChattingBox } from '../../../shared/ui/ChattingBox';
+import { QuizComponent } from './QuizComponent';
 
 export function SurvivalPage() {
   useEffect(() => {
@@ -11,10 +13,10 @@ export function SurvivalPage() {
   }, []);
 
   return (
-    <div className="relative z-10 p-4">
+    <div className="flex h-full flex-col items-center justify-center">
+      <QuizComponent />
       <CharacterPreview />
-      <ChattingBox/>
+      <ChattingBox />
     </div>
   );
 }
- 
