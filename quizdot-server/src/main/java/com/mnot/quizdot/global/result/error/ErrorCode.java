@@ -31,6 +31,7 @@ public enum ErrorCode {
     IS_NOT_EXISTS_REFRESH_TOKEN(400, "refreshToken이 존재하지 않습니다."),
     PASSWORD_DO_NOT_MATCH(400, "비밀번호가 일치하지 않습니다"),
     HINT_DO_NOT_MATCH(400, "비밀번호 힌트가 일치하지 않습니다"),
+    RECORD_NOT_FOUND(400, "전적이 없습니다."),
 
     //Game
     SUBMIT_ALREADY_COMPLETE(400, "이미 제출된 결과입니다.");

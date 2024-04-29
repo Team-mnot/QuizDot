@@ -130,9 +130,11 @@ public class MemberController {
     @GetMapping("/info/{member_id}")
     @Operation(summary = "유저 정보 조회")
     public ResponseEntity<ResultResponse> getInfo(
-        @PathVariable("member_id") int member_id) {
-        return null;
+        @PathVariable("member_id") int memberId) {
+        return ResponseEntity.ok(
+            ResultResponse.of(200, "유저 정보를 조회했습니다", memberService.getInfo(memberId)));
     }
+
 
     @PostMapping("/reissue")
     @Operation(summary = "access 토큰 재발급")

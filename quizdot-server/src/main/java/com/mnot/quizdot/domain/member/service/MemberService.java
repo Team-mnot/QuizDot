@@ -2,6 +2,7 @@ package com.mnot.quizdot.domain.member.service;
 
 import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
 import com.mnot.quizdot.domain.member.dto.JoinDto;
+import com.mnot.quizdot.domain.member.dto.MemberInfoDto;
 
 public interface MemberService {
 
@@ -27,6 +28,6 @@ public interface MemberService {
     void changePassword(CustomMemberDetail member, String password, String chkPassword);
 
     //유저 정보 조회
-
+    MemberInfoDto getInfo(int memberId);
 
 }

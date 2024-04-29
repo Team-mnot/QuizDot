@@ -2,6 +2,7 @@ package com.mnot.quizdot.domain.member.service;
 
 import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
 import com.mnot.quizdot.domain.member.dto.JoinDto;
+import com.mnot.quizdot.domain.member.dto.MemberInfoDto;
 import com.mnot.quizdot.domain.member.entity.Avatar;
 import com.mnot.quizdot.domain.member.entity.Member;
 import com.mnot.quizdot.domain.member.entity.MemberAvatar;
@@ -180,5 +181,34 @@ public class MemberServiceImpl implements MemberService {
         }
         //비밀번호 업데이트
         temp.updatePassword(bCryptPasswordEncoder.encode(password));
+    }
+
+    @Override
+    public MemberInfoDto getInfo(int memberId) {
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+        MultiRecord normalRecord = multiRecordRepository.findByMemberIdAndMode(memberId,
+                ModeType.NORMAL)
+            .orElseThrow(() -> new BusinessException(ErrorCode.RECORD_NOT_FOUND));
+        MultiRecord survivalRecord = multiRecordRepository.findByMemberIdAndMode(memberId,
+                ModeType.SURVIVAL)
+            .orElseThrow(() -> new BusinessException(ErrorCode.RECORD_NOT_FOUND));
+
+        float normalRate = normalRecord.getTotalCount() == 0 ? 0.0f
+            : (float) normalRecord.getWinCount() / normalRecord.getTotalCount() * 100;
+        float survivalRate = survivalRecord.getTotalCount() == 0 ? 0.0f
+            : (float) survivalRecord.getWinCount() / survivalRecord.getTotalCount() * 100;
+        return MemberInfoDto.builder()
+            .id(memberId)
+            .normalRate(normalRate)
+            .survivalRate(survivalRate)
+            .nickname(member.getNickname())
+            .nicknameColor(member.getNicknameColor())
+            .normalWinCount(normalRecord.getWinCount())
+            .survivalWinCount(survivalRecord.getWinCount())
+            .titleId(member.getTitleId())
+            .avartarId(member.getAvatarId())
+            .point(member.getPoint())
+            .build();
     }
 }
