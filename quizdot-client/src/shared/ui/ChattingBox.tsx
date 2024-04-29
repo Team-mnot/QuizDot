@@ -23,7 +23,7 @@ export function ChattingBox() {
 
   useEffect(() => {
     // 메시지 상태가 변경될 때 마다 실행
-    if (chatContainerRef.current) {
+    if (chatContainerRef.current) { 
       // 현재 스크롤 컨테이너의 scrollTop 값을 스크롤 높이로 설정
       chatContainerRef.current.scrollTop =
         chatContainerRef.current.scrollHeight;
