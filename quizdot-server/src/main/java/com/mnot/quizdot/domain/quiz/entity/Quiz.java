@@ -37,6 +37,9 @@ public class Quiz {
 
     private String imagePath;
 
+    @Column(length = 512)
+    private String description;
+
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
     private List<Answer> answers = new ArrayList<>();
 
@@ -45,11 +48,12 @@ public class Quiz {
 
     @Builder
     public Quiz(String question, QuestionType questionType, CategoryType category, String hint,
-        String imagePath) {
+        String imagePath, String description) {
         this.question = question;
         this.questionType = questionType;
         this.category = category;
         this.hint = hint;
         this.imagePath = imagePath;
+        this.description = description;
     }
 }
