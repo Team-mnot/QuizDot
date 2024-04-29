@@ -16,10 +16,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class RoomServiceImpl implements RoomService {
+public class LobbyServiceImpl implements LobbyService {
 
     private final static int MAX_CHANNEL = 8;
-    private final static int MAX_ROOM = 1;
+    private final static int MAX_ROOM = 30;
 
     private final RedisTemplate redisTemplate;
 
@@ -64,6 +64,7 @@ public class RoomServiceImpl implements RoomService {
             .gameMode(String.valueOf(roomReq.getMode()))
             .category(String.valueOf(roomReq.getCategory()))
             .maxQuestion(roomReq.getMaxQuestion())
+            .maxPeople(roomReq.getMaxPeople())
             .hostId(hostId)
             .build();
 
