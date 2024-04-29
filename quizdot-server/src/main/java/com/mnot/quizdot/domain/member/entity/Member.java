@@ -43,7 +43,7 @@ public class Member {
 
     private String hint;
 
-    @ColumnDefault(value = "0")
+    @ColumnDefault(value = "1")
     private int level;
 
     @ColumnDefault(value = "0")
@@ -51,6 +51,12 @@ public class Member {
 
     @ColumnDefault(value = "0")
     private int point;
+
+    @ColumnDefault(value = "1")
+    private int titleId;
+
+    @ColumnDefault(value = "1")
+    private int avatarId;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberTitle> titles = new ArrayList<>();
@@ -77,6 +83,12 @@ public class Member {
         this.nickname = nickname;
         this.hint = hint;
         this.role = role;
+        this.point = 0;
+        this.exp = 0;
+        this.level = 1;
+        this.titleId = 1;
+        this.avatarId = 1;
+        this.nicknameColor = "#000000";
     }
 
     public void updatePassword(String password) {
