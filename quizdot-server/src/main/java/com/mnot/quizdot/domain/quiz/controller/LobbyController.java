@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/lobby")
 @RequiredArgsConstructor
 @Tag(name = "Lobby", description = "로비 API")
-public class RoomController {
+public class LobbyController {
 
     private final RoomService roomService;
 
