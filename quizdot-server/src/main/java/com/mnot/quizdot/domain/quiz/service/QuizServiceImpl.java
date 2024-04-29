@@ -29,9 +29,9 @@ public class QuizServiceImpl implements QuizService {
      * 퀴즈 문제 리스트 조회 중복 출제를 방지하기 위해 퀴즈 목록을 REDIS에서 관리
      */
     @Override
-    public QuizListRes getQuizzes(int roomNum, QuizParam quizParam) {
+    public QuizListRes getQuizzes(int roomId, QuizParam quizParam) {
         // 이미 출제된 퀴즈 리스트 조회
-        String key = String.format("rooms:%d:quiz", roomNum);
+        String key = String.format("rooms:%d:quiz", roomId);
         Set<Integer> quizSet = redisTemplate.opsForSet().members(key);
         List<Integer> quizList = new ArrayList<>(quizSet);
 
@@ -54,5 +54,5 @@ public class QuizServiceImpl implements QuizService {
                 (quizRes -> redisTemplate.opsForSet().add(key, String.valueOf(quizRes.getId()))));
         return new QuizListRes(quizListRes);
     }
-    
+
 }

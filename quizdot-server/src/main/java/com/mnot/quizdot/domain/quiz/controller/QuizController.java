@@ -22,12 +22,13 @@ public class QuizController {
 
     private final QuizService quizService;
 
-    @GetMapping("/quiz/{room_num}")
+    @GetMapping("/quiz/{room_id}")
     public ResponseEntity<ResultResponse> getQuizzes(
-        @PathVariable("room_num") int roomNum,
+        @PathVariable("room_id") int roomId,
         @ModelAttribute @ParameterObject QuizParam quizParam) {
-        QuizListRes quizListRes = quizService.getQuizzes(roomNum, quizParam);
+        QuizListRes quizListRes = quizService.getQuizzes(roomId, quizParam);
         return ResponseEntity.ok(ResultResponse.of(200, "퀴즈 목록 조회에 성공하였습니다.", quizListRes));
     }
-    
+
+
 }
