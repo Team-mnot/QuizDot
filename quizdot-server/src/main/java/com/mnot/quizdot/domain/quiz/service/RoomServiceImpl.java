@@ -28,13 +28,12 @@ public class RoomServiceImpl implements RoomService {
         throws JsonProcessingException {
         // 대기실 정보 조회
         String key = String.format("rooms:%d:info", roomId);
-        RoomInfoDto roomInfoDto = objectMapper.readValue(
-            (String) redisTemplate.opsForValue().get(key), RoomInfoDto.class);
-
-        if (roomInfoDto == null) {
+        String info = (String) redisTemplate.opsForValue().get(key);
+        if (info == null) {
             throw new BusinessException(ErrorCode.ROOM_NOT_FOUND);
         }
 
+        RoomInfoDto roomInfoDto = objectMapper.readValue(info, RoomInfoDto.class);
         if (memberId != roomInfoDto.getHostId()) {
             throw new BusinessException(ErrorCode.IS_NOT_HOST);
         }
