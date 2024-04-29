@@ -24,7 +24,10 @@ public enum ErrorCode {
     // Member
     EXISTS_ID_ERROR(400, "이미 존재하는 아이디입니다."),
     EXISTS_NICKNAME_ERROR(400, "이미 존재하는 닉네임입니다."),
-    NOT_VALID_ERROR(400, "유효성 검사에서 걸림");
+    NOT_VALID_ERROR(400, "유효성 검사에서 걸림"),
+
+    //Game
+    SUBMIT_ALREADY_COMPLETE(400, "이미 제출된 결과입니다.");
 
     private final int status;
     private final String message;
