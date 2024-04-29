@@ -35,7 +35,7 @@ public class QuizController {
         return ResponseEntity.ok(ResultResponse.of(200, "퀴즈 목록 조회에 성공하였습니다.", quizListRes));
     }
 
-    @PostMapping("/game/score/{room_id}/{question_id}")
+    @PostMapping("/score/{room_id}/{question_id}")
     @Operation(summary = "문제 별 점수 업데이트 API")
     public ResponseEntity<ResultResponse> updateScores(Authentication authentication,
         @PathVariable("room_id") int roomId, @PathVariable("question_id") int questionId) {

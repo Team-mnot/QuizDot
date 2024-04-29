@@ -6,6 +6,7 @@ import com.mnot.quizdot.global.jwt.JWTFilter;
 import com.mnot.quizdot.global.jwt.JWTUtil;
 import com.mnot.quizdot.global.jwt.LoginFilter;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -58,7 +59,7 @@ public class SecurityConfig {
                         CorsConfiguration configuration = new CorsConfiguration();
                         configuration.setAllowedOrigins(
                             //허용할 주소
-                            Collections.singletonList("http://localhost:5173"));
+                            Arrays.asList("https://k10d102.p.ssafy.io", "http://localhost:5173"));
                         //허용할 메소드
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         //클라이언트에서 credentials 보내주면 true로 하기

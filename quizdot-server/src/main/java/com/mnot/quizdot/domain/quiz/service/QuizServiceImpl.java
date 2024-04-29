@@ -1,6 +1,5 @@
 package com.mnot.quizdot.domain.quiz.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnot.quizdot.domain.quiz.dto.QuizListRes;
 import com.mnot.quizdot.domain.quiz.dto.QuizParam;
 import com.mnot.quizdot.domain.quiz.dto.QuizRes;
@@ -23,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class QuizServiceImpl implements QuizService {
 
-    private final ObjectMapper objectMapper;
     private final QuizRepository quizRepository;
     private final RedisTemplate redisTemplate;
 
@@ -71,7 +69,7 @@ public class QuizServiceImpl implements QuizService {
         Long size = redisTemplate.opsForList().rightPush(stageKey, memberId);
 
         // 스테이지 점수 부여
-        int score = (size >= 3) ? 70 : (int) (100 - (size * 10));
+        int score = (size >= 3) ? 70 : (int) (100 - ((size - 1) * 10));
         String boardKey = String.format("rooms:%d:board", roomId);
         redisTemplate.opsForZSet().incrementScore(boardKey, memberId, score);
 
