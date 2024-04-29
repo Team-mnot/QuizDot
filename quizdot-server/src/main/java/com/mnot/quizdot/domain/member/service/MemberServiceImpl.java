@@ -2,12 +2,20 @@ package com.mnot.quizdot.domain.member.service;
 
 import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
 import com.mnot.quizdot.domain.member.dto.JoinDto;
+import com.mnot.quizdot.domain.member.entity.Avatar;
 import com.mnot.quizdot.domain.member.entity.Member;
+import com.mnot.quizdot.domain.member.entity.MemberAvatar;
+import com.mnot.quizdot.domain.member.entity.MemberTitle;
 import com.mnot.quizdot.domain.member.entity.ModeType;
 import com.mnot.quizdot.domain.member.entity.MultiRecord;
 import com.mnot.quizdot.domain.member.entity.Role;
+import com.mnot.quizdot.domain.member.entity.Title;
+import com.mnot.quizdot.domain.member.repository.AvatarRepository;
+import com.mnot.quizdot.domain.member.repository.MemberAvatarRepository;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
+import com.mnot.quizdot.domain.member.repository.MemberTitleRepository;
 import com.mnot.quizdot.domain.member.repository.MultiRecordRepository;
+import com.mnot.quizdot.domain.member.repository.TitleRepository;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +33,10 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
     private final MultiRecordRepository multiRecordRepository;
-
+    private final TitleRepository titleRepository;
+    private final MemberTitleRepository memberTitleRepository;
+    private final AvatarRepository avatarRepository;
+    private final MemberAvatarRepository memberAvatarRepository;
     //비밀번호 암호화
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -71,8 +82,22 @@ public class MemberServiceImpl implements MemberService {
             .build();
         multiRecordRepository.save(survivalRecord);
 
-        // TODO : 아바타랑 칭호 생기면 추가할것
+        Title defaultTitle = titleRepository.findById(1)
+            .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+        MemberTitle memberTitle = MemberTitle.builder()
+            .title(defaultTitle)
+            .member(member)
+            .isGet(true)
+            .build();
+        memberTitleRepository.save(memberTitle);
 
+        Avatar defaultAvatar = avatarRepository.findById(1)
+            .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+        MemberAvatar memberAvatar = MemberAvatar.builder()
+            .avatar(defaultAvatar)
+            .member(member)
+            .build();
+        memberAvatarRepository.save(memberAvatar);
         log.info("회원 가입 서비스 : COMPLETE");
     }
 
@@ -98,7 +123,9 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void chkHint(String memberId, String hint) {
-        Member member = memberRepository.findByMemberId(memberId);
+
+        Member member = memberRepository.findByMemberId(memberId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
         //힌트가 맞는지 확인하기
         if (!bCryptPasswordEncoder.matches(hint, member.getHint())) {
             //힌트가 다르면 에러 발생
@@ -109,7 +136,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void findPassword(String memberId, String password, String passwordChk) {
-        Member member = memberRepository.findByMemberId(memberId);
+        Member member = memberRepository.findByMemberId(memberId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
         if (member == null) {
             throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND);
         }
@@ -125,7 +153,8 @@ public class MemberServiceImpl implements MemberService {
     public void checkPassword(CustomMemberDetail member, String password) {
         //입력받은 암호와 로그인한 유저의 암호화된 비밀번호가 일치하는지 확인
         log.info("비밀번호 체크 하는 곳 member  ");
-        Member temp = memberRepository.findByMemberId(member.getUsername());
+        Member temp = memberRepository.findByMemberId(member.getUsername())
+            .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
         log.info("서비스단 password : {}", password);
         log.info("커스텀 멤버 디테일 password : {}", temp.getPassword());
         if (!bCryptPasswordEncoder.matches(password, temp.getPassword())) {
@@ -139,7 +168,8 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void changePassword(CustomMemberDetail member, String password, String chkPassword) {
         //멤버가 있는지 확인
-        Member temp = memberRepository.findByMemberId(member.getUsername());
+        Member temp = memberRepository.findByMemberId(member.getUsername())
+            .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
         if (temp == null) {
             //없으면 에러 발생
             throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND);

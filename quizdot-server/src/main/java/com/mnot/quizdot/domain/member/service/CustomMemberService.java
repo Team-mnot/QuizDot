@@ -23,7 +23,8 @@ public class CustomMemberService implements UserDetailsService {
     public UserDetails loadUserByUsername(String memberId) throws UsernameNotFoundException {
 
         log.info("멤버 정보 가져오기 : START");
-        Member member = memberRepository.findByMemberId(memberId);
+        Member member = memberRepository.findByMemberId(memberId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
         log.info("memberId : {}", memberId);
         if (member == null) {
             throw new BusinessException(ErrorCode.ENTITY_NOT_FOUND);

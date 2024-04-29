@@ -10,6 +10,8 @@ spring:
     password: ${local.db.password}
   data:
     redis:
+      host: ${local.redis.host}
+      port: ${local.redis.port}
       username: ${local.redis.username}
       password: ${local.redis.password}
 ---
