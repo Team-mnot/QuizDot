@@ -3,6 +3,7 @@ package com.mnot.quizdot.domain.member.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -17,11 +18,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
+@DynamicInsert
 public class Member {
 
     @Id
@@ -33,6 +38,7 @@ public class Member {
 
     private String password;
 
+    @Column(unique = true)
     private String nickname;
 
     private String hint;
@@ -61,7 +67,7 @@ public class Member {
     @CreatedDate
     private LocalDateTime createTime;
 
-    @ColumnDefault(value = "000000")
+    @ColumnDefault(value = "'#000000'")
     private String nicknameColor;
 
     @Builder
@@ -71,5 +77,13 @@ public class Member {
         this.nickname = nickname;
         this.hint = hint;
         this.role = role;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
+    public void updateHint(String hint) {
+        this.hint = hint;
     }
 }
