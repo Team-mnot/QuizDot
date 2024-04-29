@@ -83,6 +83,7 @@ public class MemberServiceImpl implements MemberService {
             .build();
         multiRecordRepository.save(survivalRecord);
 
+        //TODO: 칭호는 해금방식이기 때문에 처음에 생성될 때 중계테이블에 모든 칭호를 담아주고 1번 칭호만 true를 설정해주고 나머지 칭호는 모두 false인 상태로 값을 추가해놓아야함.
         Title defaultTitle = titleRepository.findById(1)
             .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
         MemberTitle memberTitle = MemberTitle.builder()
@@ -102,7 +103,7 @@ public class MemberServiceImpl implements MemberService {
         log.info("회원 가입 서비스 : COMPLETE");
     }
 
-    //GUEST의 아이디와 닉네임은 어떤식으로 랜덤할것인지?
+    //TODO: GUEST로그인 방식에 대한 고민
     @Override
     public void joinGuest() {
 
@@ -210,5 +211,34 @@ public class MemberServiceImpl implements MemberService {
             .avartarId(member.getAvatarId())
             .point(member.getPoint())
             .build();
+    }
+
+    @Override
+    public void changeNickname(CustomMemberDetail member, String nickname) {
+        Member chkMember = memberRepository.findByMemberId(member.getUsername())
+            .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+        //닉네임 중복 확인
+        Boolean isExistNickname = memberRepository.existsByNickname(nickname);
+        if (isExistNickname) {
+            throw new BusinessException(ErrorCode.EXISTS_NICKNAME_ERROR);
+        }
+        chkMember.updateNickname(nickname);
+    }
+
+    @Override
+    public void changeCharacter(CustomMemberDetail member, int characterId) {
+        Member chkMember = memberRepository.findByMemberId(member.getUsername())
+            .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+        chkMember.updateAvatarId(characterId);
+    }
+
+    @Override
+    public void changeTitle(CustomMemberDetail member, int titleId) {
+        Member chkMember = memberRepository.findByMemberId(member.getUsername())
+            .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+        if (!memberTitleRepository.existsByTitleIdAndIsGetTrue(titleId)) {
+            throw new BusinessException(ErrorCode.LOCK_TITLE_ERROR);
+        }
+        chkMember.updateTitleId(titleId);
     }
 }

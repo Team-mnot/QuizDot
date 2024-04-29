@@ -98,4 +98,16 @@ public class Member {
     public void updateHint(String hint) {
         this.hint = hint;
     }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updateAvatarId(int avatarId) {
+        this.avatarId = avatarId;
+    }
+
+    public void updateTitleId(int titleId) {
+        this.titleId = titleId;
+    }
 }

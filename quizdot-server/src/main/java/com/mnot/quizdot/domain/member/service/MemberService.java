@@ -30,4 +30,13 @@ public interface MemberService {
     //유저 정보 조회
     MemberInfoDto getInfo(int memberId);
 
+    //닉네임 변경
+    void changeNickname(CustomMemberDetail member, String nickname);
+
+    //캐릭터 변경
+    void changeCharacter(CustomMemberDetail member, int characterId);
+
+    //칭호 변경
+    void changeTitle(CustomMemberDetail member, int titleId);
+
 }

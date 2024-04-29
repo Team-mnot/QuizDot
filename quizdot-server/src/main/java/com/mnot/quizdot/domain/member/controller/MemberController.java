@@ -42,6 +42,9 @@ public class MemberController {
     private final JWTUtil jwtUtil;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
+    /**
+     * 회원 가입
+     */
     @PostMapping("/join")
     @Operation(summary = "회원 가입")
     public ResponseEntity<ResultResponse> joinMember(
@@ -65,7 +68,9 @@ public class MemberController {
         return ResponseEntity.ok(ResultResponse.of(200, "게스트로 플레이하기"));
     }
 
-    //TODO : 회원 탈퇴
+    /**
+     * 회원 탈퇴
+     */
     @DeleteMapping("")
     @Operation(summary = "회원 탈퇴")
     public ResponseEntity<ResultResponse> deleteMember(
@@ -74,7 +79,9 @@ public class MemberController {
         return ResponseEntity.ok(ResultResponse.of(200, "회원 탈퇴가 완료되었습니다."));
     }
 
-    //TODO : 비밀번호 찾기
+    /**
+     * 비밀번호 찾기
+     */
     @PostMapping("")
     @Operation(summary = "비밀번호 힌트 체크하기")
     public ResponseEntity<ResultResponse> chkHint(
@@ -100,7 +107,7 @@ public class MemberController {
     }
 
     /**
-     * 로그인 후 비밀번호 변경
+     * 로그인 후 비밀번호 변경을 위한 비밀번호 확인
      */
     @PostMapping("/info/pwd-check")
     @Operation(summary = "기존 비밀번호 확인")
@@ -112,7 +119,9 @@ public class MemberController {
         return ResponseEntity.ok(ResultResponse.of(200, "비밀번호가 확인 되었습니다."));
     }
 
-    //TODO : 비밀번호 변경
+    /**
+     * 로그인 후 비밀번호 변경
+     */
     @PostMapping("/info/pwd")
     @Operation(summary = "비밀번호 변경")
     public ResponseEntity<ResultResponse> changePassword(
@@ -135,7 +144,46 @@ public class MemberController {
             ResultResponse.of(200, "유저 정보를 조회했습니다", memberService.getInfo(memberId)));
     }
 
+    /**
+     * 닉네임 변경
+     */
+    @PostMapping("/nickname")
+    @Operation(summary = "닉네임 변경")
+    public ResponseEntity<ResultResponse> changeNickname(
+        @AuthenticationPrincipal CustomMemberDetail member,
+        @RequestBody Map<String, String> requestBody) {
+        String nickname = requestBody.get("nickname");
+        memberService.changeNickname(member, nickname);
+        return ResponseEntity.ok(ResultResponse.of(200, "닉네임을 변경했습니다."));
+    }
 
+    /**
+     * 캐릭터 변경
+     */
+    @PostMapping("/character/{character_id}")
+    @Operation(summary = "캐릭터 변경")
+    public ResponseEntity<ResultResponse> changeCharacter(
+        @AuthenticationPrincipal CustomMemberDetail member,
+        @PathVariable("character_id") int characterId) {
+        memberService.changeCharacter(member, characterId);
+        return ResponseEntity.ok(ResultResponse.of(200, "캐릭터를 변경했습니다."));
+    }
+
+    /**
+     * 칭호 변경
+     */
+    @PostMapping("/title/{title_id}")
+    @Operation(summary = "칭호 변경")
+    public ResponseEntity<ResultResponse> changeTitle(
+        @AuthenticationPrincipal CustomMemberDetail member,
+        @PathVariable("title_id") int titleId) {
+        memberService.changeTitle(member, titleId);
+        return ResponseEntity.ok(ResultResponse.of(200, "칭호를 변경했습니다."));
+    }
+
+    /**
+     * accessToken 재발급
+     */
     @PostMapping("/reissue")
     @Operation(summary = "access 토큰 재발급")
     public ResponseEntity<ResultResponse> reissue(HttpServletRequest request,
