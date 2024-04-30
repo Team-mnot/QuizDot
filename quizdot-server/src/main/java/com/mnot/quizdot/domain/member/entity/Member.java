@@ -110,4 +110,8 @@ public class Member {
     public void updateTitleId(int titleId) {
         this.titleId = titleId;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

@@ -226,6 +226,7 @@ public class MemberController {
         //유저 아이디와 role 가져오기
         String memberId = jwtUtil.getUsername(refresh);
         String role = jwtUtil.getRole(refresh);
+        int id = jwtUtil.getId(refresh);
 
         //redis에 refreshToken이 있는지 확인
         Boolean isExist = refreshTokenRedisRepository.existsById(memberId);
@@ -235,8 +236,8 @@ public class MemberController {
         log.info("redis에 있는지 확인 : {}", isExist);
 
         //새 토큰 발급
-        String newAccessToken = jwtUtil.createJwt("access", memberId, role, 600000L);
-        String newRefreshToken = jwtUtil.createJwt("refresh", memberId, role, 86400000L);
+        String newAccessToken = jwtUtil.createJwt("access", id, memberId, role, 600000L);
+        String newRefreshToken = jwtUtil.createJwt("refresh", id, memberId, role, 86400000L);
 
         //기존 refreshToken redis에서 삭제
         refreshTokenRedisRepository.deleteById(memberId);
