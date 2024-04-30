@@ -59,12 +59,11 @@ public class MemberController {
         return ResponseEntity.ok(ResultResponse.of(200, "회원가입 성공"));
     }
 
-    //TODO : GUEST정보 어떻게 구성할 것인지
+    //TODO : GUEST로 플레이 클릭하면 알아서 로그인까지 되야하는거 아닌가?
     @PostMapping("/guest")
     @Operation(summary = "게스트로 플레이하기")
     public ResponseEntity<ResultResponse> joinGuest() {
-        log.info("게스트 플레이 : OK");
-//        memberService.joinGuest
+        memberService.joinGuest();
         return ResponseEntity.ok(ResultResponse.of(200, "게스트로 플레이하기"));
     }
 
@@ -124,7 +123,7 @@ public class MemberController {
      */
     @PostMapping("/info/pwd")
     @Operation(summary = "비밀번호 변경")
-    public ResponseEntity<ResultResponse> changePassword(
+    public ResponseEntity<ResultResponse> modifyPassword(
         @AuthenticationPrincipal CustomMemberDetail member,
         @RequestBody Map<String, String> requestBody) {
         String password = requestBody.get("password");

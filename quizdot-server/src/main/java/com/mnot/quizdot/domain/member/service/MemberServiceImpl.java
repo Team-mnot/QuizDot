@@ -103,7 +103,7 @@ public class MemberServiceImpl implements MemberService {
         log.info("회원 가입 서비스 : COMPLETE");
     }
 
-    //TODO: GUEST로그인 방식에 대한 고민
+    //TODO: GUEST로그인은 자동 로그인
     @Override
     public void joinGuest() {
 
