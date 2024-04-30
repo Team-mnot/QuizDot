@@ -19,6 +19,7 @@ import com.mnot.quizdot.domain.member.repository.MultiRecordRepository;
 import com.mnot.quizdot.domain.member.repository.TitleRepository;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -106,7 +107,58 @@ public class MemberServiceImpl implements MemberService {
     //TODO: GUEST로그인은 자동 로그인
     @Override
     public void joinGuest() {
+        //폼에서 받아온 정보들
+        String memberId = UUID.randomUUID().toString();
+        String password = UUID.randomUUID().toString();
+        String nickname = "GUEST" + String.valueOf(Math.random() * 1000000);
+        String hint = UUID.randomUUID().toString();
+        //아이디 중복 확인
+        Boolean isExistId = memberRepository.existsByMemberId(memberId);
 
+        //닉네임 중복 확인
+        Boolean isExistNickname = memberRepository.existsByNickname(nickname);
+        if (isExistId || isExistNickname) {
+            throw new BusinessException(ErrorCode.GUEST_LOGIN_ERROR);
+        }
+        //멤버 엔티티 생성 및 저장
+        Member member = Member.builder()
+            .memberId(memberId)
+            .password(bCryptPasswordEncoder.encode(password))
+            .nickname(nickname)
+            .hint(bCryptPasswordEncoder.encode(hint))
+            .role(Role.ROLE_GUEST)
+            .build();
+        memberRepository.save(member);
+
+        //멀티 전적 생성 및 저장
+        MultiRecord normalRecord = MultiRecord.builder()
+            .member(member)
+            .mode(ModeType.NORMAL)
+            .build();
+        multiRecordRepository.save(normalRecord);
+        MultiRecord survivalRecord = MultiRecord.builder()
+            .member(member)
+            .mode(ModeType.SURVIVAL)
+            .build();
+        multiRecordRepository.save(survivalRecord);
+
+        //TODO: 칭호는 해금방식이기 때문에 처음에 생성될 때 중계테이블에 모든 칭호를 담아주고 1번 칭호만 true를 설정해주고 나머지 칭호는 모두 false인 상태로 값을 추가해놓아야함.
+        Title defaultTitle = titleRepository.findById(1)
+            .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+        MemberTitle memberTitle = MemberTitle.builder()
+            .title(defaultTitle)
+            .member(member)
+            .isGet(true)
+            .build();
+        memberTitleRepository.save(memberTitle);
+
+        Avatar defaultAvatar = avatarRepository.findById(1)
+            .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+        MemberAvatar memberAvatar = MemberAvatar.builder()
+            .avatar(defaultAvatar)
+            .member(member)
+            .build();
+        memberAvatarRepository.save(memberAvatar);
     }
 
     @Override
