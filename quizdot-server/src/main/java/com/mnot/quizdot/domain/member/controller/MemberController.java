@@ -42,6 +42,9 @@ public class MemberController {
     private final JWTUtil jwtUtil;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
+    /**
+     * 회원 가입
+     */
     @PostMapping("/join")
     @Operation(summary = "회원 가입")
     public ResponseEntity<ResultResponse> joinMember(
@@ -56,16 +59,17 @@ public class MemberController {
         return ResponseEntity.ok(ResultResponse.of(200, "회원가입 성공"));
     }
 
-    //TODO : GUEST정보 어떻게 구성할 것인지
+    //TODO : GUEST로 플레이 클릭하면 알아서 로그인까지 되야하는거 아닌가?
     @PostMapping("/guest")
     @Operation(summary = "게스트로 플레이하기")
     public ResponseEntity<ResultResponse> joinGuest() {
-        log.info("게스트 플레이 : OK");
-//        memberService.joinGuest
+        memberService.joinGuest();
         return ResponseEntity.ok(ResultResponse.of(200, "게스트로 플레이하기"));
     }
 
-    //TODO : 회원 탈퇴
+    /**
+     * 회원 탈퇴
+     */
     @DeleteMapping("")
     @Operation(summary = "회원 탈퇴")
     public ResponseEntity<ResultResponse> deleteMember(
@@ -74,7 +78,9 @@ public class MemberController {
         return ResponseEntity.ok(ResultResponse.of(200, "회원 탈퇴가 완료되었습니다."));
     }
 
-    //TODO : 비밀번호 찾기
+    /**
+     * 비밀번호 찾기
+     */
     @PostMapping("")
     @Operation(summary = "비밀번호 힌트 체크하기")
     public ResponseEntity<ResultResponse> chkHint(
@@ -100,7 +106,7 @@ public class MemberController {
     }
 
     /**
-     * 로그인 후 비밀번호 변경
+     * 로그인 후 비밀번호 변경을 위한 비밀번호 확인
      */
     @PostMapping("/info/pwd-check")
     @Operation(summary = "기존 비밀번호 확인")
@@ -112,15 +118,17 @@ public class MemberController {
         return ResponseEntity.ok(ResultResponse.of(200, "비밀번호가 확인 되었습니다."));
     }
 
-    //TODO : 비밀번호 변경
+    /**
+     * 로그인 후 비밀번호 변경
+     */
     @PostMapping("/info/pwd")
     @Operation(summary = "비밀번호 변경")
-    public ResponseEntity<ResultResponse> changePassword(
+    public ResponseEntity<ResultResponse> modifyPassword(
         @AuthenticationPrincipal CustomMemberDetail member,
         @RequestBody Map<String, String> requestBody) {
         String password = requestBody.get("password");
         String chkPassword = requestBody.get("chkPassword");
-        memberService.changePassword(member, password, chkPassword);
+        memberService.modifyPassword(member, password, chkPassword);
         return ResponseEntity.ok(ResultResponse.of(200, "비밀번호가 변경되었습니다."));
     }
 
@@ -135,7 +143,46 @@ public class MemberController {
             ResultResponse.of(200, "유저 정보를 조회했습니다", memberService.getInfo(memberId)));
     }
 
+    /**
+     * 닉네임 변경
+     */
+    @PostMapping("/nickname")
+    @Operation(summary = "닉네임 변경")
+    public ResponseEntity<ResultResponse> modifyNickname(
+        @AuthenticationPrincipal CustomMemberDetail member,
+        @RequestBody Map<String, String> requestBody) {
+        String nickname = requestBody.get("nickname");
+        memberService.modifyNickname(member, nickname);
+        return ResponseEntity.ok(ResultResponse.of(200, "닉네임을 변경했습니다."));
+    }
 
+    /**
+     * 캐릭터 변경
+     */
+    @PostMapping("/character/{character_id}")
+    @Operation(summary = "캐릭터 변경")
+    public ResponseEntity<ResultResponse> modifyCharacter(
+        @AuthenticationPrincipal CustomMemberDetail member,
+        @PathVariable("character_id") int characterId) {
+        memberService.modifyCharacter(member, characterId);
+        return ResponseEntity.ok(ResultResponse.of(200, "캐릭터를 변경했습니다."));
+    }
+
+    /**
+     * 칭호 변경
+     */
+    @PostMapping("/title/{title_id}")
+    @Operation(summary = "칭호 변경")
+    public ResponseEntity<ResultResponse> modifyTitle(
+        @AuthenticationPrincipal CustomMemberDetail member,
+        @PathVariable("title_id") int titleId) {
+        memberService.modifyTitle(member, titleId);
+        return ResponseEntity.ok(ResultResponse.of(200, "칭호를 변경했습니다."));
+    }
+
+    /**
+     * accessToken 재발급
+     */
     @PostMapping("/reissue")
     @Operation(summary = "access 토큰 재발급")
     public ResponseEntity<ResultResponse> reissue(HttpServletRequest request,

@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MemberTitleRepository extends JpaRepository<MemberTitle, Integer> {
 
+    boolean existsByTitleIdAndMemberIdAndIsGetTrue(int memberId, int titleId);
 }
