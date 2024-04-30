@@ -24,6 +24,7 @@ public enum ErrorCode {
     IS_NOT_HOST(403, "대기실 정보 변경 권한이 없습니다."),
 
     // Member
+    LOGIN_ERROR(400, "로그인에 실패했습니다."),
     EXISTS_ID_ERROR(400, "이미 존재하는 아이디입니다."),
     EXISTS_NICKNAME_ERROR(400, "이미 존재하는 닉네임입니다."),
     NOT_VALID_ERROR(400, "유효성 검사를 통과하지 못했습니다."),
