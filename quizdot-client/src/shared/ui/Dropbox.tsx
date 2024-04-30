@@ -1,40 +1,44 @@
-/* eslint-disable prettier/prettier */
 import { useState } from 'react';
 
 interface DropboxProps {
   options: string[];
-  onSelected: (selectedItem: string) => void;
+  item: string;
+  onClick: (newitem: string) => void;
 }
 
 export function Dropbox(props: DropboxProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [item, setItem] = useState(props.item);
 
-  const handleItemClick = (e: React.ChangeEvent<HTMLDivElement>) => {
-    setSelectedItem(e.target.id);
+  const handleClickItem = (e: React.MouseEvent<HTMLDivElement>) => {
+    setItem(e.currentTarget.id);
     setIsOpen(false);
-    props.onSelected(e.target.id);
+    props.onClick(e.currentTarget.id);
   };
 
   return (
-    <div className="relative inline-block">
+    <div className={'relative inline-block'}>
       <div
-        className="flex justify-between w-64 h-auto p-2 border-2 rounded-md shadow-md"
-        onClick={() => setIsOpen(!isOpen)}
+        className={
+          'flex h-auto w-64 justify-between rounded-md border-2 bg-white p-5 shadow-md'
+        }
+        onClick={() => setIsOpen(true)}
       >
-        <div>{selectedItem || 0}</div>
-        <div>{isOpen ? '▲' : '▼'}</div>
+        <p>{item}</p>
+        <p>{isOpen ? '▲' : '▼'}</p>
       </div>
       {isOpen && (
-        <div className="absolute w-64 h-auto bg-white rounded-md top-full">
-          {props.options.map((item, index) => (
+        <div className={'absolute top-full h-auto w-64 rounded-md bg-white'}>
+          {props.options.map((i, index) => (
             <div
-              id={item}
-              className="p-2 rounded-md cursor-pointer white-space-nowrap hover:bg-gray-100"
+              id={i}
+              className={
+                'white-space-nowrap cursor-pointer rounded-md p-5 hover:bg-gray-100'
+              }
               key={index}
-              onClick={() => handleItemClick}
+              onClick={handleClickItem}
             >
-              {item}
+              {i}
             </div>
           ))}
         </div>

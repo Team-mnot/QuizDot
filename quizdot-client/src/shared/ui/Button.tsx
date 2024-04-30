@@ -1,16 +1,12 @@
-interface ButtonProps {
-  className: string;
-  label: string;
-  onClick: () => void;
-}
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
 
-export function Button(props: ButtonProps) {
+export function Button({ className, value, ...props }: ButtonProps) {
   return (
     <button
-      className={`rounded-md border-2 p-2 shadow-md ${props.className}`}
-      onClick={props.onClick}
+      className={`rounded-md border-2 px-5 shadow-md ${className}`}
+      {...props}
     >
-      {props.label}
+      {value}
     </button>
   );
 }

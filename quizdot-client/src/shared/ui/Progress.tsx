@@ -1,33 +1,29 @@
-/* eslint-disable prettier/prettier */
 import ProgressBar from '@ramonak/react-progress-bar';
-import { useEffect, useState } from 'react';
 
 interface ProgressProps {
-  className: string;
-  currentValue: string;
-  maxValue: number;
+  padding: string;
+  size: string;
   label: string;
+  color: string;
+  currentValue: number;
+  maxValue: number;
 }
 
 export function Progress(props: ProgressProps) {
-  const [currentValue, setCurrentValue] = useState(props.currentValue);
-
-  useEffect(() => {
-    setCurrentValue(props.currentValue);
-  }, [currentValue]);
-
   return (
-    <div className="">
-      <ProgressBar
-        className={`rounded-md border-2 shadow-md ${props.className}`}
-        completed={currentValue}
-        maxCompleted={props.maxValue}
-        borderRadius="0px"
-        isLabelVisible={false}
-        baseBgColor="white"
-        bgColor="grey"
-      />
-      <div className="">{props.label}</div>
+    <div>
+      <div className={`relative ${props.padding} ${props.size}`}>
+        <p className={'absolute w-full text-center'}>{props.label}</p>
+        <ProgressBar
+          className={'rounded-md border-2 shadow-md '}
+          completed={`${props.currentValue}`}
+          maxCompleted={props.maxValue}
+          borderRadius="5px"
+          isLabelVisible={false}
+          baseBgColor="white"
+          bgColor={props.color}
+        />
+      </div>
     </div>
   );
 }
