@@ -1,6 +1,7 @@
 package com.mnot.quizdot.domain.quiz.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnot.quizdot.domain.member.entity.Member;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
@@ -59,7 +60,10 @@ public class RoomServiceImpl implements RoomService {
     public RoomEnterRes enterRoom(int roomId, int memberId) throws JsonProcessingException {
         // 대기실 회원 리스트 조회
         String memberKey = String.format("rooms:%d:players", roomId);
-        List<PlayerInfoDto> players = redisTemplate.opsForHash().values(memberKey);
+        String jsonPlayers = redisTemplate.opsForHash().values(memberKey).toString();
+        List<PlayerInfoDto> players = objectMapper.readValue(jsonPlayers,
+            new TypeReference<List<PlayerInfoDto>>() {
+            });
 
         // 대기실 정보 조회
         String roomKey = String.format("rooms:%d:info", roomId);
