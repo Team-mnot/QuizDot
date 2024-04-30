@@ -13,7 +13,7 @@ public class RoomInfoDto {
 
     // 방 번호
     @Id
-    private int roomNum;
+    private int roomId;
 
     // 제목
     private String title;
@@ -40,10 +40,10 @@ public class RoomInfoDto {
     private int hostId;
 
     @Builder
-    public RoomInfoDto(int roomNum, String title, boolean isPublic, String password,
+    public RoomInfoDto(int roomId, String title, boolean isPublic, String password,
         String gameMode,
         int maxPeople, String category, int maxQuestion, int hostId) {
-        this.roomNum = roomNum;
+        this.roomId = roomId;
         this.title = title;
         this.isPublic = isPublic;
         this.password = password;
@@ -52,5 +52,15 @@ public class RoomInfoDto {
         this.category = category;
         this.maxQuestion = maxQuestion;
         this.hostId = hostId;
+    }
+
+    public void modifyInfo(RoomReq roomReq) {
+        this.title = roomReq.getTitle();
+        this.isPublic = roomReq.isPublic();
+        this.password = roomReq.getPassword();
+        this.gameMode = String.valueOf(roomReq.getMode());
+        this.category = String.valueOf(roomReq.getCategory());
+        this.maxQuestion = roomReq.getMaxQuestion();
+        this.maxPeople = roomReq.getMaxPeople();
     }
 }
