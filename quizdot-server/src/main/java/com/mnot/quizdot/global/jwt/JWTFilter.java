@@ -59,11 +59,14 @@ public class JWTFilter extends OncePerRequestFilter {
         }
         String memberId = jwtUtil.getUsername(authorization);
         String role = jwtUtil.getRole(authorization);
+        int id = jwtUtil.getId(authorization);
 
         Member member = Member.builder()
             .memberId(memberId)
             .role(Role.valueOf(Role.class, role))
             .build();
+
+        member.setId(id);
 
         log.info("member : {}", member.getRole());
         //userDetails에 회원 정보 담기!

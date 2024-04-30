@@ -19,4 +19,5 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
 
     void deleteByMemberId(String memberId);
 
+
 }
