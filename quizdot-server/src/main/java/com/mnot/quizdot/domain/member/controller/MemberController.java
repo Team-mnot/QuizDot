@@ -128,7 +128,7 @@ public class MemberController {
         @RequestBody Map<String, String> requestBody) {
         String password = requestBody.get("password");
         String chkPassword = requestBody.get("chkPassword");
-        memberService.changePassword(member, password, chkPassword);
+        memberService.modifyPassword(member, password, chkPassword);
         return ResponseEntity.ok(ResultResponse.of(200, "비밀번호가 변경되었습니다."));
     }
 
@@ -148,11 +148,11 @@ public class MemberController {
      */
     @PostMapping("/nickname")
     @Operation(summary = "닉네임 변경")
-    public ResponseEntity<ResultResponse> changeNickname(
+    public ResponseEntity<ResultResponse> modifyNickname(
         @AuthenticationPrincipal CustomMemberDetail member,
         @RequestBody Map<String, String> requestBody) {
         String nickname = requestBody.get("nickname");
-        memberService.changeNickname(member, nickname);
+        memberService.modifyNickname(member, nickname);
         return ResponseEntity.ok(ResultResponse.of(200, "닉네임을 변경했습니다."));
     }
 
@@ -161,10 +161,10 @@ public class MemberController {
      */
     @PostMapping("/character/{character_id}")
     @Operation(summary = "캐릭터 변경")
-    public ResponseEntity<ResultResponse> changeCharacter(
+    public ResponseEntity<ResultResponse> modifyCharacter(
         @AuthenticationPrincipal CustomMemberDetail member,
         @PathVariable("character_id") int characterId) {
-        memberService.changeCharacter(member, characterId);
+        memberService.modifyCharacter(member, characterId);
         return ResponseEntity.ok(ResultResponse.of(200, "캐릭터를 변경했습니다."));
     }
 
@@ -173,10 +173,10 @@ public class MemberController {
      */
     @PostMapping("/title/{title_id}")
     @Operation(summary = "칭호 변경")
-    public ResponseEntity<ResultResponse> changeTitle(
+    public ResponseEntity<ResultResponse> modifyTitle(
         @AuthenticationPrincipal CustomMemberDetail member,
         @PathVariable("title_id") int titleId) {
-        memberService.changeTitle(member, titleId);
+        memberService.modifyTitle(member, titleId);
         return ResponseEntity.ok(ResultResponse.of(200, "칭호를 변경했습니다."));
     }
 

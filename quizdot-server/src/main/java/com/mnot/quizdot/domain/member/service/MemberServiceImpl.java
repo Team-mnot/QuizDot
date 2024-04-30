@@ -168,7 +168,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void changePassword(CustomMemberDetail member, String password, String chkPassword) {
+    public void modifyPassword(CustomMemberDetail member, String password, String chkPassword) {
         //멤버가 있는지 확인
         Member temp = memberRepository.findByMemberId(member.getUsername())
             .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
@@ -214,7 +214,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void changeNickname(CustomMemberDetail member, String nickname) {
+    public void modifyNickname(CustomMemberDetail member, String nickname) {
         Member chkMember = memberRepository.findByMemberId(member.getUsername())
             .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
         //닉네임 중복 확인
@@ -226,17 +226,18 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void changeCharacter(CustomMemberDetail member, int characterId) {
+    public void modifyCharacter(CustomMemberDetail member, int characterId) {
         Member chkMember = memberRepository.findByMemberId(member.getUsername())
             .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
         chkMember.updateAvatarId(characterId);
     }
 
     @Override
-    public void changeTitle(CustomMemberDetail member, int titleId) {
+    public void modifyTitle(CustomMemberDetail member, int titleId) {
         Member chkMember = memberRepository.findByMemberId(member.getUsername())
             .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
-        if (!memberTitleRepository.existsByTitleIdAndIsGetTrue(titleId)) {
+        if (!memberTitleRepository.existsByTitleIdAndMemberIdAndIsGetTrue(member.getId(),
+            titleId)) {
             throw new BusinessException(ErrorCode.LOCK_TITLE_ERROR);
         }
         chkMember.updateTitleId(titleId);
