@@ -19,7 +19,9 @@ public enum ErrorCode {
     JSON_PROCESSING_ERROR(400, " JSON 데이터를 처리할 수 없습니다."),
 
     //Room
-    ROOM_LIMIT_EXCEEDED(409, "채널 내 방 생성 한도를 초과하였습니다."),
+    ROOM_LIMIT_EXCEEDED(409, "채널 내 대기실 생성 한도를 초과하였습니다."),
+    ROOM_NOT_FOUND(400, "존재하지 않는 대기실입니다."),
+    IS_NOT_HOST(403, "대기실 정보 변경 권한이 없습니다."),
 
     // Member
     EXISTS_ID_ERROR(400, "이미 존재하는 아이디입니다."),

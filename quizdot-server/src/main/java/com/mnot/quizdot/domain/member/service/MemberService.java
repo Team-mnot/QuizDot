@@ -25,18 +25,18 @@ public interface MemberService {
     void checkPassword(CustomMemberDetail member, String password);
 
     //비밀번호 변경
-    void changePassword(CustomMemberDetail member, String password, String chkPassword);
+    void modifyPassword(CustomMemberDetail member, String password, String chkPassword);
 
     //유저 정보 조회
     MemberInfoDto getInfo(int memberId);
 
     //닉네임 변경
-    void changeNickname(CustomMemberDetail member, String nickname);
+    void modifyNickname(CustomMemberDetail member, String nickname);
 
     //캐릭터 변경
-    void changeCharacter(CustomMemberDetail member, int characterId);
+    void modifyCharacter(CustomMemberDetail member, int characterId);
 
     //칭호 변경
-    void changeTitle(CustomMemberDetail member, int titleId);
+    void modifyTitle(CustomMemberDetail member, int titleId);
 
 }

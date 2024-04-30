@@ -57,7 +57,7 @@ public class LobbyServiceImpl implements LobbyService {
 
         // 새로운 대기실 정보 생성하여 REDIS에 등록
         RoomInfoDto roomInfoDto = RoomInfoDto.builder()
-            .roomNum(roomNum)
+            .roomId(roomNum)
             .title(roomReq.getTitle())
             .isPublic(roomReq.isPublic())
             .password(roomReq.getPassword())
@@ -68,18 +68,13 @@ public class LobbyServiceImpl implements LobbyService {
             .hostId(hostId)
             .build();
 
-        String key = makeKey(roomNum);
+        String key = String.format("rooms:%d:info", roomNum);
         String obj = objectMapper.writeValueAsString(roomInfoDto);
-        redisTemplate.opsForHash().put(key, "info", obj);
+        redisTemplate.opsForValue().set(key, obj);
 
         // 생성된 대기실 정보 반환
         return RoomRes.builder()
             .roomNum(roomNum)
             .build();
     }
-
-    private String makeKey(int roomNum) {
-        return String.format("rooms:%d", roomNum);
-    }
-
 }
