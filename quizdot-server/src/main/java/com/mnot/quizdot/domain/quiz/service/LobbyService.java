@@ -8,4 +8,5 @@ public interface LobbyService {
 
     RoomRes createRoom(int channelId, int hostId, RoomReq roomReq) throws JsonProcessingException;
 
+    void modifyRoomNumList(int channelId, int roomId, boolean state);
 }
