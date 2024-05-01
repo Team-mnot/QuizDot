@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { baseApi } from '@/shared/apis/';
+import { baseApi } from '@/shared/apis';
 import axios from 'axios';
 
 interface UserState {}
@@ -23,10 +23,6 @@ const useUserStore = create(
           set({
             userId: responseData.id,
             nickname: responseData.nickname,
-            image: responseData.image,
-            followingCount: responseData.followingCount,
-            followerCount: responseData.followerCount,
-            role: responseData.role,
             isLogin: true,
           });
         } catch (error) {
