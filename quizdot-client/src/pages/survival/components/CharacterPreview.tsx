@@ -1,5 +1,6 @@
 // src/pages/survival/components/CharacterPreview.tsx
 
+import { getCharacterData } from '../api/api';
 import { CharacterInSurvivalModeComponent } from './CharacterInSurvivalModeComponent';
 
 // 미리 지정된 위치 정보
@@ -26,156 +27,11 @@ const predefinedPositions = [
 
 export function CharacterPreview() {
   // 더미 캐릭터 데이터
-  const dummyCharacters = [
-    {
-      imageUrl: '/images/ikball.png',
-      title: '오늘밤 두잇두잇',
-      nickname: '익찌리릿',
-      score: 500,
-      isAlive: true,
-      isRevive: true,
-    },
-    {
-      imageUrl: '/images/ikball.png',
-      title: '짜릿짜릿한',
-      nickname: '김익환',
-      score: 300,
-      isAlive: false,
-      isRevive: false,
-    },
-    {
-      imageUrl: '/images/ikball.png',
-      title: '솔비 피쳐링',
-      nickname: '김익방',
-      score: 100,
-      isAlive: true,
-      isRevive: false,
-    },
-    {
-      imageUrl: '/images/ikball.png',
-      title: '엠카 엔딩요정',
-      nickname: '찌리릿익',
-      score: 500,
-      isAlive: false,
-      isRevive: false,
-    },
-    {
-      imageUrl: '/images/ikball.png',
-      title: '저슦두잇두잇',
-      nickname: '나익키',
-      score: 300,
-      isAlive: true,
-      isRevive: false,
-    },
-    {
-      imageUrl: '/images/ikball.png',
-      title: '오늘밤 두잇두잇',
-      nickname: '익찌리릿',
-      score: 400,
-      isAlive: true,
-      isRevive: false,
-    },
-    {
-      imageUrl: '/images/ikball.png',
-      title: '오늘밤 두잇두잇',
-      nickname: '익찌리릿',
-      score: 400,
-      isAlive: true,
-      isRevive: false,
-    },
-    {
-      imageUrl: '/images/ikball.png',
-      title: '짜릿짜릿한',
-      nickname: '김익환',
-      score: 300,
-      isAlive: true,
-      isRevive: false,
-    },
-    {
-      imageUrl: '/images/ikball.png',
-      title: '솔비 피쳐링',
-      nickname: '김익방',
-      score: 100,
-      isAlive: true,
-      isRevive: false,
-    },
-    {
-      imageUrl: '/images/ikball.png',
-      title: '엠카 엔딩요정',
-      nickname: '찌리릿익',
-      score: 400,
-      isAlive: true,
-      isRevive: false,
-    },
-    {
-      imageUrl: '/images/ikball.png',
-      title: '저슦두잇두잇',
-      nickname: '나익키',
-      score: 300,
-      isAlive: true,
-      isRevive: false,
-    },
-    {
-      imageUrl: '/images/ikball.png',
-      title: '오늘밤 두잇두잇',
-      nickname: '익찌리릿',
-      score: 400,
-      isAlive: true,
-      isRevive: false,
-    },
-    {
-      imageUrl: '/images/ikball.png',
-      title: '짜릿짜릿한',
-      nickname: '김익환',
-      score: 300,
-      isAlive: true,
-      isRevive: false,
-    },
-    {
-      imageUrl: '/images/ikball.png',
-      title: '솔비 피쳐링',
-      nickname: '김익방',
-      score: 100,
-      isAlive: true,
-      isRevive: false,
-    },
-    {
-      imageUrl: '/images/ikball.png',
-      title: '엠카 엔딩요정',
-      nickname: '찌리릿익',
-      score: 400,
-      isAlive: true,
-      isRevive: false,
-    },
-    {
-      imageUrl: '/images/ikball.png',
-      title: '저슦두잇두잇',
-      nickname: '나익키',
-      score: 300,
-      isAlive: true,
-      isRevive: false,
-    },
-    {
-      imageUrl: '/images/ikball.png',
-      title: '오늘밤 두잇두잇',
-      nickname: '익찌리릿',
-      score: 400,
-      isAlive: false,
-      isRevive: false,
-    },
-    {
-      imageUrl: '/images/ikball.png',
-      title: '솔비 피쳐링',
-      nickname: '김익방',
-      score: 100,
-      isAlive: true,
-      isRevive: true,
-    },
-  ];
+  const characterData = getCharacterData()
 
   return (
     <div>
-      {dummyCharacters.map((character, index) => (
+      {characterData.map((character, index) => (
         <CharacterInSurvivalModeComponent
           key={index}
           imageUrl={character.imageUrl}
