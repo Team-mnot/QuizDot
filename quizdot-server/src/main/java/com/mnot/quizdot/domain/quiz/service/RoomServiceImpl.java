@@ -109,8 +109,11 @@ public class RoomServiceImpl implements RoomService {
     public void leaveRoom(int roomId, String memberId) throws JsonProcessingException {
         // 대기열 참여 리스트에서 삭제
         String memberKey = String.format("rooms:%d:players", roomId);
-        String jsonPlayer = (String) redisTemplate.opsForHash()
-            .get(memberKey, memberId);
+        String jsonPlayer = (String) redisTemplate.opsForHash().get(memberKey, memberId);
+        if (jsonPlayer == null) {
+            throw new BusinessException(ErrorCode.NOT_EXISTS_IN_ROOM);
+        }
+
         PlayerInfoDto player = objectMapper.readValue(jsonPlayer, PlayerInfoDto.class);
         redisTemplate.opsForHash().delete(memberKey, memberId);
 
@@ -163,9 +166,13 @@ public class RoomServiceImpl implements RoomService {
      */
     private void deleteRoom(int roomId) {
         // REDIS
-        String pattern = String.format("rooms:%d:", roomId);
+        String pattern = String.format("rooms:%d:*", roomId);
         Cursor keys = redisTemplate.scan(ScanOptions.scanOptions().match(pattern).build());
-        keys.forEachRemaining((key) -> redisTemplate.delete((String) key));
+        keys.forEachRemaining((key) -> {
+            log.info("key : {}", key);
+            redisTemplate.delete((String) key);
+            return;
+        });
 
         // ID POOL 관리
         int channelId = roomId / 1000;
