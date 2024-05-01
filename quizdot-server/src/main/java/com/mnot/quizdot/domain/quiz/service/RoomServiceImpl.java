@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @Slf4j
 public class RoomServiceImpl implements RoomService {
+    // TODO: WebSocket Message 규격을 최대한 통일할 필요가 있어 보인다
 
     private final LobbyService lobbyService;
     private final ObjectMapper objectMapper;
