@@ -72,8 +72,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         log.info("로그인 한 role : {}", role);
 
         //토큰 발급
-        String access = jwtUtil.createJwt("access", id, memberId, role, 360000L);
-        String refresh = jwtUtil.createJwt("refresh", id, memberId, role, 86400000L);
+        String access = jwtUtil.createJwt("access", id, memberId, role, 10800000L);
+        String refresh = jwtUtil.createJwt("refresh", id, memberId, role, 64800000L);
         RefreshToken refreshToken = RefreshToken.builder()
             .memberId(memberId)
             .refreshToken(refresh)
