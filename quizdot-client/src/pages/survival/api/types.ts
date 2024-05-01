@@ -6,3 +6,10 @@ export interface CharacterProps {
   nickname: string;
   score: number;
 }
+
+export interface CharacterData {
+  photo: string;
+  title: string;
+  nickname: string;
+  score: number;
+}

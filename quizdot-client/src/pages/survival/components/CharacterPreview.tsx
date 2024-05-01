@@ -1,6 +1,6 @@
 // src/pages/survival/components/CharacterPreview.tsx
 
-import { CharacterInSurvivalModeComponent } from "./CharacterInSurvivalModeComponent";
+import { CharacterInSurvivalModeComponent } from './CharacterInSurvivalModeComponent';
 
 // 미리 지정된 위치 정보
 const predefinedPositions = [
