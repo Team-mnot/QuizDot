@@ -280,4 +280,24 @@ public class MemberServiceImpl implements MemberService {
         }
         return pickCharacter;
     }
+
+    @Override
+    public String gachaColor(CustomMemberDetail customMemberDetail) {
+        Member member = memberRepository.findById(customMemberDetail.getId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
+
+        if (member.getPoint() < 50) {
+            throw new BusinessException(ErrorCode.REJECT_ACCOUNT_POINT);
+        }
+
+        member.updatePoint(member.getPoint() - 50);
+        int r = (int) (Math.random() * 256);
+        int g = (int) (Math.random() * 256);
+        int b = (int) (Math.random() * 256);
+        String pickColor = String.format("#%02x%02x%02x", r, g, b);
+
+        member.updateNicknameColor(pickColor);
+
+        return pickColor;
+    }
 }

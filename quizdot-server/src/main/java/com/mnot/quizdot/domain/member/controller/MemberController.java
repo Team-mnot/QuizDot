@@ -185,6 +185,19 @@ public class MemberController {
     }
 
     /**
+     * 닉네임 색상뽑기
+     */
+    @PostMapping("/reward/random-pick/color")
+    @Operation(summary = "닉네임 색상 뽑기")
+    public ResponseEntity<ResultResponse> gachaColor(
+        @AuthenticationPrincipal CustomMemberDetail customMemberDetail
+    ) {
+        return ResponseEntity.ok(ResultResponse.of(200, "닉네임 색상 뽑기에 성공했습니다.",
+            memberService.gachaColor(customMemberDetail)));
+    }
+
+
+    /**
      * accessToken 재발급
      */
     @PostMapping("/reissue")
