@@ -107,7 +107,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             log.error("Redis에 Refresh token 저장 실패", e);
         }
         Member member = memberRepository.findByMemberId(memberId)
-            .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_EXISTS));
+            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
         response.setHeader("access", access);
         response.addCookie(createCookie("refresh", refresh));
         response.setStatus(HttpStatus.OK.value());
@@ -116,7 +116,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         LoginMemberData memberData = LoginMemberData.builder()
             .id(id)
             .title(titleRepository.findById(member.getTitleId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.NO_EXISTS_TITLE)).getTitle())
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_TITLE)).getTitle())
             .nickname(member.getNickname())
             .nicknameColor(member.getNicknameColor())
             .characterId(member.getCharacterId())

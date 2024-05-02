@@ -276,6 +276,7 @@ public class MemberServiceImpl implements MemberService {
                 .character(character)
                 .member(member)
                 .build();
+            memberCharacterRepository.save(memberCharacter);
         }
         return pickCharacter;
     }
