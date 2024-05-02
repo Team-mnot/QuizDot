@@ -41,7 +41,7 @@ public class MemberInfoDto {
     //칭호
     private String title;
 
-    //아바타
+    //캐릭터
     private int characterId;
 
     //보유 포인트
