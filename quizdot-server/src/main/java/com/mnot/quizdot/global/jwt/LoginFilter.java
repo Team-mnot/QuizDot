@@ -17,7 +17,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,7 +26,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@RequiredArgsConstructor
 @Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -35,8 +33,20 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final JWTUtil jwtUtil;
     private final MemberRepository memberRepository;
     private final TitleRepository titleRepository;
-    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final ObjectMapper objectMapper;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
+
+    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil,
+        RefreshTokenRedisRepository refreshTokenRedisRepository, MemberRepository memberRepository,
+        TitleRepository titleRepository, ObjectMapper objectMapper) {
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+        this.refreshTokenRedisRepository = refreshTokenRedisRepository;
+        this.memberRepository = memberRepository;
+        this.titleRepository = titleRepository;
+        this.objectMapper = objectMapper;
+        this.setFilterProcessesUrl("/member/login");
+    }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
@@ -100,6 +110,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setHeader("access", access);
         response.addCookie(createCookie("refresh", refresh));
         response.setStatus(HttpStatus.OK.value());
+        response.setCharacterEncoding("utf-8");
+
         LoginRes loginRes = LoginRes.builder()
             .id(id)
             .title(titleRepository.findById(member.getTitleId())

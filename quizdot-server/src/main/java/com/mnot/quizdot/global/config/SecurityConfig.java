@@ -105,8 +105,8 @@ public class SecurityConfig {
         http
             .addFilterAt(
                 new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil,
-                    memberRepository, titleRepository,
-                    refreshTokenRedisRepository, objectMapper),
+                    refreshTokenRedisRepository, memberRepository, titleRepository,
+                    objectMapper),
                 UsernamePasswordAuthenticationFilter.class);
 
         http
