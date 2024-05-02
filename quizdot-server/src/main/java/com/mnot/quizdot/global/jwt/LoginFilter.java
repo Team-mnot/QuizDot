@@ -2,6 +2,7 @@ package com.mnot.quizdot.global.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
+import com.mnot.quizdot.domain.member.dto.LoginMemberData;
 import com.mnot.quizdot.domain.member.dto.LoginRes;
 import com.mnot.quizdot.domain.member.dto.RefreshToken;
 import com.mnot.quizdot.domain.member.entity.Member;
@@ -112,7 +113,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setStatus(HttpStatus.OK.value());
         response.setCharacterEncoding("utf-8");
 
-        LoginRes loginRes = LoginRes.builder()
+        LoginMemberData memberData = LoginMemberData.builder()
             .id(id)
             .title(titleRepository.findById(member.getTitleId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NO_EXISTS_TITLE)).getTitle())
@@ -124,7 +125,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             .point(member.getPoint())
             .build();
 
-        response.getWriter().write(objectMapper.writeValueAsString(loginRes));
+        LoginRes loginRes = LoginRes.builder()
+            .status(200)
+            .message("로그인에 성공하였습니다.")
+            .memberData(memberData)
+            .build();
+        String prettyJsonString = objectMapper.writerWithDefaultPrettyPrinter()
+            .writeValueAsString(loginRes);
+        response.getWriter().write(prettyJsonString);
         log.info("로그인 성공 : COMPLETE");
     }
 

@@ -6,40 +6,19 @@ import lombok.Getter;
 @Getter
 public class LoginRes {
 
-    //멤버 pk
-    private int id;
+    //응답 상태
+    private int status;
 
-    //칭호명
-    private String title;
+    //메시지
+    private String message;
 
-    //닉네임
-    private String nickname;
+    private LoginMemberData data;
 
-    //닉네임 색상
-    private String nicknameColor;
-
-    //캐릭터 Id
-    private int characterId;
-
-    //레벨
-    private int level;
-
-    //경험치
-    private int exp;
-
-    //포인트
-    private int point;
 
     @Builder
-    public LoginRes(int id, String title, String nickname, String nicknameColor, int characterId,
-        int level, int exp, int point) {
-        this.id = id;
-        this.title = title;
-        this.nickname = nickname;
-        this.nicknameColor = nicknameColor;
-        this.characterId = characterId;
-        this.level = level;
-        this.exp = exp;
-        this.point = point;
+    public LoginRes(int status, String message, LoginMemberData memberData) {
+        this.status = status;
+        this.message = message;
+        this.data = memberData;
     }
 }
