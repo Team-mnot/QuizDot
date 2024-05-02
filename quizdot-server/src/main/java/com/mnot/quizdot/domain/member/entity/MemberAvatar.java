@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class MemberCharacter {
+public class MemberAvatar {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,16 +23,16 @@ public class MemberCharacter {
     private boolean isGet;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "character_id")
-    private Character character;
+    @JoinColumn(name = "avatar_id")
+    private Avatar avatar;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
     @Builder
-    public MemberCharacter(Character character, Member member) {
-        this.character = character;
+    public MemberAvatar(Avatar avatar, Member member) {
+        this.avatar = avatar;
         this.member = member;
     }
 }

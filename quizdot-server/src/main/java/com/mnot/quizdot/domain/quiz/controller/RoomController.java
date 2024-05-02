@@ -14,7 +14,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,14 +49,5 @@ public class RoomController {
         @PathVariable("room_id") int roomId) throws JsonProcessingException {
         RoomEnterRes roomEnterRes = roomService.enterRoom(roomId, memberDetail.getId());
         return ResponseEntity.ok(ResultResponse.of(200, "대기실 입장에 성공하였습니다.", roomEnterRes));
-    }
-
-    @DeleteMapping("/{room_id}")
-    @Operation(summary = "대기실 퇴장 API")
-    public ResponseEntity<ResultResponse> leaveRoom(
-        @AuthenticationPrincipal CustomMemberDetail memberDetail,
-        @PathVariable("room_id") int roomId) throws JsonProcessingException {
-        roomService.leaveRoom(roomId, String.valueOf(memberDetail.getId()));
-        return ResponseEntity.ok(ResultResponse.of(200, "대기실 퇴장에 성공하였습니다."));
     }
 }

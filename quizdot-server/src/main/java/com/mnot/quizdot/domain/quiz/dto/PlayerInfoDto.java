@@ -16,18 +16,17 @@ public class PlayerInfoDto {
 
     private String nicknameColor;
 
-    private String title;
+    private int title;
 
-    private int characterId;
+    private int avatar;
 
 
     @Builder
-    public PlayerInfoDto(int level, String nickname, String nicknameColor, String title,
-        int characterId) {
+    public PlayerInfoDto(int level, String nickname, String nicknameColor, int title, int avatar) {
         this.level = level;
         this.nickname = nickname;
         this.nicknameColor = nicknameColor;
         this.title = title;
-        this.characterId = characterId;
+        this.avatar = avatar;
     }
 }

@@ -56,13 +56,13 @@ public class Member {
     private int titleId;
 
     @ColumnDefault(value = "1")
-    private int characterId;
+    private int avatarId;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberTitle> titles = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<MemberCharacter> characters = new ArrayList<>();
+    private List<MemberAvatar> avatars = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MultiRecord> multiRecords = new ArrayList<>();
@@ -87,7 +87,7 @@ public class Member {
         this.exp = 0;
         this.level = 1;
         this.titleId = 1;
-        this.characterId = 1;
+        this.avatarId = 1;
         this.nicknameColor = "#000000";
     }
 
@@ -103,8 +103,8 @@ public class Member {
         this.nickname = nickname;
     }
 
-    public void updateCharacterId(int characterId) {
-        this.characterId = characterId;
+    public void updateAvatarId(int avatarId) {
+        this.avatarId = avatarId;
     }
 
     public void updateTitleId(int titleId) {

@@ -15,11 +15,6 @@ spring:
       - key
       - db
 
-  servlet:
-    multipart:
-      max-file-size: 30MB
-      max-request-size: 30MB
-
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
@@ -47,18 +42,3 @@ springdoc: #swagger
       enabled: true
   cache:
     disabled: true
-
-cloud:
-  aws:
-    s3:
-      bucket: quizdot
-    credentials:
-      access-key: ${aws.credentials.access-key}
-      secret-key: ${aws.credentials.secret-key}
-    region:
-      static: ap-northeast-2
-      auto: false
-    stack:
-      auto: false
-    cloudfront:
-      domain: d3eb2qgtkbb4eu.cloudfront.net

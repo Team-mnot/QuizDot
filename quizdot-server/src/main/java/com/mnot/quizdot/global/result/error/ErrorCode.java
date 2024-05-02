@@ -23,7 +23,6 @@ public enum ErrorCode {
     ROOM_NOT_FOUND(400, "존재하지 않는 대기실입니다."),
     IS_NOT_HOST(403, "대기실 정보 변경 권한이 없습니다."),
     PLAYER_LIMIT_EXCEEDED(400, "대기실 최대 인원을 초과하였습니다."),
-    NOT_EXISTS_IN_ROOM(400, "대기실에 존재하지 않는 회원입니다."),
 
     // Member
     LOGIN_ERROR(400, "로그인에 실패했습니다."),
@@ -40,7 +39,6 @@ public enum ErrorCode {
     LOCK_TITLE_ERROR(400, "칭호가 해금되지 않았습니다."),
     GUEST_LOGIN_ERROR(400, "게스트 정보 생성에 실패했습니다"),
     MEMBER_NOT_EXISTS(400, "회원 정보가 존재하지 않습니다."),
-    NO_EXISTS_TITLE(400, "칭호가 존재하지 않습니다"),
 
     //Game
     SUBMIT_ALREADY_COMPLETE(400, "이미 제출된 결과입니다.");
