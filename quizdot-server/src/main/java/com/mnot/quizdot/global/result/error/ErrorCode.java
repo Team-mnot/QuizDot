@@ -40,6 +40,7 @@ public enum ErrorCode {
     LOCK_TITLE_ERROR(400, "칭호가 해금되지 않았습니다."),
     GUEST_LOGIN_ERROR(400, "게스트 정보 생성에 실패했습니다"),
     MEMBER_NOT_EXISTS(400, "회원 정보가 존재하지 않습니다."),
+    NO_EXISTS_TITLE(400, "칭호가 존재하지 않습니다"),
 
     //Game
     SUBMIT_ALREADY_COMPLETE(400, "이미 제출된 결과입니다.");

@@ -1,6 +1,9 @@
 package com.mnot.quizdot.global.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mnot.quizdot.domain.member.repository.MemberRepository;
 import com.mnot.quizdot.domain.member.repository.RefreshTokenRedisRepository;
+import com.mnot.quizdot.domain.member.repository.TitleRepository;
 import com.mnot.quizdot.global.jwt.CustomLogoutFilter;
 import com.mnot.quizdot.global.jwt.JWTFilter;
 import com.mnot.quizdot.global.jwt.JWTUtil;
@@ -34,6 +37,9 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final JWTUtil jwtUtil;
+    private final ObjectMapper objectMapper;
+    private final MemberRepository memberRepository;
+    private final TitleRepository titleRepository;
 
     //비밀번호를 암호화 해서 저장하기 위해 사용
     @Bean
@@ -99,7 +105,8 @@ public class SecurityConfig {
         http
             .addFilterAt(
                 new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil,
-                    refreshTokenRedisRepository),
+                    memberRepository, titleRepository,
+                    refreshTokenRedisRepository, objectMapper),
                 UsernamePasswordAuthenticationFilter.class);
 
         http
