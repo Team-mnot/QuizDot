@@ -1,15 +1,23 @@
 package com.mnot.quizdot.global.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
+import com.mnot.quizdot.domain.member.dto.LoginMemberData;
+import com.mnot.quizdot.domain.member.dto.LoginRes;
 import com.mnot.quizdot.domain.member.dto.RefreshToken;
+import com.mnot.quizdot.domain.member.entity.Member;
+import com.mnot.quizdot.domain.member.repository.MemberRepository;
 import com.mnot.quizdot.domain.member.repository.RefreshTokenRedisRepository;
+import com.mnot.quizdot.domain.member.repository.TitleRepository;
+import com.mnot.quizdot.global.result.error.ErrorCode;
+import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,15 +27,27 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@RequiredArgsConstructor
 @Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
-
+    private final MemberRepository memberRepository;
+    private final TitleRepository titleRepository;
+    private final ObjectMapper objectMapper;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
+    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil,
+        RefreshTokenRedisRepository refreshTokenRedisRepository, MemberRepository memberRepository,
+        TitleRepository titleRepository, ObjectMapper objectMapper) {
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+        this.refreshTokenRedisRepository = refreshTokenRedisRepository;
+        this.memberRepository = memberRepository;
+        this.titleRepository = titleRepository;
+        this.objectMapper = objectMapper;
+        this.setFilterProcessesUrl("/member/login");
+    }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
@@ -51,7 +71,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request,
         HttpServletResponse response,
-        FilterChain filterChain, Authentication authentication) {
+        FilterChain filterChain, Authentication authentication) throws IOException {
 
         log.info("로그인 성공 : START");
 
@@ -72,8 +92,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         log.info("로그인 한 role : {}", role);
 
         //토큰 발급
-        String access = jwtUtil.createJwt("access", id, memberId, role, 360000L);
-        String refresh = jwtUtil.createJwt("refresh", id, memberId, role, 86400000L);
+        String access = jwtUtil.createJwt("access", id, memberId, role, 10800000L);
+        String refresh = jwtUtil.createJwt("refresh", id, memberId, role, 64800000L);
         RefreshToken refreshToken = RefreshToken.builder()
             .memberId(memberId)
             .refreshToken(refresh)
@@ -86,11 +106,33 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         } catch (Exception e) {
             log.error("Redis에 Refresh token 저장 실패", e);
         }
-
+        Member member = memberRepository.findByMemberId(memberId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_EXISTS));
         response.setHeader("access", access);
         response.addCookie(createCookie("refresh", refresh));
         response.setStatus(HttpStatus.OK.value());
+        response.setCharacterEncoding("utf-8");
 
+        LoginMemberData memberData = LoginMemberData.builder()
+            .id(id)
+            .title(titleRepository.findById(member.getTitleId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.NO_EXISTS_TITLE)).getTitle())
+            .nickname(member.getNickname())
+            .nicknameColor(member.getNicknameColor())
+            .characterId(member.getCharacterId())
+            .level(member.getLevel())
+            .exp(member.getExp())
+            .point(member.getPoint())
+            .build();
+
+        LoginRes loginRes = LoginRes.builder()
+            .status(200)
+            .message("로그인에 성공하였습니다.")
+            .memberData(memberData)
+            .build();
+        String prettyJsonString = objectMapper.writerWithDefaultPrettyPrinter()
+            .writeValueAsString(loginRes);
+        response.getWriter().write(prettyJsonString);
         log.info("로그인 성공 : COMPLETE");
     }
 

@@ -13,10 +13,10 @@ import org.springframework.data.redis.core.RedisHash;
 public class RoomRes {
 
     // 방 번호
-    private int roomNum;
+    private int roomId;
 
     @Builder
-    public RoomRes(int roomNum) {
-        this.roomNum = roomNum;
+    public RoomRes(int roomId) {
+        this.roomId = roomId;
     }
 }

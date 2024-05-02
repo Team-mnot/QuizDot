@@ -41,23 +41,23 @@ public class LobbyServiceImpl implements LobbyService {
     public RoomRes createRoom(int channelId, int hostId, RoomReq roomReq)
         throws JsonProcessingException {
         // 채널에서 사용 가능한 방 번호를 찾는다
-        int roomNum = -1;
+        int roomId = -1;
         for (int i = 1; i <= MAX_ROOM; i++) {
             if (!roomNumList.get(channelId)[i]) {
-                roomNumList.get(channelId)[i] = true;
-                roomNum = channelId * 1000 + i;
+                modifyRoomNumList(channelId, i, true);
+                roomId = channelId * 1000 + i;
                 break;
             }
         }
 
         // 현재 채널에 방을 더 이상 생성할 수 없는 경우 예외 발생
-        if (roomNum < 0) {
+        if (roomId < 0) {
             throw new BusinessException(ErrorCode.ROOM_LIMIT_EXCEEDED);
         }
 
         // 새로운 대기실 정보 생성하여 REDIS에 등록
         RoomInfoDto roomInfoDto = RoomInfoDto.builder()
-            .roomId(roomNum)
+            .roomId(roomId)
             .title(roomReq.getTitle())
             .isPublic(roomReq.isPublic())
             .password(roomReq.getPassword())
@@ -68,13 +68,18 @@ public class LobbyServiceImpl implements LobbyService {
             .hostId(hostId)
             .build();
 
-        String key = String.format("rooms:%d:info", roomNum);
+        String key = String.format("rooms:%d:info", roomId);
         String obj = objectMapper.writeValueAsString(roomInfoDto);
         redisTemplate.opsForValue().set(key, obj);
 
         // 생성된 대기실 정보 반환
         return RoomRes.builder()
-            .roomNum(roomNum)
+            .roomId(roomId)
             .build();
+    }
+
+    // ID POOL 상태 변경
+    public void modifyRoomNumList(int channelId, int roomNum, boolean state) {
+        roomNumList.get(channelId)[roomNum] = state;
     }
 }

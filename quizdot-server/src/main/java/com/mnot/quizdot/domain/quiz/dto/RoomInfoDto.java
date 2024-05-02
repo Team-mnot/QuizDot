@@ -63,4 +63,8 @@ public class RoomInfoDto {
         this.maxQuestion = roomReq.getMaxQuestion();
         this.maxPeople = roomReq.getMaxPeople();
     }
+
+    public void modifyHost(int hostId) {
+        this.hostId = hostId;
+    }
 }

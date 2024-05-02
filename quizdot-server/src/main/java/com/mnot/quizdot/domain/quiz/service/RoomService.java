@@ -7,7 +7,8 @@ import com.mnot.quizdot.domain.quiz.dto.RoomReq;
 public interface RoomService {
 
     void modifyRoomInfo(int roomId, int memberId, RoomReq roomReq) throws JsonProcessingException;
-    // TODO : 방장이 나가는 경우, 다른 회원으로 방장 변경
 
     RoomEnterRes enterRoom(int roomId, int memberId) throws JsonProcessingException;
+
+    void leaveRoom(int roomId, String memberId) throws JsonProcessingException;
 }
