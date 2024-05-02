@@ -201,6 +201,7 @@ public class MemberServiceImpl implements MemberService {
             (survivalRecord.getTotalCount() + normalRecord.getTotalCount()) == 0 ? 0.0f
                 : (float) (survivalRecord.getWinCount() + normalRecord.getWinCount())
                     / (survivalRecord.getTotalCount() + normalRecord.getTotalCount()) * 100;
+
         return MemberInfoDto.builder()
             .id(memberId)
             .totalRate(totalRate)
@@ -212,7 +213,9 @@ public class MemberServiceImpl implements MemberService {
             .normalWinCount(normalRecord.getWinCount())
             .survivalWinCount(survivalRecord.getWinCount())
             .title(title)
+            .titleListDtos(titleRepository.findAllTitlesByMemberId(memberId))
             .characterId(member.getCharacterId())
+            .characterListDtos(characterRepository.findAllCharacterByMemberId(memberId))
             .point(member.getPoint())
             .level(member.getLevel())
             .exp(member.getExp())
