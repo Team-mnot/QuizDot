@@ -111,6 +111,10 @@ public class Member {
         this.titleId = titleId;
     }
 
+    public void updatePoint(int point) {
+        this.point = point;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
