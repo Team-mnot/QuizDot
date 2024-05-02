@@ -16,8 +16,8 @@ public class MessageDto {
 
     // 데이터
     private final Object data;
-
-    private MessageDto(String sender, String text, MessageType type, Object data) {
+    
+    public MessageDto(String sender, String text, MessageType type, Object data) {
         this.sender = sender;
         this.text = text;
         this.type = type;
