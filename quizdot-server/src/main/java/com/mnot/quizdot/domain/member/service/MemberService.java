@@ -9,9 +9,6 @@ public interface MemberService {
     //회원가입
     void joinMember(JoinDto joinDto);
 
-    //게스트로 로그인
-    void joinGuest();
-
     //회원 탈퇴
     void deleteMember(CustomMemberDetail member);
 

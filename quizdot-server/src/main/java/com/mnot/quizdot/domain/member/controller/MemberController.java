@@ -58,15 +58,7 @@ public class MemberController {
 
         return ResponseEntity.ok(ResultResponse.of(200, "회원가입 성공"));
     }
-
-    //TODO : GUEST로 플레이 클릭하면 알아서 로그인까지 되야하는거 아닌가?
-    @PostMapping("/guest")
-    @Operation(summary = "게스트로 플레이하기")
-    public ResponseEntity<ResultResponse> joinGuest() {
-        memberService.joinGuest();
-        return ResponseEntity.ok(ResultResponse.of(200, "게스트로 플레이하기"));
-    }
-
+    
     /**
      * 회원 탈퇴
      */

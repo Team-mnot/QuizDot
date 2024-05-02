@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Avatar {
+public class Character {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +20,7 @@ public class Avatar {
     private String name;
 
     @Builder
-    public Avatar(String name) {
+    public Character(String name) {
         this.name = name;
     }
 }
