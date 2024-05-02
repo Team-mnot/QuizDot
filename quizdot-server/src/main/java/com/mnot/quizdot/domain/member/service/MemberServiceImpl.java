@@ -190,19 +190,28 @@ public class MemberServiceImpl implements MemberService {
                 ModeType.SURVIVAL)
             .orElseThrow(() -> new BusinessException(ErrorCode.RECORD_NOT_FOUND));
 
+        String title = titleRepository.findById(member.getTitleId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.LOCK_TITLE_ERROR)).getTitle();
+
         float normalRate = normalRecord.getTotalCount() == 0 ? 0.0f
             : (float) normalRecord.getWinCount() / normalRecord.getTotalCount() * 100;
         float survivalRate = survivalRecord.getTotalCount() == 0 ? 0.0f
             : (float) survivalRecord.getWinCount() / survivalRecord.getTotalCount() * 100;
+        float totalRate =
+            (survivalRecord.getTotalCount() + normalRecord.getTotalCount()) == 0 ? 0.0f
+                : (float) (survivalRecord.getWinCount() + normalRecord.getWinCount())
+                    / (survivalRecord.getTotalCount() + normalRecord.getTotalCount()) * 100;
         return MemberInfoDto.builder()
             .id(memberId)
+            .totalRate(totalRate)
             .normalRate(normalRate)
             .survivalRate(survivalRate)
             .nickname(member.getNickname())
             .nicknameColor(member.getNicknameColor())
+            .totalWinCount(normalRecord.getWinCount() + survivalRecord.getWinCount())
             .normalWinCount(normalRecord.getWinCount())
             .survivalWinCount(survivalRecord.getWinCount())
-            .titleId(member.getTitleId())
+            .title(title)
             .characterId(member.getCharacterId())
             .point(member.getPoint())
             .level(member.getLevel())
