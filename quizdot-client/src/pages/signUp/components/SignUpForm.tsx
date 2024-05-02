@@ -30,14 +30,21 @@ export function SignUpForm() {
 
   type CustomSubmitHandler = SubmitHandler<FieldValues>;
 
-  const onSubmit: CustomSubmitHandler = (data) => {
-    const props: SignUpProps = {
-      memberId: data.memberId as string,
-      password: data.password as string,
-      nickname: data.nickname as string,
-      hint: data.hint as string,
-    };
-    SignUpApi(props);
+  const onSubmit: CustomSubmitHandler = async (data) => {
+    console.log('submit');
+    try {
+      const props: SignUpProps = {
+        memberId: data.memberId as string,
+        password: data.password as string,
+        nickname: data.nickname as string,
+        hint: data.hint as string,
+      };
+      await SignUpApi(props);
+      console.log('회원가입 성공');
+      // Todo: 회원 가입 후 자동 로그인
+    } catch (error) {
+      console.error('Error signup:', error);
+    }
   };
 
   // Todo : 하나 입력할 때마다 확인
