@@ -203,7 +203,7 @@ public class MemberServiceImpl implements MemberService {
             .normalWinCount(normalRecord.getWinCount())
             .survivalWinCount(survivalRecord.getWinCount())
             .titleId(member.getTitleId())
-            .avartarId(member.getCharacterId())
+            .characterId(member.getCharacterId())
             .point(member.getPoint())
             .level(member.getLevel())
             .exp(member.getExp())

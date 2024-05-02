@@ -59,7 +59,8 @@ public class SecurityConfig {
                         CorsConfiguration configuration = new CorsConfiguration();
                         configuration.setAllowedOrigins(
                             //허용할 주소
-                            Arrays.asList("https://k10d102.p.ssafy.io", "http://localhost:5173"));
+                            Arrays.asList("https://k10d102.p.ssafy.io", "http://localhost:5173",
+                                "https://jiangxy.github.io/"));
                         //허용할 메소드
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         //클라이언트에서 credentials 보내주면 true로 하기

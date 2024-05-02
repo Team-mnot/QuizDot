@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnot.quizdot.domain.member.entity.Member;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
+import com.mnot.quizdot.domain.member.repository.TitleRepository;
 import com.mnot.quizdot.domain.quiz.dto.MessageDto;
 import com.mnot.quizdot.domain.quiz.dto.PlayerInfoDto;
 import com.mnot.quizdot.domain.quiz.dto.RoomEnterRes;
@@ -33,6 +34,7 @@ public class RoomServiceImpl implements RoomService {
     private final ObjectMapper objectMapper;
     private final RedisTemplate redisTemplate;
     private final MemberRepository memberRepository;
+    private final TitleRepository titleRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
     /**
@@ -86,10 +88,13 @@ public class RoomServiceImpl implements RoomService {
         Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_EXISTS));
 
+        String title = titleRepository.findById(member.getTitleId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.LOCK_TITLE_ERROR)).getTitle();
+
         PlayerInfoDto player = PlayerInfoDto.builder()
             .level(member.getLevel())
-            .title(member.getTitleId())
-            .avatar(member.getAvatarId())
+            .title(title)
+            .characterId(member.getCharacterId())
             .nickname(member.getNickname())
             .nicknameColor(member.getNicknameColor())
             .build();
