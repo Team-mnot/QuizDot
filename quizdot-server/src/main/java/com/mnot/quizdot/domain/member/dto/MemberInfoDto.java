@@ -1,5 +1,6 @@
 package com.mnot.quizdot.domain.member.dto;
 
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,8 +42,14 @@ public class MemberInfoDto {
     //칭호
     private String title;
 
+    //칭호 리스트
+    private List<TitleListDto> titleListDtos;
+
     //캐릭터
     private int characterId;
+
+    //캐릭터 리스트
+    private List<CharacterListDto> characterdListDtos;
 
     //보유 포인트
     private int point;
@@ -59,7 +66,8 @@ public class MemberInfoDto {
         String nicknameColor, int totalWinCount, int normalWinCount, int survivalWinCount,
         String title,
         int characterId,
-        int point, int level, int exp) {
+        int point, int level, int exp, List<TitleListDto> titleListDtos,
+        List<CharacterListDto> characterListDtos) {
         this.id = id;
         this.totalRate = totalRate;
         this.normalRate = normalRate;
@@ -70,9 +78,12 @@ public class MemberInfoDto {
         this.normalWinCount = normalWinCount;
         this.survivalWinCount = survivalWinCount;
         this.title = title;
+        this.titleListDtos = titleListDtos;
         this.characterId = characterId;
+        this.characterdListDtos = characterListDtos;
         this.point = point;
         this.level = level;
         this.exp = exp;
+
     }
 }
