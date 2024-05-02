@@ -3,16 +3,16 @@ package com.mnot.quizdot.domain.member.service;
 import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
 import com.mnot.quizdot.domain.member.dto.JoinDto;
 import com.mnot.quizdot.domain.member.dto.MemberInfoDto;
-import com.mnot.quizdot.domain.member.entity.Avatar;
+import com.mnot.quizdot.domain.member.entity.Character;
 import com.mnot.quizdot.domain.member.entity.Member;
-import com.mnot.quizdot.domain.member.entity.MemberAvatar;
+import com.mnot.quizdot.domain.member.entity.MemberCharacter;
 import com.mnot.quizdot.domain.member.entity.MemberTitle;
 import com.mnot.quizdot.domain.member.entity.ModeType;
 import com.mnot.quizdot.domain.member.entity.MultiRecord;
 import com.mnot.quizdot.domain.member.entity.Role;
 import com.mnot.quizdot.domain.member.entity.Title;
-import com.mnot.quizdot.domain.member.repository.AvatarRepository;
-import com.mnot.quizdot.domain.member.repository.MemberAvatarRepository;
+import com.mnot.quizdot.domain.member.repository.CharacterRepository;
+import com.mnot.quizdot.domain.member.repository.MemberCharacterRepository;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
 import com.mnot.quizdot.domain.member.repository.MemberTitleRepository;
 import com.mnot.quizdot.domain.member.repository.MultiRecordRepository;
@@ -36,8 +36,8 @@ public class MemberServiceImpl implements MemberService {
     private final MultiRecordRepository multiRecordRepository;
     private final TitleRepository titleRepository;
     private final MemberTitleRepository memberTitleRepository;
-    private final AvatarRepository avatarRepository;
-    private final MemberAvatarRepository memberAvatarRepository;
+    private final CharacterRepository characterRepository;
+    private final MemberCharacterRepository memberCharacterRepository;
     //비밀번호 암호화
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -93,13 +93,13 @@ public class MemberServiceImpl implements MemberService {
             .build();
         memberTitleRepository.save(memberTitle);
 
-        Avatar defaultAvatar = avatarRepository.findById(1)
+        Character defaultCharacter = characterRepository.findById(1)
             .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
-        MemberAvatar memberAvatar = MemberAvatar.builder()
-            .avatar(defaultAvatar)
+        MemberCharacter memberCharacter = MemberCharacter.builder()
+            .character(defaultCharacter)
             .member(member)
             .build();
-        memberAvatarRepository.save(memberAvatar);
+        memberCharacterRepository.save(memberCharacter);
         log.info("회원 가입 서비스 : COMPLETE");
     }
 
@@ -203,7 +203,7 @@ public class MemberServiceImpl implements MemberService {
             .normalWinCount(normalRecord.getWinCount())
             .survivalWinCount(survivalRecord.getWinCount())
             .titleId(member.getTitleId())
-            .avartarId(member.getAvatarId())
+            .avartarId(member.getCharacterId())
             .point(member.getPoint())
             .level(member.getLevel())
             .exp(member.getExp())
@@ -226,7 +226,7 @@ public class MemberServiceImpl implements MemberService {
     public void modifyCharacter(CustomMemberDetail member, int characterId) {
         Member chkMember = memberRepository.findByMemberId(member.getUsername())
             .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
-        chkMember.updateAvatarId(characterId);
+        chkMember.updateCharacterId(characterId);
     }
 
     @Override

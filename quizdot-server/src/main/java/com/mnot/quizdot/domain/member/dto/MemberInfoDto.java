@@ -35,7 +35,7 @@ public class MemberInfoDto {
     private int titleId;
 
     //아바타
-    private int avartarId;
+    private int characterId;
 
     //보유 포인트
     private int point;
@@ -48,7 +48,8 @@ public class MemberInfoDto {
 
     @Builder
     public MemberInfoDto(int id, float normalRate, float survivalRate, String nickname,
-        String nicknameColor, int normalWinCount, int survivalWinCount, int titleId, int avartarId,
+        String nicknameColor, int normalWinCount, int survivalWinCount, int titleId,
+        int characterId,
         int point, int level, int exp) {
         this.id = id;
         this.normalRate = normalRate;
@@ -58,7 +59,7 @@ public class MemberInfoDto {
         this.normalWinCount = normalWinCount;
         this.survivalWinCount = survivalWinCount;
         this.titleId = titleId;
-        this.avartarId = avartarId;
+        this.characterId = characterId;
         this.point = point;
         this.level = level;
         this.exp = exp;

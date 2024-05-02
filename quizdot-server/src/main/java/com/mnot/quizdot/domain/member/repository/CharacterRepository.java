@@ -1,10 +1,10 @@
 package com.mnot.quizdot.domain.member.repository;
 
-import com.mnot.quizdot.domain.member.entity.Avatar;
+import com.mnot.quizdot.domain.member.entity.Character;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AvatarRepository extends JpaRepository<Avatar, Integer> {
+public interface CharacterRepository extends JpaRepository<Character, Integer> {
 
 }
