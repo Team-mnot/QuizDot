@@ -9,7 +9,7 @@ export async function LogInApi(props: LogInProps): Promise<void> {
     formData.append('password', props.password);
 
     const response: AxiosResponse<Response> = await axios.post(
-      `${baseApi}/login`,
+      `${baseApi}/member/login`,
       formData,
       {
         headers: {
@@ -17,6 +17,7 @@ export async function LogInApi(props: LogInProps): Promise<void> {
         },
       },
     );
+    console.log(response);
     if (response.status === 200) {
       console.log('로그인 성공');
       window.alert('로그인 성공');

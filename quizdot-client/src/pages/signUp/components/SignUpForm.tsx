@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -20,6 +21,7 @@ const schema = z.object({
 });
 
 export function SignUpForm() {
+  const navi = useNavigate();
   const {
     register,
     handleSubmit,
@@ -31,7 +33,6 @@ export function SignUpForm() {
   type CustomSubmitHandler = SubmitHandler<FieldValues>;
 
   const onSubmit: CustomSubmitHandler = async (data) => {
-    console.log('submit');
     try {
       const props: SignUpProps = {
         memberId: data.memberId as string,
@@ -40,7 +41,7 @@ export function SignUpForm() {
         hint: data.hint as string,
       };
       await SignUpApi(props);
-      console.log('회원가입 성공');
+      navi('/login');
       // Todo: 회원 가입 후 자동 로그인
     } catch (error) {
       console.error('Error signup:', error);
