@@ -68,12 +68,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         //role 가져오기
         String role = authority.getAuthority();
 
+        // 닉네임 가져오기
+        String nickname = customMemberDetail.getNickname();
+
         log.info("로그인 한 아이디 : {}", memberId);
         log.info("로그인 한 role : {}", role);
 
         //토큰 발급
-        String access = jwtUtil.createJwt("access", id, memberId, role, 10800000L);
-        String refresh = jwtUtil.createJwt("refresh", id, memberId, role, 64800000L);
+        String access = jwtUtil.createJwt("access", id, memberId, role, nickname, 10800000L);
+        String refresh = jwtUtil.createJwt("refresh", id, memberId, role, nickname, 64800000L);
         RefreshToken refreshToken = RefreshToken.builder()
             .memberId(memberId)
             .refreshToken(refresh)
