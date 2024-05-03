@@ -160,7 +160,7 @@ public class RoomServiceImpl implements RoomService {
     /**
      * 대기실 정보 조회
      */
-    private RoomInfoDto getRoomInfo(String key) throws JsonProcessingException {
+    public RoomInfoDto getRoomInfo(String key) throws JsonProcessingException {
         // Redis 조회
         String info = (String) redisTemplate.opsForValue().get(key);
         if (info == null) {

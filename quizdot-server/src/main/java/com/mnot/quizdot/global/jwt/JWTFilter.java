@@ -60,10 +60,12 @@ public class JWTFilter extends OncePerRequestFilter {
         String memberId = jwtUtil.getUsername(authorization);
         String role = jwtUtil.getRole(authorization);
         int id = jwtUtil.getId(authorization);
-
+        String nickname = jwtUtil.getNickname(authorization);
+        
         Member member = Member.builder()
             .memberId(memberId)
             .role(Role.valueOf(Role.class, role))
+            .nickname(nickname)
             .build();
 
         member.setId(id);

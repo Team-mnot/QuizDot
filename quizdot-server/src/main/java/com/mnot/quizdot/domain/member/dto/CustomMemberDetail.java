@@ -30,6 +30,10 @@ public class CustomMemberDetail implements UserDetails {
         return member.getId();
     }
 
+    public String getNickname() {
+        return member.getNickname();
+    }
+
     @Override
     public String getPassword() {
         return member.getPassword();
@@ -39,6 +43,7 @@ public class CustomMemberDetail implements UserDetails {
     public String getUsername() {
         return member.getMemberId();
     }
+
 
     //계정이 만료되지 않았는지 체크
     @Override
