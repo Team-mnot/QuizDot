@@ -135,9 +135,7 @@ public class MemberServiceImpl implements MemberService {
     public void findPassword(String memberId, String password, String passwordChk) {
         Member member = memberRepository.findByMemberId(memberId)
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
-//        if (member == null) {
-//            throw new BusinessException(ErrorCode.MEMBER_NOT_EXISTS);
-//        }
+
         if (!password.equals(passwordChk)) {
             //비밀번호와 비밀번호 확인이 일치할때만 업데이트
             throw new BusinessException(ErrorCode.INVALID_MEMBER_PASSWORD);
@@ -168,10 +166,7 @@ public class MemberServiceImpl implements MemberService {
         //멤버가 있는지 확인
         Member member = memberRepository.findByMemberId(customMemberDetail.getUsername())
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
-//        if (temp == null) {
-//            //없으면 에러 발생
-//            throw new BusinessException(ErrorCode.MEMBER_NOT_EXISTS);
-//        }
+
         //새 비밀번호와 새 비밀번호 확인용이 같은지 체크 다르면 에러발생
         if (!password.equals(chkPassword)) {
             throw new BusinessException(ErrorCode.INVALID_MEMBER_PASSWORD);
