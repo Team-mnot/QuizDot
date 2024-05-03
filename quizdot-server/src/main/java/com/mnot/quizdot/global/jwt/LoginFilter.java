@@ -110,6 +110,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
         response.setHeader("access", access);
         response.addCookie(createCookie("refresh", refresh));
+
+        //헤더의 access에 접근할 수 있도록 설정함
+        response.setHeader("Access-Control-Expose-Headers", "access");
         response.setStatus(HttpStatus.OK.value());
         response.setCharacterEncoding("utf-8");
 
