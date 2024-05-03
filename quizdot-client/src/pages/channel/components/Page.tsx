@@ -8,7 +8,7 @@ export function ChannelPage() {
   }, []);
 
   return (
-    <div className="flex h-screen w-screen flex-col items-center justify-center text-center">
+    <div className="flex flex-col items-center justify-center w-screen h-screen text-center">
       <h1>채널</h1>
       <Button value={'1채널'} />
       <Button value={'2채널'} />
