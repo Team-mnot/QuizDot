@@ -18,6 +18,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -86,6 +87,10 @@ public class SecurityConfig {
         //csrf
         http
             .csrf((auth) -> auth.disable());
+
+        //X-frame-options
+        http
+            .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
 
         //jwt 방식으로 로그인을 할 것이기 때문에 formLogin과 http basic 인증 방식 disable하기
         http
