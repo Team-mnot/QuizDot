@@ -111,6 +111,14 @@ public class Member {
         this.titleId = titleId;
     }
 
+    public void updatePoint(int point) {
+        this.point = point;
+    }
+
+    public void updateNicknameColor(String nicknameColor) {
+        this.nicknameColor = nicknameColor;
+    }
+
     public void setId(int id) {
         this.id = id;
     }

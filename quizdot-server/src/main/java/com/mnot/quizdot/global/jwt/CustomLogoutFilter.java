@@ -60,7 +60,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         //refresh 있는지 체크
         if (refresh == null) {
-            throw new BusinessException(ErrorCode.NOT_EXISTS_REFRESH_TOKEN_ERROR);
+            throw new BusinessException(ErrorCode.NOT_FOUND_REFRESH_TOKEN);
         }
 
         //만료 체크
@@ -81,7 +81,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         log.info("isExist : {}", isExist);
         if (!isExist) {
-            throw new BusinessException(ErrorCode.IS_NOT_EXISTS_REFRESH_TOKEN);
+            throw new BusinessException(ErrorCode.NOT_FOUND_REFRESH_TOKEN);
         }
 
         //로그아웃 진행

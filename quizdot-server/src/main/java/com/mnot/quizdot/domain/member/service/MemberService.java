@@ -36,4 +36,10 @@ public interface MemberService {
     //칭호 변경
     void modifyTitle(CustomMemberDetail member, int titleId);
 
+    //캐릭터 뽑기
+    int gachaCharacter(CustomMemberDetail customMemberDetail);
+
+    //닉네임 색상 뽑익
+    String gachaColor(CustomMemberDetail customMemberDetail);
+
 }
