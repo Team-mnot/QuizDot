@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class MultiServiceImpl implements MultiService {
 
+    private static final String SERVER_SENDER = "SYSTEM";
     private final RedisUtil redisUtil;
     private final RedisTemplate redisTemplate;
     private final SimpMessagingTemplate messagingTemplate;
@@ -109,10 +110,12 @@ public class MultiServiceImpl implements MultiService {
                     .curExp(member.getExp())
                     .build();
                 resultDtoList.add(resultDto);
-                
+
                 member.updateReward(member.getPoint() + exp, member.getExp() + exp);
             }
         }
+        messagingTemplate.convertAndSend("/sub/info/game/" + roomId,
+            MessageDto.of(SERVER_SENDER, MessageType.EXIT, resultDtoList));
         log.info("계산 시작 : COMPLETE");
         return resultDtoList;
     }

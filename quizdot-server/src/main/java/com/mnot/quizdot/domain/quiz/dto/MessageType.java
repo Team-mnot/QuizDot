@@ -7,5 +7,6 @@ public enum MessageType {
     LEAVE, // 게임 대기실 퇴장
     START, // 게임 시작
     PASS, // 문제 패스
-    UPDATE // 스테이지 결과 업데이트
+    UPDATE, // 스테이지 결과 업데이트
+    EXIT //게임 종료
 }
