@@ -32,7 +32,7 @@ public class QuizServiceImpl implements QuizService {
     private final RoomService roomService;
 
     /**
-     * 퀴즈 문제 리스트 조회 중복 출제를 방지하기 위해 퀴즈 목록을 REDIS에서 관리한다
+     * 퀴즈 문제 리스트 조회 (중복 출제를 방지하기 위해 퀴즈 목록을 REDIS에서 관리)
      */
     @Override
     public QuizListRes getQuizzes(int roomId, QuizParam quizParam) {
@@ -62,32 +62,7 @@ public class QuizServiceImpl implements QuizService {
     }
 
     /**
-     * 문제를 맞힌 순서에 따라 현재 스테이지의 점수를 부여한다
-     */
-    @Override
-    public void updateScores(int roomId, int questionId, String memberId) {
-        // 나의 제출 순위 조회
-        String stageKey = String.format("rooms:%d:%d", roomId, questionId);
-        if (redisTemplate.opsForList().lastIndexOf(stageKey, memberId) != null) {
-            throw new BusinessException(ErrorCode.SUBMIT_ALREADY_COMPLETE);
-        }
-
-        Long size = redisTemplate.opsForList().rightPush(stageKey, memberId);
-
-        // 스테이지 점수 부여
-        int score = (size >= 3) ? 70 : (int) (100 - ((size - 1) * 10));
-        String boardKey = String.format("rooms:%d:board", roomId);
-        redisTemplate.opsForZSet().incrementScore(boardKey, memberId, score);
-
-        log.info("[updateScores] Member : {}, Rank : {}, Score : {}", memberId, size, score);
-    }
-
-    /**
      * 문제 패스 API (REDIS PASS 유저 집합에 추가, 모든 유저가 PASS 버튼을 누른 경우에는 PASS 메세지 전송)
-     *
-     * @param roomId     게임을 진행 중인 대기실 ID
-     * @param questionId 패스하려는 문제 PK
-     * @param memberId   패스하려는 유저 PK
      */
     @Override
     public void passQuestion(int roomId, int questionId, String memberId, String nickname) {
