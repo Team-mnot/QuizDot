@@ -88,12 +88,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         //role 가져오기
         String role = authority.getAuthority();
 
+        // 닉네임 가져오기
+        String nickname = customMemberDetail.getNickname();
+
         log.info("로그인 한 아이디 : {}", memberId);
         log.info("로그인 한 role : {}", role);
 
         //토큰 발급
-        String access = jwtUtil.createJwt("access", id, memberId, role, 10800000L);
-        String refresh = jwtUtil.createJwt("refresh", id, memberId, role, 64800000L);
+        String access = jwtUtil.createJwt("access", id, memberId, role, nickname, 10800000L);
+        String refresh = jwtUtil.createJwt("refresh", id, memberId, role, nickname, 64800000L);
         RefreshToken refreshToken = RefreshToken.builder()
             .memberId(memberId)
             .refreshToken(refresh)
@@ -107,16 +110,19 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             log.error("Redis에 Refresh token 저장 실패", e);
         }
         Member member = memberRepository.findByMemberId(memberId)
-            .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_EXISTS));
+            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
         response.setHeader("access", access);
         response.addCookie(createCookie("refresh", refresh));
+
+        //헤더의 access에 접근할 수 있도록 설정함
+        response.setHeader("Access-Control-Expose-Headers", "access");
         response.setStatus(HttpStatus.OK.value());
         response.setCharacterEncoding("utf-8");
 
         LoginMemberData memberData = LoginMemberData.builder()
             .id(id)
             .title(titleRepository.findById(member.getTitleId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.NO_EXISTS_TITLE)).getTitle())
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_TITLE)).getTitle())
             .nickname(member.getNickname())
             .nicknameColor(member.getNicknameColor())
             .characterId(member.getCharacterId())

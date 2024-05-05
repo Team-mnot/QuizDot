@@ -16,7 +16,7 @@ public class MessageDto {
 
     // 데이터
     private final Object data;
-    
+
     public MessageDto(String sender, String text, MessageType type, Object data) {
         this.sender = sender;
         this.text = text;
@@ -29,11 +29,15 @@ public class MessageDto {
     }
 
     public static MessageDto of(String sender, String text, MessageType type) {
-        return new MessageDto(sender, text, type, "");
+        return new MessageDto(sender, text, type, null);
     }
 
     public static MessageDto of(String sender, MessageType type, Object data) {
-        return new MessageDto(sender, "", type, data);
+        return new MessageDto(sender, null, type, data);
+    }
+
+    public static MessageDto of(String sender, MessageType type) {
+        return new MessageDto(sender, null, type, null);
     }
 
 }

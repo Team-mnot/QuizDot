@@ -11,4 +11,5 @@ public interface RoomService {
     RoomEnterRes enterRoom(int roomId, int memberId) throws JsonProcessingException;
 
     void leaveRoom(int roomId, String memberId) throws JsonProcessingException;
+
 }

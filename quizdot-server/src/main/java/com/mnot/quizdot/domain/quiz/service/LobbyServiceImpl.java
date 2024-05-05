@@ -10,6 +10,7 @@ import com.mnot.quizdot.domain.quiz.dto.RoomReq;
 import com.mnot.quizdot.domain.quiz.dto.RoomRes;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
+import com.mnot.quizdot.global.util.RedisUtil;
 import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,8 @@ public class LobbyServiceImpl implements LobbyService {
     private final RedisTemplate redisTemplate;
 
     private final ObjectMapper objectMapper;
+
+    private final RedisUtil redisUtil;
     ConcurrentMap<Integer, boolean[]> roomNumList;
 
     private final MemberRepository memberRepository;
@@ -80,7 +83,7 @@ public class LobbyServiceImpl implements LobbyService {
             .hostId(hostId)
             .build();
 
-        String key = String.format("rooms:%d:info", roomId);
+        String key = redisUtil.getRoomInfoKey(roomId);
         String obj = objectMapper.writeValueAsString(roomInfoDto);
         redisTemplate.opsForValue().set(key, obj);
 
