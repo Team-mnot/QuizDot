@@ -19,6 +19,8 @@ interface UserInfo {
   titleListDtos: TitleList[];
   characterId: number;
   characterListDtos: Character[];
+  level: number;
+  exp: number;
   point: number;
 }
 

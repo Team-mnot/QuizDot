@@ -23,16 +23,18 @@ export function UserInfo(props: number) {
   return (
     <div>
       <div>
-        <div>{userInfo?.avartarId}</div>
-        <span>{userInfo?.titleId}</span>
-        {/* 레벨 */}
+        <div>{userInfo?.characterId}</div>
+        <span>{userInfo?.title}</span>
+        <span>{userInfo?.level}</span>
         <span>{userInfo?.nickname}</span>
-        {/* 경험치=포인트? */}
+        <span>{userInfo?.exp}</span>
       </div>
       <div>
         <p>게임 전적</p>
+        <p>전체 게임 평균 순위{userInfo?.totalRate}</p>
         <p>일반 게임 평균 순위{userInfo?.normalRate}</p>
         <p>서바이벌 평균 순위{userInfo?.survivalRate}</p>
+        <p>전체 게임 평균 승률{userInfo?.totalWinCount}</p>
         <p>일반 게임 평균 승률{userInfo?.normalWinCount}</p>
         <p>서바이벌 평균 승률{userInfo?.survivalWinCount}</p>
       </div>
