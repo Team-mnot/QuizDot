@@ -1,6 +1,5 @@
 package com.mnot.quizdot.domain.quiz.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mnot.quizdot.domain.quiz.dto.MessageDto;
 import com.mnot.quizdot.domain.quiz.dto.MessageType;
 import com.mnot.quizdot.domain.quiz.dto.QuizListRes;
@@ -91,8 +90,7 @@ public class QuizServiceImpl implements QuizService {
      * @param memberId   패스하려는 유저 PK
      */
     @Override
-    public void passQuestion(int roomId, int questionId, String memberId, String nickname)
-        throws JsonProcessingException {
+    public void passQuestion(int roomId, int questionId, String memberId, String nickname) {
         String passKey = String.format("rooms:%d:%d:pass", roomId, questionId);
 
         // 이미 패스한 유저가 시도하는 경우
