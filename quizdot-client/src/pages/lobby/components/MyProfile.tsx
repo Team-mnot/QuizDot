@@ -1,4 +1,4 @@
-export function MyProfileComponent() {
+export function MyProfile() {
   return (
     <div>
       <div className={'rounded-md border-2 bg-white p-5 shadow-md'}>

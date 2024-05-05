@@ -1,5 +1,5 @@
 import { Modal } from '@/shared/ui';
-import { OnlineUserComponent } from './OnlineUserComponent';
+import { OnlineUser } from './OnlineUser';
 import { useOpenModal } from '@/shared/hooks';
 import { useState } from 'react';
 
@@ -9,7 +9,7 @@ const dummyData = [
   },
 ];
 
-export function OnlineUserListComponent() {
+export function OnlineUserList() {
   const { isOpenModal, clickModal, closeModal } = useOpenModal();
   const [nickname, setNickname] = useState('');
 
@@ -17,7 +17,7 @@ export function OnlineUserListComponent() {
     <div>
       <div>
         {dummyData.map((item, index) => (
-          <OnlineUserComponent
+          <OnlineUser
             key={index}
             onClick={() => {
               setNickname(item.nickname);

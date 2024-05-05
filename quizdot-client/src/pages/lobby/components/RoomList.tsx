@@ -1,5 +1,7 @@
-import { Button } from '@/shared/ui';
-import { RoomComponent } from './RoomComponent';
+import { Button, Modal } from '@/shared/ui';
+import { Room } from './Room';
+import { useOpenModal } from '@/shared/hooks';
+import { RoomCreation } from './RoomCreation';
 
 const dummyData = [
   {
@@ -14,7 +16,9 @@ const dummyData = [
   },
 ];
 
-export function RoomListComponent() {
+export function RoomList() {
+  const { isOpenModal, clickModal, closeModal } = useOpenModal();
+
   return (
     <div>
       <div>
@@ -23,7 +27,7 @@ export function RoomListComponent() {
         <Button value="서바이벌" />
       </div>
       {dummyData.map((item, index) => (
-        <RoomComponent
+        <Room
           onClick={() => alert('입장!')}
           key={index}
           id={item.id}
@@ -39,8 +43,12 @@ export function RoomListComponent() {
       <div>
         <Button value="<" />
         <Button value=">" />
-        <Button value="방 생성" />
+        <Button value="방 생성" onClick={clickModal} />
       </div>
+
+      <Modal isOpen={isOpenModal} onClose={closeModal}>
+        <RoomCreation />
+      </Modal>
     </div>
   );
 }

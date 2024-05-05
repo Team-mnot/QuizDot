@@ -1,11 +1,11 @@
-import { RoomInfoProps } from '../api/types';
+import { RoomInfo } from '../api/types';
 
-interface RoomProps extends RoomInfoProps {
+interface RoomProps extends RoomInfo {
   onClick: () => void;
   key: number;
 }
 
-export function RoomComponent(props: RoomProps) {
+export function Room(props: RoomProps) {
   return (
     <div className="p-5" onClick={props.onClick}>
       <div className={'rounded-md border-2 bg-white p-5 shadow-md'}>

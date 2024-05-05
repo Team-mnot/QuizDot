@@ -35,7 +35,7 @@ export const router = createBrowserRouter([
     element: <LobbyPage />,
   },
   {
-    path: '/multi',
+    path: '/:channel/multi',
     element: <MultiPage />,
   },
   {

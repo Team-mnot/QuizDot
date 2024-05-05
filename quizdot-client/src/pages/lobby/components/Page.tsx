@@ -1,7 +1,7 @@
-import { RoomListComponent } from './RoomListComponent';
 import { useEffect, useState, useRef } from 'react';
-import { OnlineUserListComponent } from './OnlineUserListComponent';
-import { MyProfileComponent } from './MyProfileComponent';
+import { OnlineUserList } from './OnlineUserList';
+import { MyProfile } from './MyProfile';
+import { RoomList } from './RoomList';
 
 import SockJS from 'sockjs-client/dist/sockjs';
 import { Stomp, CompatClient } from '@stomp/stompjs';
@@ -20,39 +20,38 @@ export function LobbyPage() {
   const { channel } = useParams() as { channel: string };
 
   const client = useRef<CompatClient | null>(null);
+  const socket = new SockJS(`https://k10d102.p.ssafy.io/api/ws/chat`);
+  client.current = Stomp.over(socket);
 
-  // 첫 접속 시 Socket 생성해 연결
   function onConnect(): void {
-    const socket = new SockJS(`https://k10d102.p.ssafy.io/api/ws/chat`);
-
-    client.current = Stomp.over(socket);
-    client.current.connect({}, onSubscribe);
+    client.current?.connect({}, onSubscribe, onError);
   }
 
-  // Socket 연결 시 실행
   function onSubscribe(): void {
-    try {
-      // Subscribe 함수 (CallBack 함수를 포함)
-      client.current?.subscribe(
-        `/sub/chat/lobby/${channel}`,
+    console.error('[연결 성공] server -> client');
 
-        (message) => {
-          const msg: MessageDto = JSON.parse(message.body) as MessageDto;
-          setMessages([...messages, msg.text]);
-          console.error('[콜백 성공] server -> client');
-        },
-      );
-    } catch (error: unknown) {
-      onError(error);
+    client.current?.subscribe(
+      `/sub/chat/lobby/${channel}`,
 
-      // 연결에 실패하면 이전 채널로 돌아갈 것인지 팝업창으로 묻고, OK 하면 돌아감
-      // navi(`/channel`, { replace: true });
-    }
+      (message) => {
+        const msg: MessageDto = JSON.parse(message.body) as MessageDto;
+        setMessages([...messages, msg.text]);
+        console.error('[콜백 성공] server -> client');
+      },
+    );
+
+    // 연결에 실패하면 이전 채널로 돌아갈 것인지 팝업창으로 묻고, OK 하면 돌아감
+    // navi(`/channel`, { replace: true });
   }
 
   // Socket 연결 도중 Error 발생 시 실행될 함수
   function onError(error: unknown): void {
     console.error('[연결 실패] WebSocket Connection Error', error);
+
+    setTimeout(() => {
+      console.log('Attempting to reconnect...');
+      onConnect(); // 연결 재시도
+    }, 3000); // 3초 후 재시도
   }
 
   // Send 함수
@@ -72,7 +71,7 @@ export function LobbyPage() {
       );
 
       setMessage('');
-      console.log('[연결 성공] Client -> Server');
+      console.log('[전송 성공] Client -> Server');
     }
   }
 
@@ -83,6 +82,13 @@ export function LobbyPage() {
   // function onDisconnect(): void {
   //   client.current?.onDisconnect;
   // }
+
+  const onEnterSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      onSend();
+    }
+  };
 
   const [message, setMessage] = useState<string>(''); // 사용자 입력을 상태로 관리
   const [messages, setMessages] = useState<string[]>([]);
@@ -103,11 +109,11 @@ export function LobbyPage() {
       <div>
         <h1>로비</h1>
         <div className={'flex'}>
-          <OnlineUserListComponent />
-          <RoomListComponent />
+          <OnlineUserList />
+          <RoomList />
         </div>
         <div className={'flex'}>
-          <MyProfileComponent />
+          <MyProfile />
           <div>
             {messages.map((item) => (
               <div key={item}>{item}</div>
@@ -118,6 +124,7 @@ export function LobbyPage() {
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setMessage(e.currentTarget.value)
             }
+            onKeyPress={onEnterSubmit}
           />
           <Button
             value="전송"
