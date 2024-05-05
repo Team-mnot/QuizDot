@@ -39,7 +39,7 @@ public interface MemberService {
     //캐릭터 뽑기
     int gachaCharacter(CustomMemberDetail customMemberDetail);
 
-    //닉네임 색상 뽑익
+    //닉네임 색상 뽑기
     String gachaColor(CustomMemberDetail customMemberDetail);
 
 }

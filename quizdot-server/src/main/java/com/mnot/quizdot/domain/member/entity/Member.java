@@ -119,6 +119,15 @@ public class Member {
         this.nicknameColor = nicknameColor;
     }
 
+    public void updateReward(int point, int exp) {
+        this.point += point;
+        this.exp += exp;
+        while (this.exp >= 1000) {
+            this.exp -= 1000;
+            this.level += 1;
+        }
+    }
+
     public void setId(int id) {
         this.id = id;
     }
