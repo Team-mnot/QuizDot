@@ -105,7 +105,7 @@ public class LobbyServiceImpl implements LobbyService {
         throws JsonProcessingException {
         // TODO : 동시 접속자 REDIS Set에서 접속하지않는 유저 확인하고 삭제해줘야함(웹소켓 필요 예상)
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
 
         ActiveUserDto activeUserDto = ActiveUserDto.builder()
             .id(memberId)
