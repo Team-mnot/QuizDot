@@ -2,16 +2,26 @@ package com.mnot.quizdot.domain.quiz.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mnot.quizdot.domain.member.entity.Member;
+import com.mnot.quizdot.domain.member.repository.MemberRepository;
+import com.mnot.quizdot.domain.quiz.dto.ActiveUserDto;
 import com.mnot.quizdot.domain.quiz.dto.RoomInfoDto;
 import com.mnot.quizdot.domain.quiz.dto.RoomReq;
 import com.mnot.quizdot.domain.quiz.dto.RoomRes;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import jakarta.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,6 +35,8 @@ public class LobbyServiceImpl implements LobbyService {
 
     private final ObjectMapper objectMapper;
     ConcurrentMap<Integer, boolean[]> roomNumList;
+
+    private final MemberRepository memberRepository;
 
     @PostConstruct
     public void initialize() {
@@ -81,5 +93,67 @@ public class LobbyServiceImpl implements LobbyService {
     // ID POOL 상태 변경
     public void modifyRoomNumList(int channelId, int roomNum, boolean state) {
         roomNumList.get(channelId)[roomNum] = state;
+    }
+
+    /**
+     * 동시 접속자 목록 조회
+     */
+    public List<ActiveUserDto> getActiveUserList(int channelId, int memberId)
+        throws JsonProcessingException {
+        // TODO : 동시 접속자 REDIS Set에서 접속하지않는 유저 확인하고 삭제해줘야함(웹소켓 필요 예상)
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
+
+        ActiveUserDto activeUserDto = ActiveUserDto.builder()
+            .id(memberId)
+            .nickname(member.getNickname())
+            .level(member.getLevel())
+            .build();
+
+        // 해당 유저를 동시접속목록 REDIS Set에 등록
+        String key = String.format("channel:%d:lobby:players", channelId);
+        String obj = objectMapper.writeValueAsString(activeUserDto);
+        redisTemplate.opsForSet().add(key, obj);
+
+        // 레디스에서 해당 채널의 동시접속목록 추출
+        Set<Object> activeSet = redisTemplate.opsForSet().members(key);
+
+        return activeSet.stream()
+            .map(Object::toString)
+            .map(jsonString -> {
+                try {
+                    return objectMapper.readValue(jsonString, ActiveUserDto.class);
+                } catch (JsonProcessingException e) {
+                    throw new BusinessException(ErrorCode.JSON_PROCESSING_ERROR);
+                }
+            })
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * 방 목록 조회
+     */
+    public List<RoomInfoDto> getRoomList(int channelId) {
+        String pattern = String.format("rooms:%d*:info", channelId);
+        List<RoomInfoDto> roomsList = new ArrayList<>();
+
+        redisTemplate.execute((RedisConnection connection) -> {
+            try (Cursor<byte[]> cursor = connection.scan(ScanOptions.scanOptions().match(pattern).count(999).build())) {
+                while (cursor.hasNext()) {
+                    String key = new String(cursor.next());
+                    Object value = redisTemplate.opsForValue().get(key);
+                    String json = value != null ? value.toString() : null;
+                    if (json != null) {
+                        RoomInfoDto roomInfo = objectMapper.readValue(json, RoomInfoDto.class);
+                        roomsList.add(roomInfo);
+                    }
+                }
+            }
+            catch (JsonProcessingException e) {
+                throw new BusinessException(ErrorCode.JSON_PROCESSING_ERROR);
+            }
+            return null;
+        });
+        return roomsList;
     }
 }
