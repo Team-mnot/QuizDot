@@ -7,6 +7,7 @@ import com.mnot.quizdot.domain.member.entity.Member;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
 import com.mnot.quizdot.domain.member.repository.TitleRepository;
 import com.mnot.quizdot.domain.quiz.dto.MessageDto;
+import com.mnot.quizdot.domain.quiz.dto.MessageType;
 import com.mnot.quizdot.domain.quiz.dto.PlayerInfoDto;
 import com.mnot.quizdot.domain.quiz.dto.RoomEnterRes;
 import com.mnot.quizdot.domain.quiz.dto.RoomInfoDto;
@@ -55,9 +56,10 @@ public class RoomServiceImpl implements RoomService {
         redisTemplate.opsForValue().set(key, jsonRoom);
 
         // 업데이트 된 정보를 대기실 내 유저들에게 전송
-        messagingTemplate.convertAndSend("/sub/info/room/" + roomId, roomInfoDto);
+        messagingTemplate.convertAndSend("/sub/info/room/" + roomId,
+            MessageDto.of("System", MessageType.MODIFY, roomInfoDto));
         messagingTemplate.convertAndSend("/sub/chat/room/" + roomId,
-            new MessageDto("System", "대기실 정보가 변경되었습니다."));
+            MessageDto.of("System", "대기실 정보가 변경되었습니다.", MessageType.CHAT));
     }
 
     /**
@@ -68,7 +70,7 @@ public class RoomServiceImpl implements RoomService {
         String memberKey = String.format("rooms:%d:players", roomId);
         String jsonPlayers = redisTemplate.opsForHash().values(memberKey).toString();
         List<PlayerInfoDto> players = objectMapper.readValue(jsonPlayers,
-            new TypeReference<List<PlayerInfoDto>>() {
+            new TypeReference<>() {
             });
 
         // 대기실 정보 조회
@@ -102,9 +104,11 @@ public class RoomServiceImpl implements RoomService {
         String obj = objectMapper.writeValueAsString(player);
         redisTemplate.opsForHash().put(memberKey, String.valueOf(memberId), obj);
 
-        messagingTemplate.convertAndSend("/sub/players/room/" + roomId + "/enter", player);
+        messagingTemplate.convertAndSend("/sub/players/room/" + roomId,
+            MessageDto.of("System", player.getNickname() + "님이 입장하셨습니다.", MessageType.ENTER,
+                player));
         messagingTemplate.convertAndSend("/sub/chat/room/" + roomId,
-            new MessageDto("System", player.getNickname() + "님이 입장하셨습니다."));
+            MessageDto.of("System", player.getNickname() + "님이 입장하셨습니다.", MessageType.CHAT));
         return new RoomEnterRes(players, roomInfoDto);
     }
 
@@ -123,10 +127,10 @@ public class RoomServiceImpl implements RoomService {
         PlayerInfoDto player = objectMapper.readValue(jsonPlayer, PlayerInfoDto.class);
         redisTemplate.opsForHash().delete(memberKey, memberId);
 
-        messagingTemplate.convertAndSend("/sub/players/room/" + roomId + "/leave",
-            new MessageDto("System", memberId));
+        messagingTemplate.convertAndSend("/sub/players/room/" + roomId,
+            MessageDto.of("System", MessageType.LEAVE, memberId));
         messagingTemplate.convertAndSend("/sub/chat/room/" + roomId,
-            new MessageDto("System", player.getNickname() + "님이 퇴장하셨습니다."));
+            MessageDto.of("System", player.getNickname() + "님이 퇴장하셨습니다.", MessageType.CHAT));
 
         // 방장이 퇴장한 경우 체크
         String roomKey = String.format("rooms:%d:info", roomId);
@@ -149,14 +153,14 @@ public class RoomServiceImpl implements RoomService {
             log.info("[leaveRoom] Host 변경 : {}", newHostId);
             messagingTemplate.convertAndSend("/sub/info/room/" + roomId, roomInfoDto);
             messagingTemplate.convertAndSend("/sub/chat/room/" + roomId,
-                new MessageDto("System", "방장이 변경되었습니다"));
+                MessageDto.of("System", "방장이 변경되었습니다", MessageType.CHAT));
         }
     }
 
     /**
      * 대기실 정보 조회
      */
-    private RoomInfoDto getRoomInfo(String key) throws JsonProcessingException {
+    public RoomInfoDto getRoomInfo(String key) throws JsonProcessingException {
         // Redis 조회
         String info = (String) redisTemplate.opsForValue().get(key);
         if (info == null) {
