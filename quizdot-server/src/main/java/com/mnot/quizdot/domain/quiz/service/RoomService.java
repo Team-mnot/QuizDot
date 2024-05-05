@@ -2,7 +2,6 @@ package com.mnot.quizdot.domain.quiz.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mnot.quizdot.domain.quiz.dto.RoomEnterRes;
-import com.mnot.quizdot.domain.quiz.dto.RoomInfoDto;
 import com.mnot.quizdot.domain.quiz.dto.RoomReq;
 
 public interface RoomService {
@@ -13,5 +12,4 @@ public interface RoomService {
 
     void leaveRoom(int roomId, String memberId) throws JsonProcessingException;
 
-    RoomInfoDto getRoomInfo(String key) throws JsonProcessingException;
 }

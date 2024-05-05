@@ -1,5 +1,6 @@
 package com.mnot.quizdot.domain.quiz.service;
 
+import com.mnot.quizdot.domain.member.entity.ModeType;
 import com.mnot.quizdot.domain.quiz.dto.MessageDto;
 import com.mnot.quizdot.domain.quiz.dto.MessageType;
 import com.mnot.quizdot.domain.quiz.dto.QuizListRes;
@@ -9,12 +10,15 @@ import com.mnot.quizdot.domain.quiz.entity.CategoryType;
 import com.mnot.quizdot.domain.quiz.repository.QuizRepository;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
+import com.mnot.quizdot.global.util.RedisUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,10 +33,10 @@ public class QuizServiceImpl implements QuizService {
     private final RedisTemplate redisTemplate;
     private final QuizRepository quizRepository;
     private final SimpMessagingTemplate messagingTemplate;
-    private final RoomService roomService;
+    private final RedisUtil redisUtil;
 
     /**
-     * 퀴즈 문제 리스트 조회 (중복 출제를 방지하기 위해 퀴즈 목록을 REDIS에서 관리)
+     * 문제 리스트 조회 (중복 출제를 방지하기 위해 퀴즈 목록을 REDIS에서 관리)
      */
     @Override
     public QuizListRes getQuizzes(int roomId, QuizParam quizParam) {
@@ -92,5 +96,47 @@ public class QuizServiceImpl implements QuizService {
             messagingTemplate.convertAndSend("/sub/chat/game/" + roomId,
                 MessageDto.of(SERVER_SENDER, message, MessageType.CHAT));
         }
+    }
+
+    /**
+     * 게임 시작 (REDIS 초기화)
+     */
+    @Override
+    public void startGame(int roomId, int memberId, ModeType mode) {
+        // 방장 권한 체크
+        redisUtil.checkHost(roomId, memberId);
+
+        // 현재 대기실 관련 게임 기록이 남아 있다면 초기화
+        deleteGame(roomId);
+
+        // 게임 모드에 따라 REDIS 값 초기화
+        String boardKey = redisUtil.getBoardKey(roomId);
+        String memberKey = redisUtil.getPlayersKey(roomId);
+        List<Integer> players = redisUtil.getPlayers(memberKey);
+
+        int defaultValue = (ModeType.NORMAL.equals(mode)) ? 0 : 1;
+        players.forEach((playerId) -> redisTemplate.opsForZSet()
+            .add(boardKey, String.valueOf(playerId), defaultValue));
+
+        // 모든 플레이어에게 게임 시작을 알린다
+        messagingTemplate.convertAndSend("/sub/info/room/" + roomId,
+            MessageDto.of(SERVER_SENDER, MessageType.START));
+    }
+
+    /**
+     * 특정 대기실의 게임 기록 삭제
+     */
+    public void deleteGame(int roomId) {
+        // 스테이지 결과 삭제
+        String pattern = String.format("rooms:%d:*:*", roomId);
+        Cursor keys = redisTemplate.scan(ScanOptions.scanOptions().match(pattern).build());
+        keys.forEachRemaining((key) -> {
+            log.info("[deleteGame] key : {}", key);
+            redisTemplate.delete(key);
+        });
+
+        // 스코어 보드 삭제
+        String boardKey = redisUtil.getBoardKey(roomId);
+        redisTemplate.delete(boardKey);
     }
 }
