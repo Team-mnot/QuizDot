@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { LogInForm } from './LogInForm';
+import { LogOutButton } from '@/shared/components';
 
 export function LoginPage() {
   useEffect(() => {
@@ -22,7 +23,7 @@ export function LoginPage() {
           </button>
         </Link>
       </div>
-      <Link to="/channel">마법버튼</Link>
+      <LogOutButton />
     </div>
   );
 }

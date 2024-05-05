@@ -1,8 +1,10 @@
+import { useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { LogInApi } from '../api/api';
 import type { LogInProps } from '../api/types';
+import { useUserStore } from '@/shared/stores/userStore/userStore';
 
 const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
@@ -17,6 +19,8 @@ const schema = z.object({
 });
 
 export function LogInForm() {
+  const store = useUserStore();
+  const navi = useNavigate();
   const {
     register,
     handleSubmit,
@@ -27,12 +31,16 @@ export function LogInForm() {
 
   type CustomSubmitHandler = SubmitHandler<FieldValues>;
 
-  const onSubmit: CustomSubmitHandler = (data) => {
+  const onSubmit: CustomSubmitHandler = async (data) => {
     const formData: LogInProps = {
       memberId: data.memberId as string,
       password: data.password as string,
     };
-    LogInApi(formData);
+    const info = await LogInApi(formData);
+    if (info !== null) {
+      store.getData(info);
+      navi('/channel');
+    }
   };
 
   return (
