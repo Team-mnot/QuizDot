@@ -71,7 +71,7 @@ public class MultiServiceImpl implements MultiService {
         log.info("계산 시작 : START");
         String roomKey = redisUtil.getBoardKey(roomId);
         redisUtil.checkHost(roomId, memberId);
-
+        log.info("roomKey : {}", roomKey);
         Set<TypedTuple<String>> scores = redisTemplate.opsForZSet()
             .reverseRangeWithScores(roomKey, 0, -1);
 
@@ -114,8 +114,10 @@ public class MultiServiceImpl implements MultiService {
                 member.updateReward(member.getPoint() + exp, member.getExp() + exp);
             }
         }
+        log.info("resultDtoList 확인 : {}", resultDtoList);
         messagingTemplate.convertAndSend("/sub/info/game/" + roomId,
-            MessageDto.of(SERVER_SENDER, MessageType.EXIT, resultDtoList));
+            MessageDto.of(SERVER_SENDER, "리워드 지급 및 결과 계산이 완료되었습니다.", MessageType.EXIT,
+                resultDtoList));
         log.info("계산 시작 : COMPLETE");
         return resultDtoList;
     }
