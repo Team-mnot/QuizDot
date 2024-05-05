@@ -41,6 +41,8 @@ public class LobbyServiceImpl implements LobbyService {
     ConcurrentMap<Integer, boolean[]> roomNumList;
 
     private final MemberRepository memberRepository;
+    // TODO : 채널 입장 가능 인원 수 확정하면 수정해야함
+    private final static int MAX_CAPACITY = 150;
 
     @PostConstruct
     public void initialize() {
@@ -157,11 +159,22 @@ public class LobbyServiceImpl implements LobbyService {
             Channelnfo channelnfo = Channelnfo.builder()
                 .channelId(channel)
                 .activeUserCount(activeUserCount)
-                .totalAvailable(150)
+                .totalAvailable(MAX_CAPACITY)
                 .build();
 
             channelnfos.add(channelnfo);
         }
         return channelnfos;
+    }
+
+    /**
+     * 채널 입장 가능 여부 확인
+     */
+    public void checkAvailable(int channelId) {
+        String key = redisUtil.getActiveUserKey(channelId);
+
+        if(MAX_CAPACITY == redisTemplate.opsForSet().size(key)) {
+            throw new BusinessException(ErrorCode.CHANNEL_LIMIT_EXCEEDED);
+        }
     }
 }

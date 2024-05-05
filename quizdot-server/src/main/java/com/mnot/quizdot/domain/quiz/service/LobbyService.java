@@ -19,4 +19,6 @@ public interface LobbyService {
     List<RoomInfoDto> getRoomList(int channelId) throws JsonProcessingException;
 
     List<Channelnfo> getChannelList();
+
+    void checkAvailable(int channelId);
 }

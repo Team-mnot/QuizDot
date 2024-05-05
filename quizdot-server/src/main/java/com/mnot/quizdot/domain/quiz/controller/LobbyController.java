@@ -53,7 +53,8 @@ public class LobbyController {
         @PathVariable("channel_id") int channelId)
         throws JsonProcessingException {
 
-        // TODO : 입장 가능 여부 체크하기
+        // 입장 가능 여부 확인
+        lobbyService.checkAvailable(channelId);
 
         // 입장한 유저의 정보
         CustomMemberDetail userDetails = (CustomMemberDetail) authentication.getPrincipal();
