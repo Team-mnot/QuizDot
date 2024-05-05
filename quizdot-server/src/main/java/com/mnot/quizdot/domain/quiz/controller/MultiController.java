@@ -36,7 +36,8 @@ public class MultiController {
     @Operation(summary = "멀티 모드 리워드 지급 및 결과 정보 제공 API")
     public ResponseEntity<ResultResponse> exitGame(Authentication authentication,
         @PathVariable("room_id") int roomId) {
-        List<ResultDto> resultDtoList = multiService.exitGame(roomId);
+        CustomMemberDetail memberDetail = (CustomMemberDetail) authentication.getPrincipal();
+        List<ResultDto> resultDtoList = multiService.exitGame(roomId, memberDetail.getId());
         return ResponseEntity.ok(ResultResponse.of(200, "리워드 지급 및 결과 계산을 성공하였습니다", resultDtoList));
     }
 }

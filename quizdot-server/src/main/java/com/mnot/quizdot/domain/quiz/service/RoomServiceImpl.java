@@ -1,7 +1,6 @@
 package com.mnot.quizdot.domain.quiz.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnot.quizdot.domain.member.entity.Member;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
@@ -14,6 +13,7 @@ import com.mnot.quizdot.domain.quiz.dto.RoomInfoDto;
 import com.mnot.quizdot.domain.quiz.dto.RoomReq;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
+import com.mnot.quizdot.global.util.RedisUtil;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @Slf4j
 public class RoomServiceImpl implements RoomService {
-    // TODO: WebSocket Message 규격을 최대한 통일할 필요가 있어 보인다
 
     private final LobbyService lobbyService;
     private final ObjectMapper objectMapper;
@@ -37,14 +36,15 @@ public class RoomServiceImpl implements RoomService {
     private final MemberRepository memberRepository;
     private final TitleRepository titleRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final RedisUtil redisUtil;
 
     /**
      * 대기실 정보 변경
      */
     public void modifyRoomInfo(int roomId, int memberId, RoomReq roomReq)
         throws JsonProcessingException {
-        String key = String.format("rooms:%d:info", roomId);
-        RoomInfoDto roomInfoDto = getRoomInfo(key);
+        String key = redisUtil.getRoomInfoKey(roomId);
+        RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(key);
 
         if (memberId != roomInfoDto.getHostId()) {
             throw new BusinessException(ErrorCode.IS_NOT_HOST);
@@ -67,15 +67,12 @@ public class RoomServiceImpl implements RoomService {
      */
     public RoomEnterRes enterRoom(int roomId, int memberId) throws JsonProcessingException {
         // 대기실 회원 리스트 조회
-        String memberKey = String.format("rooms:%d:players", roomId);
-        String jsonPlayers = redisTemplate.opsForHash().values(memberKey).toString();
-        List<PlayerInfoDto> players = objectMapper.readValue(jsonPlayers,
-            new TypeReference<>() {
-            });
+        String memberKey = redisUtil.getPlayersKey(roomId);
+        List<PlayerInfoDto> players = redisUtil.getPlayersInfo(memberKey);
 
         // 대기실 정보 조회
-        String roomKey = String.format("rooms:%d:info", roomId);
-        RoomInfoDto roomInfoDto = getRoomInfo(roomKey);
+        String roomKey = redisUtil.getRoomInfoKey(roomId);
+        RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(roomKey);
 
         if (roomInfoDto == null) {
             throw new BusinessException(ErrorCode.ROOM_NOT_FOUND);
@@ -86,7 +83,7 @@ public class RoomServiceImpl implements RoomService {
         }
 
         // 대기실 회원 리스트에 추가
-        log.info("memberId : {}", memberId);
+        log.info("[enterRoom] memberId : {}", memberId);
         Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
 
@@ -118,7 +115,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void leaveRoom(int roomId, String memberId) throws JsonProcessingException {
         // 대기열 참여 리스트에서 삭제
-        String memberKey = String.format("rooms:%d:players", roomId);
+        String memberKey = redisUtil.getPlayersKey(roomId);
         String jsonPlayer = (String) redisTemplate.opsForHash().get(memberKey, memberId);
         if (jsonPlayer == null) {
             throw new BusinessException(ErrorCode.NOT_EXISTS_IN_ROOM);
@@ -133,8 +130,8 @@ public class RoomServiceImpl implements RoomService {
             MessageDto.of("System", player.getNickname() + "님이 퇴장하셨습니다.", MessageType.CHAT));
 
         // 방장이 퇴장한 경우 체크
-        String roomKey = String.format("rooms:%d:info", roomId);
-        RoomInfoDto roomInfoDto = getRoomInfo(roomKey);
+        String roomKey = redisUtil.getRoomInfoKey(roomId);
+        RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(roomKey);
 
         if (memberId.equals(String.valueOf(roomInfoDto.getHostId()))) {
             String newHostId = (String) redisTemplate.opsForHash().randomKey(memberKey);
@@ -157,19 +154,6 @@ public class RoomServiceImpl implements RoomService {
         }
     }
 
-    /**
-     * 대기실 정보 조회
-     */
-    public RoomInfoDto getRoomInfo(String key) throws JsonProcessingException {
-        // Redis 조회
-        String info = (String) redisTemplate.opsForValue().get(key);
-        if (info == null) {
-            throw new BusinessException(ErrorCode.ROOM_NOT_FOUND);
-        }
-
-        // 객체 변환
-        return objectMapper.readValue(info, RoomInfoDto.class);
-    }
 
     /**
      * 대기실 관련 모든 데이터 삭제

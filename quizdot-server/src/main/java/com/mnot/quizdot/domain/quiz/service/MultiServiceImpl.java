@@ -8,6 +8,7 @@ import com.mnot.quizdot.domain.quiz.dto.ResultDto;
 import com.mnot.quizdot.domain.quiz.dto.ScoreDto;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
+import com.mnot.quizdot.global.util.RedisUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class MultiServiceImpl implements MultiService {
 
+    private final RedisUtil redisUtil;
     private final RedisTemplate redisTemplate;
     private final SimpMessagingTemplate messagingTemplate;
     private final MemberRepository memberRepository;
@@ -45,7 +47,7 @@ public class MultiServiceImpl implements MultiService {
 
         // 스테이지 점수 부여
         int score = (size >= 3) ? 70 : (int) (100 - ((size - 1) * 10));
-        String boardKey = String.format("rooms:%d:board", roomId);
+        String boardKey = redisUtil.getBoardKey(roomId);
         Long newScore = redisTemplate.opsForZSet().incrementScore(boardKey, memberId, score)
             .longValue();
 
@@ -64,9 +66,11 @@ public class MultiServiceImpl implements MultiService {
      */
 
     @Override
-    public List<ResultDto> exitGame(int roomId) {
+    public List<ResultDto> exitGame(int roomId, int memberId) {
         log.info("계산 시작 : START");
-        String roomKey = String.format("rooms:%d:board", roomId);
+        String roomKey = redisUtil.getBoardKey(roomId);
+        redisUtil.checkHost(roomId, memberId);
+
         Set<TypedTuple<String>> scores = redisTemplate.opsForZSet()
             .reverseRangeWithScores(roomKey, 0, -1);
 
@@ -84,15 +88,17 @@ public class MultiServiceImpl implements MultiService {
                 Member member = memberRepository.findById(Integer.parseInt(id))
                     .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
                 double memberScore = score.getScore();
-                log.info("점수 : {}", memberScore);
+
                 if (curScore != -1 && curScore != memberScore) {
                     rank += sameScoreCount;
                     sameScoreCount = 1;
                 } else if (curScore == memberScore) {
                     sameScoreCount++;
                 }
+
                 curScore = memberScore;
                 exp = (totalPlayer + 1 - rank) * 100;
+
                 ResultDto resultDto = ResultDto.builder()
                     .id(Integer.parseInt(id))
                     .nickname(member.getNickname())
@@ -103,6 +109,7 @@ public class MultiServiceImpl implements MultiService {
                     .curExp(member.getExp())
                     .build();
                 resultDtoList.add(resultDto);
+                
                 member.updateReward(member.getPoint() + exp, member.getExp() + exp);
             }
         }
