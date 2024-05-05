@@ -16,4 +16,6 @@ public interface LobbyService {
     List<ActiveUserDto> getActiveUserList(int channelId, int memberId) throws JsonProcessingException;
 
     List<RoomInfoDto> getRoomList(int channelId) throws JsonProcessingException;
+
+    void checkPassword(int roomId, String password);
 }

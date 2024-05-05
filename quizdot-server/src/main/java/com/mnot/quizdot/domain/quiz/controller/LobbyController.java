@@ -69,4 +69,13 @@ public class LobbyController {
 
         return ResponseEntity.ok(ResultResponse.of(200, "채널 로비 입장에 성공하였습니다.", lobbyRes));
     }
+
+    @PostMapping("/{room_id}/pwd-check")
+    @Operation(summary = "비공개 방 비밀번호 확인")
+    public ResponseEntity<ResultResponse> checkPassword(@PathVariable("room_id") int roomId,
+        @RequestBody String password) {
+
+        lobbyService.checkPassword(roomId, password); // 비밀번호 불일치시, 예외 발생
+        return ResponseEntity.ok(ResultResponse.of(200, "올바른 비밀번호입니다."));
+    }
 }

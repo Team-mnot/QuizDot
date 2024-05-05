@@ -141,4 +141,16 @@ public class LobbyServiceImpl implements LobbyService {
         });
         return roomsList;
     }
+
+    /**
+     * 비공개 방 비밀번호 확인
+     */
+    public void checkPassword(int roomId, String password) {
+        String key = redisUtil.getRoomInfoKey(roomId);
+        RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(key);
+
+        if(!roomInfoDto.getPassword().equals(password)) {
+            throw new BusinessException(ErrorCode.INVALID_ROOM_PASSWORD);
+        }
+    }
 }
