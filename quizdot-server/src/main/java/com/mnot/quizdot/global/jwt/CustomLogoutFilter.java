@@ -35,7 +35,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         //logout URI로 들어오면
         String requestUri = request.getRequestURI();
-        if (!requestUri.matches("^\\/member\\/logout$")) {
+        if (!requestUri.matches("^\\/api\\/member\\/logout$")) {
 
             filterChain.doFilter(request, response);
             return;
