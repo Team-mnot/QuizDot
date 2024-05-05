@@ -76,6 +76,7 @@ public class SecurityConfig {
                         //얼마나 허용할 지
                         configuration.setMaxAge(3600L);
                         configuration.addExposedHeader("access");
+                        configuration.addExposedHeader("Set-Cookie");
                         //Authorization에 jwt담아서 보내기 때문
                         configuration.setExposedHeaders(Collections.singletonList("Authorization"));
 
