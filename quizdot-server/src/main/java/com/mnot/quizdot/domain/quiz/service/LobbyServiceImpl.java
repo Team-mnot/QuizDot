@@ -133,7 +133,7 @@ public class LobbyServiceImpl implements LobbyService {
         List<RoomInfoDto> roomsList = new ArrayList<>();
 
         redisTemplate.execute((RedisConnection connection) -> {
-            try (Cursor<byte[]> cursor = connection.scan(ScanOptions.scanOptions().match(pattern).count(999).build())) {
+            try (Cursor<byte[]> cursor = connection.scan(ScanOptions.scanOptions().match(pattern).count(MAX_ROOM).build())) {
                 while (cursor.hasNext()) {
                     String key = new String(cursor.next());
                     RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(key);
@@ -151,7 +151,7 @@ public class LobbyServiceImpl implements LobbyService {
     public List<Channelnfo> getChannelList() {
         // 레디스에서 채널별로 동시접속자 수 구해오기
         List<Channelnfo> channelnfos = new ArrayList<>();
-        for(int channel=1; channel<=8; channel++) {
+        for(int channel=1; channel<=MAX_CHANNEL; channel++) {
             String key = redisUtil.getActiveUserKey(channel);
             long activeUserCount = redisTemplate.opsForSet().size(key);
 
