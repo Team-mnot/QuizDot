@@ -3,6 +3,8 @@ package com.mnot.quizdot.domain.quiz.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
 import com.mnot.quizdot.domain.quiz.dto.ActiveUserDto;
+import com.mnot.quizdot.domain.quiz.dto.ChannelListRes;
+import com.mnot.quizdot.domain.quiz.dto.Channelnfo;
 import com.mnot.quizdot.domain.quiz.dto.LobbyRes;
 import com.mnot.quizdot.domain.quiz.dto.RoomInfoDto;
 import com.mnot.quizdot.domain.quiz.dto.RoomReq;
@@ -51,6 +53,8 @@ public class LobbyController {
         @PathVariable("channel_id") int channelId)
         throws JsonProcessingException {
 
+        // TODO : 입장 가능 여부 체크하기
+
         // 입장한 유저의 정보
         CustomMemberDetail userDetails = (CustomMemberDetail) authentication.getPrincipal();
         int memberId = userDetails.getId();
@@ -68,5 +72,14 @@ public class LobbyController {
             .build();
 
         return ResponseEntity.ok(ResultResponse.of(200, "채널 로비 입장에 성공하였습니다.", lobbyRes));
+    }
+
+    @GetMapping("/channel")
+    @Operation(summary = "채널 목록 조회")
+    public ResponseEntity<ResultResponse> getChannels() {
+        // 각 채널의 동시 접속 수와 수용 가능 인원수 조회
+        List<Channelnfo> channels = lobbyService.getChannelList();
+        ChannelListRes channelListRes = new ChannelListRes(channels);
+        return ResponseEntity.ok(ResultResponse.of(200, "채널 목록 조회에 성공하였습니다.", channelListRes));
     }
 }

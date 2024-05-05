@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnot.quizdot.domain.member.entity.Member;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
 import com.mnot.quizdot.domain.quiz.dto.ActiveUserDto;
+import com.mnot.quizdot.domain.quiz.dto.Channelnfo;
 import com.mnot.quizdot.domain.quiz.dto.RoomInfoDto;
 import com.mnot.quizdot.domain.quiz.dto.RoomReq;
 import com.mnot.quizdot.domain.quiz.dto.RoomRes;
@@ -140,5 +141,27 @@ public class LobbyServiceImpl implements LobbyService {
             return null;
         });
         return roomsList;
+    }
+
+    /**
+     * 채널 목록 조회
+     */
+    public List<Channelnfo> getChannelList() {
+        // 레디스에서 채널별로 동시접속자 수 구해오기
+        List<Channelnfo> channelnfos = new ArrayList<>();
+        for(int channel=1; channel<=8; channel++) {
+            String key = redisUtil.getActiveUserKey(channel);
+            long activeUserCount = redisTemplate.opsForSet().size(key);
+
+            // 각 채널의 동시접속자 반영
+            Channelnfo channelnfo = Channelnfo.builder()
+                .channelId(channel)
+                .activeUserCount(activeUserCount)
+                .totalAvailable(150)
+                .build();
+
+            channelnfos.add(channelnfo);
+        }
+        return channelnfos;
     }
 }
