@@ -5,18 +5,33 @@ interface Response {
   errors?: null;
 }
 
-// Todo: 레벨, 경험치 추가하기
 interface UserInfo {
   id: number;
+  totalRate: number;
   normalRate: number;
   survivalRate: number;
   nickname: string;
   nicknameColor: string;
+  totalWinCount: number;
   normalWinCount: number;
   survivalWinCount: number;
-  titleId: number;
-  avartarId: number;
+  title: number;
+  titleListDtos: TitleList[];
+  characterId: number;
+  characterListDtos: Character[];
   point: number;
+}
+
+interface TitleList {
+  id: number;
+  title: string;
+  requirement: string;
+  get: boolean;
+}
+
+interface Character {
+  id: number;
+  name: string;
 }
 
 export type { Response, UserInfo };
