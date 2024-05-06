@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class SurvivalServiceImpl implements SurvivalService {
 
-    private static final String SERVER_SENDER = "System";
+    private static final String SERVER_SENDER = "SYSTEM";
     private final RedisTemplate redisTemplate;
     private final RedisUtil redisUtil;
     private final SimpMessagingTemplate messagingTemplate;
