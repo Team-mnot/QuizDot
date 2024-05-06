@@ -25,21 +25,25 @@ export function RoomList() {
         <Button value="전체" />
         <Button value="일반" />
         <Button value="서바이벌" />
+
+        <Button value="이전" />
       </div>
-      {dummyData.map((item, index) => (
-        <Room
-          onClick={() => alert('입장!')}
-          key={index}
-          id={item.id}
-          category={item.category}
-          maxPeople={item.maxPeople}
-          maxQuestion={item.maxQuestion}
-          mode={item.mode}
-          password={item.password}
-          public={item.public}
-          title={item.title}
-        />
-      ))}
+      <div className={'rounded-lg bg-white bg-opacity-20 p-5 shadow-md'}>
+        {dummyData.map((item, index) => (
+          <Room
+            onClick={() => alert('입장!')}
+            key={index}
+            id={item.id}
+            category={item.category}
+            maxPeople={item.maxPeople}
+            maxQuestion={item.maxQuestion}
+            mode={item.mode}
+            password={item.password}
+            public={item.public}
+            title={item.title}
+          />
+        ))}
+      </div>
       <div>
         <Button value="<" />
         <Button value=">" />

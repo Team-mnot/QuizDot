@@ -3,9 +3,14 @@ import { OnlineUser } from './OnlineUser';
 import { useOpenModal } from '@/shared/hooks';
 import { useState } from 'react';
 
+const myNickname = '어흥';
+
 const dummyData = [
   {
     nickname: '어흥',
+  },
+  {
+    nickname: '우엑',
   },
 ];
 
@@ -15,7 +20,7 @@ export function OnlineUserList() {
 
   return (
     <div>
-      <div>
+      <div className={'rounded-lg bg-white bg-opacity-20 p-5 shadow-md'}>
         {dummyData.map((item, index) => (
           <OnlineUser
             key={index}
@@ -29,7 +34,7 @@ export function OnlineUserList() {
       </div>
 
       <Modal isOpen={isOpenModal} onClose={closeModal}>
-        <div className={'h-96 w-96'}>{nickname}</div>
+        {myNickname == nickname ? <div>마이페이지</div> : <div>타인</div>}
       </Modal>
     </div>
   );

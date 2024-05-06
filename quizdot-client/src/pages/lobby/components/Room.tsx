@@ -8,7 +8,7 @@ interface RoomProps extends RoomInfo {
 export function Room(props: RoomProps) {
   return (
     <div className="p-5" onClick={props.onClick}>
-      <div className={'rounded-md border-2 bg-white p-5 shadow-md'}>
+      <div className={'w-[400px] rounded-lg border-2 bg-white p-5 shadow-md'}>
         <div className="flex justify-between">
           <p>{props.id}</p>
           <p>
