@@ -43,7 +43,8 @@ public enum ErrorCode {
 
     //Game
     SUBMIT_ALREADY_COMPLETE(400, "이미 제출된 결과입니다."),
-    PASS_ALREADY_COMPLETE(400, "패스를 이미 입력하셨습니다.");
+    PASS_ALREADY_COMPLETE(400, "패스를 이미 입력하셨습니다."),
+    PLAYER_NOT_EXISTS(400, "플레이어 정보가 존재하지 않습니다.");
 
     private final int status;
     private final String message;
