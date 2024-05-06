@@ -69,11 +69,11 @@ public class MultiServiceImpl implements MultiService {
     @Override
     public List<ResultDto> exitGame(int roomId, int memberId) {
         log.info("계산 시작 : START");
-        String roomKey = redisUtil.getBoardKey(roomId);
+        String boardKey = redisUtil.getBoardKey(roomId);
         redisUtil.checkHost(roomId, memberId);
-        log.info("roomKey : {}", roomKey);
+        log.info("roomKey : {}", boardKey);
         Set<TypedTuple<String>> scores = redisTemplate.opsForZSet()
-            .reverseRangeWithScores(roomKey, 0, -1);
+            .reverseRangeWithScores(boardKey, 0, -1);
 
         List<ResultDto> resultDtoList = new ArrayList<>();
         int rank = 1;
@@ -100,8 +100,11 @@ public class MultiServiceImpl implements MultiService {
                 curScore = memberScore;
                 exp = (totalPlayer + 1 - rank) * 100;
 
+                member.updateReward(member.getPoint() + exp, member.getExp() + exp);
+
                 ResultDto resultDto = ResultDto.builder()
                     .id(Integer.parseInt(id))
+                    .level(member.getLevel())
                     .nickname(member.getNickname())
                     .rank(rank)
                     .score((int) curScore)
@@ -110,8 +113,6 @@ public class MultiServiceImpl implements MultiService {
                     .curExp(member.getExp())
                     .build();
                 resultDtoList.add(resultDto);
-
-                member.updateReward(member.getPoint() + exp, member.getExp() + exp);
             }
         }
         log.info("resultDtoList 확인 : {}", resultDtoList);
