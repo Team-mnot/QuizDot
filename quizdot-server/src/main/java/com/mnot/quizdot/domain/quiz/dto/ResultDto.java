@@ -9,6 +9,10 @@ public class ResultDto {
     //유저 id
     private int id;
 
+    //레벨
+    private int level;
+
+    //닉네임
     private String nickname;
 
     //등수
@@ -27,9 +31,10 @@ public class ResultDto {
     int curExp;
 
     @Builder
-    public ResultDto(int id, String nickname, int rank, int score, int point, int exp,
+    public ResultDto(int id, int level, String nickname, int rank, int score, int point, int exp,
         int curExp) {
         this.id = id;
+        this.level = level;
         this.nickname = nickname;
         this.rank = rank;
         this.score = score;

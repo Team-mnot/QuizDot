@@ -2,6 +2,7 @@ package com.mnot.quizdot.domain.quiz.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mnot.quizdot.domain.quiz.dto.ActiveUserDto;
+import com.mnot.quizdot.domain.quiz.dto.Channelnfo;
 import com.mnot.quizdot.domain.quiz.dto.RoomInfoDto;
 import com.mnot.quizdot.domain.quiz.dto.RoomReq;
 import com.mnot.quizdot.domain.quiz.dto.RoomRes;
@@ -16,6 +17,10 @@ public interface LobbyService {
     List<ActiveUserDto> getActiveUserList(int channelId, int memberId) throws JsonProcessingException;
 
     List<RoomInfoDto> getRoomList(int channelId) throws JsonProcessingException;
+
+    List<Channelnfo> getChannelList();
+
+    void checkAvailable(int channelId);
 
     void checkPassword(int roomId, String password);
 }
