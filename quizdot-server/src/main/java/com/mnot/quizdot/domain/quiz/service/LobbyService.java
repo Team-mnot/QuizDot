@@ -21,4 +21,6 @@ public interface LobbyService {
     List<Channelnfo> getChannelList();
 
     void checkAvailable(int channelId);
+
+    void checkPassword(int roomId, String password);
 }
