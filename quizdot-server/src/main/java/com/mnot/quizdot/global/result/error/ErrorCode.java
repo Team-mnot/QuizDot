@@ -46,7 +46,10 @@ public enum ErrorCode {
 
     //Game
     SUBMIT_ALREADY_COMPLETE(400, "이미 제출된 결과입니다."),
-    PASS_ALREADY_COMPLETE(400, "패스를 이미 입력하셨습니다.");
+    PASS_ALREADY_COMPLETE(400, "패스를 이미 입력하셨습니다."),
+
+    // Lobby
+    CHANNEL_LIMIT_EXCEEDED(400, "채널 최대 인원을 초과하였습니다.");
 
     private final int status;
     private final String message;
