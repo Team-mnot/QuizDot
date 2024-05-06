@@ -5,7 +5,6 @@ interface Response {
   errors?: null;
 }
 
-// Todo: 레벨, 경험치 추가하기
 interface UserInfo {
   id: number;
   normalRate: number;
