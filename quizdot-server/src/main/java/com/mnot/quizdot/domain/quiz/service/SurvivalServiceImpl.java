@@ -38,28 +38,25 @@ public class SurvivalServiceImpl implements SurvivalService {
     public void updateScores(int roomId, String memberId, boolean isCorrect) {
         // 생존 여부 체크
         String boardKey = redisUtil.getBoardKey(roomId);
-        Double state = redisTemplate.opsForZSet().score(boardKey, memberId);
-
-        if (state == null) {
+        Double doubleState = redisTemplate.opsForZSet().score(boardKey, memberId);
+        
+        if (doubleState == null) {
             throw new BusinessException(ErrorCode.PLAYER_NOT_EXISTS);
         }
+
+        int state = doubleState.intValue();
 
         // 생존 여부, 정답 여부에 따라 다른 집합에서 관리
         String stateKey = null;
         String totalKey = getSurviverTotalKey(roomId);
 
         if (state > 0) {
-            if (isCorrect) {
-                // 생존자-정답
-                stateKey = getSurviveCorrectKey(roomId);
-            } else {
-                // 생존자-오답, 탈락 처리도 함께 수행
-                stateKey = getSurviverIncorrectKey(roomId);
-                redisTemplate.opsForZSet().add(boardKey, memberId, -1);
-            }
+            stateKey = getSurviveKey(roomId, isCorrect);
+            state = (isCorrect) ? (state + 1) : (state * -1);
+            redisTemplate.opsForZSet().add(boardKey, memberId, state);
             redisTemplate.opsForValue().increment(totalKey);
         } else {
-            stateKey = getEliminatedCorrectKey(roomId);
+            stateKey = getEliminatedKey(roomId, isCorrect);
         }
 
         // 탈락자-오답인 경우는 처리하지 않는다
@@ -73,7 +70,7 @@ public class SurvivalServiceImpl implements SurvivalService {
         long survivePeople = redisTemplate.opsForZSet().count(boardKey, 1, 100);
         if (submitPeople == survivePeople) {
             messagingTemplate.convertAndSend("/sub/chat/game/" + roomId,
-                MessageDto.of(SERVER_SENDER, "모든 생존자가 제출하여 문제가 패스되었습니다.", MessageType.PASS,
+                MessageDto.of(SERVER_SENDER, "모든 생존자가 답안을 제출하였습니다.", MessageType.PASS,
                     System.currentTimeMillis()));
         }
     }
@@ -134,15 +131,18 @@ public class SurvivalServiceImpl implements SurvivalService {
         return String.format("rooms:%d:survivors:total", roomId);
     }
 
-    private String getSurviveCorrectKey(int roomId) {
-        return String.format("rooms:%d:survivors:correct", roomId);
-    }
-
-    private String getSurviverIncorrectKey(int roomId) {
+    private String getSurviveKey(int roomId, boolean isCorrect) {
+        if (isCorrect) {
+            return String.format("rooms:%d:survivors:correct", roomId);
+        }
         return String.format("rooms:%d:survivors:incorrect", roomId);
+
     }
 
-    private String getEliminatedCorrectKey(int roomId) {
-        return String.format("rooms:%d:eliminated:correct", roomId);
+    private String getEliminatedKey(int roomId, boolean isCorrect) {
+        if (isCorrect) {
+            return String.format("rooms:%d:eliminated:correct", roomId);
+        }
+        return null;
     }
 }
