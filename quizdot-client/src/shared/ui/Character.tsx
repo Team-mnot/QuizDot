@@ -7,12 +7,7 @@ export interface iCharacter {
   score?: number;
 }
 
-export function Character({
-  imageUrl,
-  title,
-  nickname,
-  score,
-}: iCharacter) {
+export function Character({ imageUrl, title, nickname, score }: iCharacter) {
   return (
     <div className="m-2 flex w-36 flex-col items-center rounded-lg p-2">
       <img
@@ -27,7 +22,9 @@ export function Character({
         {nickname}
       </p>
       {score !== undefined && (
-      <div className='text-xs rounded-lg border-black border-solid border-2 px-2 bg-white bg-opacity-80'>{score}</div>
+        <div className="rounded-lg border-2 border-solid border-black bg-white bg-opacity-80 px-2 text-xs">
+          {score}
+        </div>
       )}
     </div>
   );

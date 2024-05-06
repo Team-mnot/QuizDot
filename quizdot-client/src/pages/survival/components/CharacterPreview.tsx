@@ -27,7 +27,7 @@ const predefinedPositions = [
 
 export function CharacterPreview() {
   // 더미 캐릭터 데이터
-  const characterData = getCharacterData()
+  const characterData = getCharacterData();
 
   return (
     <div>

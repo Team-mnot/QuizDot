@@ -34,4 +34,3 @@ export interface iQuizList {
     quizResList: iQuiz[];
   };
 }
-
