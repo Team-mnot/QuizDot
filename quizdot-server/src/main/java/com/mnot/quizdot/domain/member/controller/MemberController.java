@@ -65,8 +65,8 @@ public class MemberController {
     @DeleteMapping("")
     @Operation(summary = "회원 탈퇴")
     public ResponseEntity<ResultResponse> deleteMember(
-        @AuthenticationPrincipal CustomMemberDetail member) {
-        memberService.deleteMember(member);
+        @AuthenticationPrincipal CustomMemberDetail customMemberDetail) {
+        memberService.deleteMember(customMemberDetail);
         return ResponseEntity.ok(ResultResponse.of(200, "회원 탈퇴가 완료되었습니다."));
     }
 
@@ -103,10 +103,10 @@ public class MemberController {
     @PostMapping("/info/pwd-check")
     @Operation(summary = "기존 비밀번호 확인")
     public ResponseEntity<ResultResponse> checkPassword(
-        @AuthenticationPrincipal CustomMemberDetail member,
+        @AuthenticationPrincipal CustomMemberDetail customMemberDetail,
         @RequestBody Map<String, String> requestBody) {
         String password = requestBody.get("password");
-        memberService.checkPassword(member, password);
+        memberService.checkPassword(customMemberDetail, password);
         return ResponseEntity.ok(ResultResponse.of(200, "비밀번호가 확인 되었습니다."));
     }
 
@@ -116,11 +116,11 @@ public class MemberController {
     @PostMapping("/info/pwd")
     @Operation(summary = "비밀번호 변경")
     public ResponseEntity<ResultResponse> modifyPassword(
-        @AuthenticationPrincipal CustomMemberDetail member,
+        @AuthenticationPrincipal CustomMemberDetail customMemberDetail,
         @RequestBody Map<String, String> requestBody) {
         String password = requestBody.get("password");
         String chkPassword = requestBody.get("chkPassword");
-        memberService.modifyPassword(member, password, chkPassword);
+        memberService.modifyPassword(customMemberDetail, password, chkPassword);
         return ResponseEntity.ok(ResultResponse.of(200, "비밀번호가 변경되었습니다."));
     }
 
@@ -141,10 +141,10 @@ public class MemberController {
     @PostMapping("/nickname")
     @Operation(summary = "닉네임 변경")
     public ResponseEntity<ResultResponse> modifyNickname(
-        @AuthenticationPrincipal CustomMemberDetail member,
+        @AuthenticationPrincipal CustomMemberDetail customMemberDetail,
         @RequestBody Map<String, String> requestBody) {
         String nickname = requestBody.get("nickname");
-        memberService.modifyNickname(member, nickname);
+        memberService.modifyNickname(customMemberDetail, nickname);
         return ResponseEntity.ok(ResultResponse.of(200, "닉네임을 변경했습니다."));
     }
 
@@ -154,9 +154,9 @@ public class MemberController {
     @PostMapping("/character/{character_id}")
     @Operation(summary = "캐릭터 변경")
     public ResponseEntity<ResultResponse> modifyCharacter(
-        @AuthenticationPrincipal CustomMemberDetail member,
+        @AuthenticationPrincipal CustomMemberDetail customMemberDetail,
         @PathVariable("character_id") int characterId) {
-        memberService.modifyCharacter(member, characterId);
+        memberService.modifyCharacter(customMemberDetail, characterId);
         return ResponseEntity.ok(ResultResponse.of(200, "캐릭터를 변경했습니다."));
     }
 
@@ -166,11 +166,36 @@ public class MemberController {
     @PostMapping("/title/{title_id}")
     @Operation(summary = "칭호 변경")
     public ResponseEntity<ResultResponse> modifyTitle(
-        @AuthenticationPrincipal CustomMemberDetail member,
+        @AuthenticationPrincipal CustomMemberDetail customMemberDetail,
         @PathVariable("title_id") int titleId) {
-        memberService.modifyTitle(member, titleId);
+        memberService.modifyTitle(customMemberDetail, titleId);
         return ResponseEntity.ok(ResultResponse.of(200, "칭호를 변경했습니다."));
     }
+
+    /**
+     * 캐릭터 뽑기
+     */
+    @PostMapping("/reward/random-pick/character")
+    @Operation(summary = "캐릭터 뽑기")
+    public ResponseEntity<ResultResponse> gachaCharacter(
+        @AuthenticationPrincipal CustomMemberDetail customMemberDetail) {
+        return ResponseEntity.ok(
+            ResultResponse.of(200, "캐릭터 뽑기에 성공했습니다.",
+                memberService.gachaCharacter(customMemberDetail)));
+    }
+
+    /**
+     * 닉네임 색상뽑기
+     */
+    @PostMapping("/reward/random-pick/color")
+    @Operation(summary = "닉네임 색상 뽑기")
+    public ResponseEntity<ResultResponse> gachaColor(
+        @AuthenticationPrincipal CustomMemberDetail customMemberDetail
+    ) {
+        return ResponseEntity.ok(ResultResponse.of(200, "닉네임 색상 뽑기에 성공했습니다.",
+            memberService.gachaColor(customMemberDetail)));
+    }
+
 
     /**
      * accessToken 재발급
@@ -193,7 +218,7 @@ public class MemberController {
         log.info("쿠키에서 꺼낸 refresh 토큰 : {}", refresh);
         //refreshToken이 존재하지 않음
         if (refresh == null) {
-            throw new BusinessException(ErrorCode.NOT_EXISTS_REFRESH_TOKEN_ERROR);
+            throw new BusinessException(ErrorCode.NOT_FOUND_REFRESH_TOKEN);
         }
 
         log.info("refreshToken이 있나요?");
@@ -224,7 +249,7 @@ public class MemberController {
         //redis에 refreshToken이 있는지 확인
         Boolean isExist = refreshTokenRedisRepository.existsById(memberId);
         if (!isExist) {
-            throw new BusinessException(ErrorCode.IS_NOT_EXISTS_REFRESH_TOKEN);
+            throw new BusinessException(ErrorCode.NOT_FOUND_REFRESH_TOKEN);
         }
         log.info("redis에 있는지 확인 : {}", isExist);
 

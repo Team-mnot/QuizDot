@@ -85,7 +85,7 @@ public class RoomServiceImpl implements RoomService {
         // 대기실 회원 리스트에 추가
         log.info("[enterRoom] memberId : {}", memberId);
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_EXISTS));
+            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
 
         String title = titleRepository.findById(member.getTitleId())
             .orElseThrow(() -> new BusinessException(ErrorCode.LOCK_TITLE_ERROR)).getTitle();

@@ -2,6 +2,10 @@ package com.mnot.quizdot.domain.quiz.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mnot.quizdot.domain.member.entity.Member;
+import com.mnot.quizdot.domain.member.repository.MemberRepository;
+import com.mnot.quizdot.domain.quiz.dto.ActiveUserDto;
+import com.mnot.quizdot.domain.quiz.dto.Channelnfo;
 import com.mnot.quizdot.domain.quiz.dto.RoomInfoDto;
 import com.mnot.quizdot.domain.quiz.dto.RoomReq;
 import com.mnot.quizdot.domain.quiz.dto.RoomRes;
@@ -9,10 +13,17 @@ import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import com.mnot.quizdot.global.util.RedisUtil;
 import jakarta.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,6 +39,9 @@ public class LobbyServiceImpl implements LobbyService {
 
     private final RedisUtil redisUtil;
     ConcurrentMap<Integer, boolean[]> roomNumList;
+
+    private final MemberRepository memberRepository;
+    private final static int MAX_CAPACITY = 200;
 
     @PostConstruct
     public void initialize() {
@@ -84,5 +98,94 @@ public class LobbyServiceImpl implements LobbyService {
     // ID POOL 상태 변경
     public void modifyRoomNumList(int channelId, int roomNum, boolean state) {
         roomNumList.get(channelId)[roomNum] = state;
+    }
+
+    /**
+     * 동시 접속자 목록 조회
+     */
+    public List<ActiveUserDto> getActiveUserList(int channelId, int memberId)
+        throws JsonProcessingException {
+        // TODO : 동시 접속자 REDIS Set에서 접속하지않는 유저 확인하고 삭제해줘야함(웹소켓 필요 예상)
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
+
+        ActiveUserDto activeUserDto = ActiveUserDto.builder()
+            .id(memberId)
+            .nickname(member.getNickname())
+            .level(member.getLevel())
+            .build();
+
+        // 해당 유저를 동시접속목록 REDIS Set에 추가
+        String key = redisUtil.getActiveUserKey(channelId);
+        String obj = objectMapper.writeValueAsString(activeUserDto);
+        redisTemplate.opsForSet().add(key, obj);
+
+        // 채널 내 동시 접속자 목록 반환
+        return redisUtil.getActiveUsers(key);
+    }
+
+    /**
+     * 대기실 목록 조회
+     */
+    public List<RoomInfoDto> getRoomList(int channelId) {
+        String pattern = String.format("rooms:%d*:info", channelId);
+        List<RoomInfoDto> roomsList = new ArrayList<>();
+
+        redisTemplate.execute((RedisConnection connection) -> {
+            try (Cursor<byte[]> cursor = connection.scan(ScanOptions.scanOptions().match(pattern).count(MAX_ROOM).build())) {
+                while (cursor.hasNext()) {
+                    String key = new String(cursor.next());
+                    RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(key);
+                    roomsList.add(roomInfoDto);
+                }
+            }
+            return null;
+        });
+        return roomsList;
+    }
+
+    /**
+     * 채널 목록 조회
+     */
+    public List<Channelnfo> getChannelList() {
+        // 레디스에서 채널별로 동시접속자 수 구해오기
+        List<Channelnfo> channelnfos = new ArrayList<>();
+        for(int channel=1; channel<=MAX_CHANNEL; channel++) {
+            String key = redisUtil.getActiveUserKey(channel);
+            long activeUserCount = redisTemplate.opsForSet().size(key);
+
+            // 각 채널의 동시접속자 반영
+            Channelnfo channelnfo = Channelnfo.builder()
+                .channelId(channel)
+                .activeUserCount(activeUserCount)
+                .totalAvailable(MAX_CAPACITY)
+                .build();
+
+            channelnfos.add(channelnfo);
+        }
+        return channelnfos;
+    }
+
+    /**
+     * 채널 입장 가능 여부 확인
+     */
+    public void checkAvailable(int channelId) {
+        String key = redisUtil.getActiveUserKey(channelId);
+
+        if(MAX_CAPACITY == redisTemplate.opsForSet().size(key)) {
+            throw new BusinessException(ErrorCode.CHANNEL_LIMIT_EXCEEDED);
+        }
+    }
+
+    /**
+     * 비공개 방 비밀번호 확인
+     */
+    public void checkPassword(int roomId, String password) {
+        String key = redisUtil.getRoomInfoKey(roomId);
+        RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(key);
+
+        if (!roomInfoDto.getPassword().equals(password)) {
+            throw new BusinessException(ErrorCode.INVALID_ROOM_PASSWORD);
+        }
     }
 }
