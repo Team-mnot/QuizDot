@@ -71,7 +71,6 @@ public class MultiServiceImpl implements MultiService {
         log.info("계산 시작 : START");
         String boardKey = redisUtil.getBoardKey(roomId);
         redisUtil.checkHost(roomId, memberId);
-        log.info("roomKey : {}", boardKey);
         Set<TypedTuple<String>> scores = redisTemplate.opsForZSet()
             .reverseRangeWithScores(boardKey, 0, -1);
 
