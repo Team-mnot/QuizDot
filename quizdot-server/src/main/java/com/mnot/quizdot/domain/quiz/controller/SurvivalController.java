@@ -24,7 +24,7 @@ public class SurvivalController {
     private final SurvivalService survivalService;
 
     @PostMapping("/exit/{room_id}")
-    @Operation(summary = "서바이벌모드 게임 종료 시 호출되는 API")
+    @Operation(summary = "서바이벌 모드 리워드 지급 및 결과 정보 제공 API")
     public ResponseEntity<ResultResponse> exitGame(Authentication authentication,
         @PathVariable("room_id") int roomId) {
         CustomMemberDetail memberDetail = (CustomMemberDetail) authentication.getPrincipal();
