@@ -41,8 +41,7 @@ public class LobbyServiceImpl implements LobbyService {
     ConcurrentMap<Integer, boolean[]> roomNumList;
 
     private final MemberRepository memberRepository;
-    // TODO : 채널 입장 가능 인원 수 확정하면 수정해야함
-    private final static int MAX_CAPACITY = 150;
+    private final static int MAX_CAPACITY = 200;
 
     @PostConstruct
     public void initialize() {
