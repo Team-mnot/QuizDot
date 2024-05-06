@@ -49,12 +49,12 @@ const beforeReq = (
   return config;
 };
 
-//fail request
+// fail request
 const requestFail = (err: AxiosError | Error): Promise<AxiosError> => {
   return Promise.reject(err);
 };
 
-//before return response
+// before return response
 const beforeRes = async (res: AxiosResponse): Promise<any> => {
   const data = res.data;
 
@@ -72,7 +72,7 @@ const beforeRes = async (res: AxiosResponse): Promise<any> => {
     confirmedUserInfo.accessToken = result.data?.accessToken;
     localStorage.setItem('userInfo', JSON.stringify(confirmedUserInfo));
 
-    //원래의 호출
+    // 원래의 호출
     const originalRequest = res.config;
 
     console.log(originalRequest);
@@ -93,7 +93,7 @@ const beforeRes = async (res: AxiosResponse): Promise<any> => {
   return res;
 };
 
-//fail response
+// fail response
 const responseFail = (err: AxiosError | Error): Promise<Error> => {
   console.log('response fail error.............');
 
