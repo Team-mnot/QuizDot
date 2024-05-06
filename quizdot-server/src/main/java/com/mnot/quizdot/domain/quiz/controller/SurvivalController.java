@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,7 +32,6 @@ public class SurvivalController {
     public ResponseEntity<ResultResponse> updateScores(
         @AuthenticationPrincipal CustomMemberDetail memberDetail,
         @PathVariable("room_id") int roomId, @RequestBody SurvivalAnswerDto answerDto) {
-        System.out.println(answerDto);
         survivalService.updateScores(roomId, String.valueOf(memberDetail.getId()),
             answerDto.getResult());
         return ResponseEntity.ok(ResultResponse.of(200, "점수 업데이트에 성공하였습니다."));
@@ -46,5 +46,14 @@ public class SurvivalController {
         List<ResultDto> resultDtoList = survivalService.exitGame(roomId, memberDetail.getId());
         return ResponseEntity.ok(ResultResponse.of(200, "리워드 지급 및 결과 계산을 성공하였습니다.", resultDtoList));
 
+    }
+
+    @GetMapping("/score/{room_id}")
+    @Operation(summary = "서바이벌 스테이지 결과 API")
+    public ResponseEntity<ResultResponse> getStageResult(
+        @AuthenticationPrincipal CustomMemberDetail memberDetail,
+        @PathVariable("room_id") int roomId) {
+        survivalService.getStageResult(roomId, memberDetail.getId());
+        return ResponseEntity.ok(ResultResponse.of(200, "리워드 지급 및 결과 계산을 성공하였습니다."));
     }
 }
