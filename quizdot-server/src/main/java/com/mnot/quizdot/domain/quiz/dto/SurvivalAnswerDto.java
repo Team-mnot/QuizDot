@@ -7,6 +7,6 @@ import lombok.ToString;
 @ToString
 public class SurvivalAnswerDto {
 
-    private boolean result;
+    private int result;
 
 }

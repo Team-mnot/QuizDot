@@ -33,7 +33,7 @@ public class SurvivalController {
         @PathVariable("room_id") int roomId, @RequestBody SurvivalAnswerDto answerDto) {
         System.out.println(answerDto);
         survivalService.updateScores(roomId, String.valueOf(memberDetail.getId()),
-            answerDto.isResult());
+            answerDto.getResult());
         return ResponseEntity.ok(ResultResponse.of(200, "점수 업데이트에 성공하였습니다."));
     }
 

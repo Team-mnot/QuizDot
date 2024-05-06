@@ -25,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class SurvivalServiceImpl implements SurvivalService {
 
+    private static final int MIN_SCORE = -1000;
+    private static final int MAX_SCORE = 1000;
     private static final String SERVER_SENDER = "SYSTEM";
     private final RedisTemplate redisTemplate;
     private final RedisUtil redisUtil;
@@ -35,40 +37,31 @@ public class SurvivalServiceImpl implements SurvivalService {
      * 서바이벌 모드 점수 업데이트
      */
     @Override
-    public void updateScores(int roomId, String memberId, boolean isCorrect) {
+    public void updateScores(int roomId, String memberId, int isCorrect) {
         // 생존 여부 체크
         String boardKey = redisUtil.getBoardKey(roomId);
         Double doubleState = redisTemplate.opsForZSet().score(boardKey, memberId);
-        
+
         if (doubleState == null) {
             throw new BusinessException(ErrorCode.PLAYER_NOT_EXISTS);
         }
 
         int state = doubleState.intValue();
 
-        // 생존 여부, 정답 여부에 따라 다른 집합에서 관리
-        String stateKey = null;
-        String totalKey = getSurviverTotalKey(roomId);
-
-        if (state > 0) {
-            stateKey = getSurviveKey(roomId, isCorrect);
-            state = (isCorrect) ? (state + 1) : (state * -1);
-            redisTemplate.opsForZSet().add(boardKey, memberId, state);
-            redisTemplate.opsForValue().increment(totalKey);
-        } else {
-            stateKey = getEliminatedKey(roomId, isCorrect);
-        }
-
-        // 탈락자-오답인 경우는 처리하지 않는다
+        // 생존 여부에 따라 정답 여부를 다른 집합에서 관리
+        String stateKey = (state > 0) ? getSurviveKey(roomId) : getEliminatedKey(roomId);
+        redisTemplate.opsForZSet().add(stateKey, memberId, isCorrect);
         log.info("[updateScores] stateKey : {}", stateKey);
-        if (stateKey != null) {
-            redisTemplate.opsForSet().add(stateKey, memberId);
-        }
 
         // 전체 생존자가 풀었을 경우 패스 메세지 송신
-        long submitPeople = Long.parseLong(redisTemplate.opsForValue().get(totalKey).toString());
-        long survivePeople = redisTemplate.opsForZSet().count(boardKey, 1, 100);
+        long survivePeople = redisTemplate.opsForZSet().count(boardKey, 0, MAX_SCORE);
+        long submitPeople = redisTemplate.opsForZSet()
+            .count(getSurviveKey(roomId), MIN_SCORE, MAX_SCORE);
+
+        log.info("survive : {}, submit : {}", survivePeople, submitPeople);
+
         if (submitPeople == survivePeople) {
+            log.info("메세지 전송");
             messagingTemplate.convertAndSend("/sub/chat/game/" + roomId,
                 MessageDto.of(SERVER_SENDER, "모든 생존자가 답안을 제출하였습니다.", MessageType.PASS,
                     System.currentTimeMillis()));
@@ -126,23 +119,12 @@ public class SurvivalServiceImpl implements SurvivalService {
         return resultDtoList;
     }
 
-
-    private String getSurviverTotalKey(int roomId) {
-        return String.format("rooms:%d:survivors:total", roomId);
-    }
-
-    private String getSurviveKey(int roomId, boolean isCorrect) {
-        if (isCorrect) {
-            return String.format("rooms:%d:survivors:correct", roomId);
-        }
-        return String.format("rooms:%d:survivors:incorrect", roomId);
+    private String getSurviveKey(int roomId) {
+        return String.format("rooms:%d:survivors", roomId);
 
     }
 
-    private String getEliminatedKey(int roomId, boolean isCorrect) {
-        if (isCorrect) {
-            return String.format("rooms:%d:eliminated:correct", roomId);
-        }
-        return null;
+    private String getEliminatedKey(int roomId) {
+        return String.format("rooms:%d:eliminated", roomId);
     }
 }
