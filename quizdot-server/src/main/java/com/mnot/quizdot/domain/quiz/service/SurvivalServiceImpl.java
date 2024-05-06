@@ -25,11 +25,48 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class SurvivalServiceImpl implements SurvivalService {
 
+    private static final int MIN_SCORE = -1000;
+    private static final int MAX_SCORE = 1000;
     private static final String SERVER_SENDER = "SYSTEM";
-    private final RedisUtil redisUtil;
     private final RedisTemplate redisTemplate;
+    private final RedisUtil redisUtil;
     private final SimpMessagingTemplate messagingTemplate;
     private final MemberRepository memberRepository;
+
+    /**
+     * 서바이벌 모드 점수 업데이트
+     */
+    @Override
+    public void updateScores(int roomId, String memberId, int isCorrect) {
+        // 생존 여부 체크
+        String boardKey = redisUtil.getBoardKey(roomId);
+        Double doubleState = redisTemplate.opsForZSet().score(boardKey, memberId);
+
+        if (doubleState == null) {
+            throw new BusinessException(ErrorCode.PLAYER_NOT_EXISTS);
+        }
+
+        int state = doubleState.intValue();
+
+        // 생존 여부에 따라 정답 여부를 다른 집합에서 관리
+        String stateKey = (state > 0) ? getSurviveKey(roomId) : getEliminatedKey(roomId);
+        redisTemplate.opsForZSet().add(stateKey, memberId, isCorrect);
+        log.info("[updateScores] stateKey : {}", stateKey);
+
+        // 전체 생존자가 풀었을 경우 패스 메세지 송신
+        long survivePeople = redisTemplate.opsForZSet().count(boardKey, 0, MAX_SCORE);
+        long submitPeople = redisTemplate.opsForZSet()
+            .count(getSurviveKey(roomId), MIN_SCORE, MAX_SCORE);
+
+        log.info("survive : {}, submit : {}", survivePeople, submitPeople);
+
+        if (submitPeople == survivePeople) {
+            log.info("메세지 전송");
+            messagingTemplate.convertAndSend("/sub/chat/game/" + roomId,
+                MessageDto.of(SERVER_SENDER, "모든 생존자가 답안을 제출하였습니다.", MessageType.PASS,
+                    System.currentTimeMillis()));
+        }
+    }
 
     /**
      * 결과에 따라 경험치 및 포인트 업데이트, 결과 정보 제공
@@ -80,5 +117,14 @@ public class SurvivalServiceImpl implements SurvivalService {
             MessageDto.of(SERVER_SENDER, "리워드 지급 및 결과 계산이 완료되었습니다.",
                 MessageType.EXIT, resultDtoList));
         return resultDtoList;
+    }
+
+    private String getSurviveKey(int roomId) {
+        return String.format("rooms:%d:survivors", roomId);
+
+    }
+
+    private String getEliminatedKey(int roomId) {
+        return String.format("rooms:%d:eliminated", roomId);
     }
 }

@@ -5,5 +5,7 @@ import java.util.List;
 
 public interface SurvivalService {
 
+    void updateScores(int roomId, String memberId, int isCorrect);
+
     List<ResultDto> exitGame(int roomId, int memberId);
 }
