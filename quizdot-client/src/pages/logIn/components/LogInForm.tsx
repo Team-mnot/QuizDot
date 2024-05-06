@@ -32,11 +32,11 @@ export function LogInForm() {
   type CustomSubmitHandler = SubmitHandler<FieldValues>;
 
   const onSubmit: CustomSubmitHandler = async (data) => {
-    const formData: LogInProps = {
+    const logInProps: LogInProps = {
       memberId: data.memberId as string,
       password: data.password as string,
     };
-    const info = await LogInApi(formData);
+    const info = await LogInApi(logInProps);
     if (info !== null) {
       store.getData(info);
       navi('/channel');

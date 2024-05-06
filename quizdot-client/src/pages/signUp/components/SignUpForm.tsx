@@ -3,7 +3,10 @@ import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { SignUpApi } from '../api/api';
+import { LogInApi } from '@/pages/logIn/api/api';
 import type { SignUpProps } from '../api/types';
+import type { LogInProps } from '@/pages/logIn/api/types';
+import { useUserStore } from '@/shared/stores/userStore/userStore';
 
 const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
@@ -21,6 +24,7 @@ const schema = z.object({
 });
 
 export function SignUpForm() {
+  const store = useUserStore();
   const navi = useNavigate();
   const {
     register,
@@ -40,9 +44,18 @@ export function SignUpForm() {
         nickname: data.nickname as string,
         hint: data.hint as string,
       };
-      await SignUpApi(props);
-      navi('/login');
-      // Todo: 회원 가입 후 자동 로그인
+      const response = await SignUpApi(props);
+      if (response === 'success') {
+        const logInProps: LogInProps = {
+          memberId: data.memberId as string,
+          password: data.password as string,
+        };
+        const info = await LogInApi(logInProps);
+        if (info !== null) {
+          store.getData(info);
+          navi('/channel');
+        }
+      }
     } catch (error) {
       console.error('Error signup:', error);
     }

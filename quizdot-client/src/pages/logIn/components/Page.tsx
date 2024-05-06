@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { LogInForm } from './LogInForm';
 import { LogOutButton } from '@/shared/components';
+import { UserInfo } from '@/widgets/userInfo';
 
 export function LoginPage() {
   useEffect(() => {
@@ -24,6 +25,7 @@ export function LoginPage() {
         </Link>
       </div>
       <LogOutButton />
+      <UserInfo id={16} />
     </div>
   );
 }

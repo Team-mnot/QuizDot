@@ -13,7 +13,6 @@ export async function GetUserInfoApi(props: number): Promise<UserInfo | null> {
       },
     );
     if (response.status === 200) {
-      console.log('유저 정보 조회 성공');
       return response.data.data!;
     }
   } catch (error) {

@@ -31,8 +31,6 @@ export async function LogInApi(props: LogInProps): Promise<UserInfo | null> {
     );
 
     if (response.status === 200) {
-      console.log('로그인 성공');
-      window.alert('로그인 성공');
       return response.data.data;
     }
   } catch (error) {
