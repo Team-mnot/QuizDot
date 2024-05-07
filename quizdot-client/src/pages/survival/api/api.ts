@@ -20,6 +20,7 @@ export async function fetchQuizData(
   }
 
   const data = await response.json();
+  2;
   console.log(data);
   return data;
 }

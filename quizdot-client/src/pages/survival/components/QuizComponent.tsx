@@ -1,46 +1,63 @@
 //src/pages/survival/components/QuizComponent.tsx
 
 import { useQuiz2 } from '../hooks/useQuiz2';
-import { useState } from 'react';
-import useSubmitAnswer from '../hooks/useSubmitAnswer';
+import { useState, useEffect } from 'react';
+import useIsSubmitAnswer from '../hooks/useIsSubmitAnswer';
 import useQuizStore from '../store';
 
-export function QuizComponent({
-  roomId,
-  category,
-  count,
-}: {
-  roomId: number;
-  category: string;
-  count: number;
-}) {
-  const { setShowChatBox, resultMessage, setResultMessage, setShowResult } =
-    useQuizStore();
-  const [userAnswer, setUserAnswer] = useState(''); // 사용자 입력을 저장할 상태
+export function QuizComponent({ roomId }: { roomId: number }) {
+  const {
+    setShowChatBox,
+    resultMessage,
+    setResultMessage,
+    quizzes,
+    setShowResult,
+    setCurrentQuiz,
+    currentQuizIndex,
+  } = useQuizStore();
 
-  const { currentQuiz, loading, error } = useQuiz2(roomId, category, count);
+  const { loading, error } = useQuiz2(); // 수정: useQuiz2에서 필요한 데이터를 가져오도록 함
+  const [userAnswer, setUserAnswer] = useState(''); // 사용자 입력을 저장할 상태
+  const { currentQuiz } = useQuizStore();
+
   const {
     submitAnswer,
     loading: submitLoading,
     // error: submitError,
-  } = useSubmitAnswer();
+  } = useIsSubmitAnswer();
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.toString()}</div>;
-  if (!currentQuiz) return <div>No Quiz Available</div>;
+  useEffect(() => {
+    const currentQuiz = quizzes[currentQuizIndex] || null;
+    setCurrentQuiz(currentQuiz);
+  }, [currentQuizIndex, quizzes, setCurrentQuiz]);
 
   const handleAnswerSubmit = async () => {
     // async 쓰지말까.. 어차피 정답 오답 내는건 데이터 보내는거 기다릴 필요 없긴한데
     // 그래도 서버에 제출했다는 신호 주는거 확인은 해보자고 ~
-    await submitAnswer(roomId, currentQuiz.id);
-    setShowChatBox(true); // 정답제출시 채팅박스 표시
-    if (currentQuiz?.answers.includes(userAnswer.trim())) {
-      setResultMessage('정답');
-    } else {
-      setResultMessage('오답');
+
+    if (currentQuiz) {
+      await submitAnswer(roomId, currentQuiz.id);
+      setShowChatBox(true); // 정답제출시 채팅박스 표시
+      if (currentQuiz?.answers.includes(userAnswer.trim())) {
+        setResultMessage('정답');
+      } else {
+        setResultMessage('오답');
+      }
+      setUserAnswer('');
     }
-    setUserAnswer('');
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowResult(true); // 결과창 표시
+    }, 5000); // 10초 후 결과창으로 전환
+
+    return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 해제
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.toString()}</div>;
+  if (!quizzes.length || !currentQuiz) return null; // currentQuiz가 store에 있으니까 null일 때 애매해짐
 
   return (
     <div>

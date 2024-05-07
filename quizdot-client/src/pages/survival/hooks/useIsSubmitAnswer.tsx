@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-const useSubmitAnswer = () => {
+const useIsSubmitAnswer = () => {
   const [loading, setLoading] = useState(false); // 국밥
   const [error, setError] = useState<string | null>(null); // 국밥
 
@@ -30,4 +30,4 @@ const useSubmitAnswer = () => {
   };
   return { submitAnswer, loading, error };
 };
-export default useSubmitAnswer;
+export default useIsSubmitAnswer;
