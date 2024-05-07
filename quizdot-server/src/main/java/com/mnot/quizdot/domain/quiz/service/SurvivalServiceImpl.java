@@ -131,27 +131,27 @@ public class SurvivalServiceImpl implements SurvivalService {
         // 스테이지 결과 계산
         String boardKey = redisUtil.getBoardKey(roomId);
         String surviveKey = getSurviveKey(roomId);
+        String eliminatedKey = getEliminatedKey(roomId);
 
         // 생존자 중에서 정답을 맞힌 사람이 없는 경우
         // 생존자는 그대로 다음 문제로 넘어가되, 정답을 맞힌 탈락자는 추가로 부활시킨다
         if (redisTemplate.opsForZSet().count(surviveKey, 0, MAX_SCORE) == 0) {
-            String eliminatedKey = getEliminatedKey(roomId);
             Set<TypedTuple<String>> resurrections = redisTemplate.opsForZSet()
                 .rangeByScoreWithScores(eliminatedKey, 0, MAX_SCORE);
             Set<TypedTuple<String>> newRessurections = new HashSet<>();
             for (TypedTuple<String> resurrection : resurrections) {
                 // 부활 처리
                 String playerId = resurrection.getValue();
-                // TODO: REDIS 호출 최적화 (현재는 생존자/탈락자 수만큼 반복하며 REDIS 호출)
                 Double originalScore = redisTemplate.opsForZSet().score(boardKey, playerId);
                 newRessurections.add(TypedTuple.of(resurrection.getValue(), originalScore * (-1)));
+                // TODO: REDIS 호출 최적화 (현재는 생존자/탈락자 수만큼 반복하며 REDIS 호출)
             }
 
-            redisTemplate.opsForZSet().add(boardKey, newRessurections);
             log.info("[getStageResult] newRessurections : {}", newRessurections);
 
             // 부활 메시지 전송
             if (!newRessurections.isEmpty()) {
+                redisTemplate.opsForZSet().add(boardKey, newRessurections);
                 messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
                     MessageDto.of(SERVER_SENDER, newRessurections.size() + "명의 플레이어가 부활했습니다 !!",
                         MessageType.RESURRECT));
@@ -167,8 +167,8 @@ public class SurvivalServiceImpl implements SurvivalService {
             for (TypedTuple<String> survivor : survivors) {
                 String playerId = survivor.getValue();
                 Double originalScore = survivor.getScore();
-                // TODO: REDIS 호출 최적화 (현재는 생존자/탈락자 수만큼 반복하며 REDIS 호출)
                 Double state = redisTemplate.opsForZSet().score(surviveKey, playerId);
+                // TODO: REDIS 호출 최적화 (현재는 생존자/탈락자 수만큼 반복하며 REDIS 호출)
 
                 if (state == null || state <= 0) {
                     // 정답자가 아니면 탈락 처리
@@ -182,25 +182,20 @@ public class SurvivalServiceImpl implements SurvivalService {
             log.info("[getStageResult] newSurvivors : {}", newSurvivors);
         }
 
+        // 스테이지 결과 초기화
+        redisTemplate.unlink(List.of(surviveKey, eliminatedKey));
+
         // 최종 스테이지 결과 리턴
         Set<TypedTuple<String>> result = redisTemplate.opsForZSet()
             .rangeByScoreWithScores(boardKey, MIN_SCORE, MAX_SCORE);
         messagingTemplate.convertAndSend("/sub/info/game" + roomId,
             MessageDto.of(SERVER_SENDER, MessageType.STAGE_RESULT, result));
+
         return result;
-    }
-
-    /**
-     * 스테이지 결과 초기화
-     */
-    @Override
-    public void initStageResult(int roomId) {
-
     }
 
     private String getSurviveKey(int roomId) {
         return String.format("rooms:%d:survivors", roomId);
-
     }
 
     private String getEliminatedKey(int roomId) {

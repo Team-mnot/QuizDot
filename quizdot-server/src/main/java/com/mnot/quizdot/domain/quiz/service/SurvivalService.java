@@ -13,5 +13,4 @@ public interface SurvivalService {
 
     Set<TypedTuple<String>> getStageResult(int roomId, int memberId);
 
-    void initStageResult(int roomId);
 }
