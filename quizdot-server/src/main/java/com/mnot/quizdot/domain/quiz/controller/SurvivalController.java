@@ -57,7 +57,6 @@ public class SurvivalController {
         @PathVariable("room_id") int roomId) {
         Set<TypedTuple<String>> result = survivalService.getStageResult(roomId,
             memberDetail.getId());
-        survivalService.initStageResult(roomId);
         return ResponseEntity.ok(ResultResponse.of(200, "서바이벌 스테이지 결과 업데이트에 성공하였습니다.", result));
     }
 }

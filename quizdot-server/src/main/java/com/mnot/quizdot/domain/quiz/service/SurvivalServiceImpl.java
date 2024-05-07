@@ -186,12 +186,15 @@ public class SurvivalServiceImpl implements SurvivalService {
         redisTemplate.unlink(List.of(surviveKey, eliminatedKey));
 
         // 최종 스테이지 결과 리턴
-        Set<TypedTuple<String>> result = redisTemplate.opsForZSet()
+        // 만약 생존자가 1명이면 서바이벌 게임은 종료된다
+        Set<TypedTuple<String>> results = redisTemplate.opsForZSet()
             .rangeByScoreWithScores(boardKey, MIN_SCORE, MAX_SCORE);
-        messagingTemplate.convertAndSend("/sub/info/game" + roomId,
-            MessageDto.of(SERVER_SENDER, MessageType.STAGE_RESULT, result));
+        long left = redisTemplate.opsForZSet().count(boardKey, 0, MAX_SCORE);
+        MessageType messageType = (left == 1) ? MessageType.EXIT : MessageType.STAGE_RESULT;
+        messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
+            MessageDto.of(SERVER_SENDER, messageType, results));
 
-        return result;
+        return results;
     }
 
     private String getSurviveKey(int roomId) {
