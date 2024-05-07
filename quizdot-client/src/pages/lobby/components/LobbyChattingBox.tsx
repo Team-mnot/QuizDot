@@ -37,7 +37,10 @@ export function LobbyChattingBox(props: LobbyChattingBoxProps) {
     const msg: MessageDto = JSON.parse(message.body) as MessageDto;
     console.error('[콜백 성공] server -> client ', msg);
 
-    setMessages([...messages, { nickname: msg.sender, content: msg.text }]);
+    setMessages((messages) => [
+      ...messages,
+      { nickname: msg.sender, content: msg.text },
+    ]);
   };
 
   useEffect(() => {
