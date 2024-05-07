@@ -2,21 +2,14 @@ import { Button, Modal } from '@/shared/ui';
 import { Room } from './Room';
 import { useOpenModal } from '@/shared/hooks';
 import { RoomCreation } from './RoomCreation';
+import { RoomInfo } from '../api/types';
 
-const dummyData = [
-  {
-    id: 1,
-    title: '들어오지마요',
-    category: '랜덤',
-    mode: '일반 모드',
-    maxQuestion: 10,
-    maxPeople: 8,
-    public: true,
-    password: '',
-  },
-];
+interface RoomListProps {
+  roomsInfo: RoomInfo[];
+  channelId: number;
+}
 
-export function RoomList() {
+export function RoomList(props: RoomListProps) {
   const { isOpenModal, clickModal, closeModal } = useOpenModal();
 
   return (
@@ -29,19 +22,10 @@ export function RoomList() {
         <Button value="이전" />
       </div>
       <div className={'rounded-lg bg-white bg-opacity-20 p-5 shadow-md'}>
-        {dummyData.map((item, index) => (
-          <Room
-            onClick={() => alert('입장!')}
-            key={index}
-            id={item.id}
-            category={item.category}
-            maxPeople={item.maxPeople}
-            maxQuestion={item.maxQuestion}
-            mode={item.mode}
-            password={item.password}
-            public={item.public}
-            title={item.title}
-          />
+        {props.roomsInfo.map((room) => (
+          <div key={room.roomId}>
+            <Room roomInfo={room} />
+          </div>
         ))}
       </div>
       <div>
@@ -51,7 +35,7 @@ export function RoomList() {
       </div>
 
       <Modal isOpen={isOpenModal} onClose={closeModal}>
-        <RoomCreation />
+        <RoomCreation channelId={props.channelId} />
       </Modal>
     </div>
   );

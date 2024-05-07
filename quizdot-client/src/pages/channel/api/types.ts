@@ -1,13 +1,13 @@
-interface channelInfo {
+interface ChannelResponse {
+  status: number;
+  message: string;
+  data: ChannelInfo[];
+}
+
+interface ChannelInfo {
   channelId: number;
   activeUserCount: number;
   totalAvailable: number;
 }
 
-interface Response {
-  status: number;
-  message: string;
-  data: channelInfo[];
-}
-
-export type { Response, channelInfo };
+export type { ChannelResponse, ChannelInfo };

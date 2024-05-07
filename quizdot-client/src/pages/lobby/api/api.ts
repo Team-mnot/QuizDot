@@ -1,53 +1,50 @@
-import axiosInstance from '@/shared/utils/jwtAxiosInstance';
+import jwtAxiosInstance from '@/shared/utils/jwtAxiosInstance';
 import { baseApi } from '@/shared/apis';
-import { RoomInfoProps } from './types';
+import { CreatingRoomInfo, LobbyInfo, LobbyResponse } from './types';
 
 const url = 'lobby';
 
 /*** 대기실 생성 ***/
 export async function createRoomApi(
   channelId: number,
-  request: RoomInfoProps,
-): Promise<void> {
-  await axiosInstance
-    .post(`${baseApi}/${url}/channel/${channelId}`, request)
-    .then((reponse) => {
-      console.log('[대기실 생성 성공] : ', reponse);
-      return reponse;
-    })
-    .catch((error) => {
-      console.error('[대기실 생성 실패] : ', error);
-      return null;
-    });
+  request: CreatingRoomInfo,
+): Promise<LobbyResponse> {
+  const response = await jwtAxiosInstance.post(
+    `${baseApi}/${url}/channel/${channelId}`,
+    request,
+  );
+
+  console.log(`[${response.data.status}] ${response.data.message}`);
+  return response.data;
 }
 
 /*** 채널 로비 입장 ***/
-export async function enterLobbyApi(channelId: number): Promise<void> {
-  await axiosInstance
-    .post(`${baseApi}/${url}/channel/${channelId}`)
-    .then((reponse) => {
-      console.log('[채널 로비 입장 성공] : ', reponse);
-      return reponse;
-    })
-    .catch((error) => {
-      console.error('[채널 로비 입장 실패] : ', error);
-      return null;
-    });
+export async function enterLobbyApi(channelId: number): Promise<LobbyInfo> {
+  const response = await jwtAxiosInstance.get(
+    `${baseApi}/${url}/channel/${channelId}`,
+  );
+
+  console.log(`[${response.data.status}] ${response.data.message}`);
+
+  if (response.data.status == 201) return response.data.data;
+  else
+    return {
+      channelId: channelId,
+      activeUsersInfo: [],
+      roomsInfo: [],
+    };
 }
 
 /*** 비공개 방 비밀번호 확인 ***/
 export async function checkPasswordApi(
   roomId: number,
   password: string,
-): Promise<void> {
-  await axiosInstance
-    .post(`${baseApi}/${url}/${roomId}/pwd-check`, password)
-    .then((reponse) => {
-      console.log('[비밀번호 확인 성공] : ', reponse);
-      return reponse;
-    })
-    .catch((error) => {
-      console.error('[비밀번호 확인 실패] : ', error);
-      return null;
-    });
+): Promise<LobbyResponse> {
+  const response = await jwtAxiosInstance.post(
+    `${baseApi}/${url}/channel/${roomId}/pwd-check`,
+    password,
+  );
+
+  console.log(`[${response.data.status}] ${response.data.message}`);
+  return response.data;
 }

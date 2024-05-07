@@ -4,7 +4,7 @@ interface DropboxProps {
   size: string;
   item: string | number;
   options: string[] | number[];
-  selectedItem: (e: React.MouseEvent<HTMLDivElement>) => void;
+  selectedItem: (index: number) => void;
 }
 
 export function Dropbox(props: DropboxProps) {
@@ -14,7 +14,7 @@ export function Dropbox(props: DropboxProps) {
   const selectedItem = (e: React.MouseEvent<HTMLDivElement>) => {
     setIsOpen(false);
     setItem(e.currentTarget.innerText);
-    props.selectedItem(e);
+    props.selectedItem(Number(e.currentTarget.id));
   };
 
   return (
@@ -30,12 +30,13 @@ export function Dropbox(props: DropboxProps) {
         <div
           className={`absolute top-full z-[2] h-auto ${props.size} rounded-md border-2 bg-white shadow-md`}
         >
-          {props.options.map((item) => (
+          {props.options.map((item, index) => (
             <div
               className={
                 'white-space-nowrap cursor-pointer rounded-md p-5 hover:bg-gray-100'
               }
               key={item}
+              id={String(index)}
               onClick={selectedItem}
             >
               {item}

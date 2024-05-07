@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import { SocketStore } from '@/shared/stores/socketStore/socket';
+import { SocketStore } from '@/shared/stores/connectionStore/socket';
+
 import { ChattingBox } from '@/shared/ui/ChattingBox';
 
 interface MessageDto {
@@ -11,7 +12,7 @@ interface MessageDto {
 }
 
 interface LobbyChattingBoxProps {
-  channel: string;
+  channelId: number;
   stompInstance: SocketStore;
 }
 
@@ -28,7 +29,7 @@ export function LobbyChattingBox(props: LobbyChattingBoxProps) {
       data: null,
     };
 
-    props.stompInstance.onSend(`lobby/${props.channel}`, chatMessage);
+    props.stompInstance.onSend(`lobby/${props.channelId}`, chatMessage);
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -40,7 +41,7 @@ export function LobbyChattingBox(props: LobbyChattingBoxProps) {
   };
 
   useEffect(() => {
-    props.stompInstance.onConnect(`lobby/${props.channel}`, onCallBack);
+    props.stompInstance.onConnect(`lobby/${props.channelId}`, onCallBack);
   }, []);
 
   return (

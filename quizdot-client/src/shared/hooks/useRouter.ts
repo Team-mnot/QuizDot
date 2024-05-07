@@ -5,7 +5,7 @@ export const useRouter = () => {
 
   return {
     currentPath: window.location.pathname,
-    routeTo: (path: string) => router(path),
+    routeTo: (path: string) => router(path, { replace: true }),
     goBack: () => router(-1),
   };
 };

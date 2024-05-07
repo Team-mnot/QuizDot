@@ -5,11 +5,17 @@ import { RoomList } from './RoomList';
 
 import { useParams } from 'react-router-dom';
 
-import { SocketStore } from '@/shared/stores/socketStore/socket';
 import { LobbyChattingBox } from './LobbyChattingBox';
+import { useLobbyQuery } from '../hooks/useLobbyQuery';
+import { SocketStore } from '@/shared/stores/connectionStore/socket';
 
 export function LobbyPage() {
-  const { channel } = useParams() as { channel: string };
+  const { channelId } = useParams() as { channelId: string };
+  const {
+    data: lobby,
+    isError: isLobbyError,
+    isLoading: isLobbyLoading,
+  } = useLobbyQuery(Number(channelId));
 
   const stompInstance = new SocketStore();
 
@@ -20,15 +26,29 @@ export function LobbyPage() {
 
   return (
     <div>
-      <h1 className={'p-5'}>로비 ({channel} 채널)</h1>
-      <div className={'flex'}>
-        <OnlineUserList />
-        <RoomList />
-      </div>
-      <div className={'flex'}>
-        <MyProfile />
-        <LobbyChattingBox stompInstance={stompInstance} channel={channel} />
-      </div>
+      <h1 className={'p-5'}>로비 ({lobby.channelId} 채널)</h1>
+      {!isLobbyError && (
+        <div>
+          <div>로비 목록을 불러올 수 없습니다.</div>
+        </div>
+      )}
+      {isLobbyLoading ? (
+        <div>Loading . . .</div>
+      ) : (
+        <div>
+          <div className={'flex'}>
+            <OnlineUserList activeUsersInfo={lobby.activeUsersInfo} />
+            <RoomList roomsInfo={lobby.roomsInfo} channelId={lobby.channelId} />
+          </div>
+          <div className={'flex'}>
+            <MyProfile />
+            <LobbyChattingBox
+              stompInstance={stompInstance}
+              channelId={lobby.channelId}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -2,39 +2,37 @@ import { Modal } from '@/shared/ui';
 import { OnlineUser } from './OnlineUser';
 import { useOpenModal } from '@/shared/hooks';
 import { useState } from 'react';
+import { ActiveUserInfo } from '../api/types';
+import { useUserStore } from '@/shared/stores/userStore/userStore';
 
-const myNickname = '어흥';
+interface OnlineUserListProps {
+  activeUsersInfo: ActiveUserInfo[];
+}
 
-const dummyData = [
-  {
-    nickname: '어흥',
-  },
-  {
-    nickname: '우엑',
-  },
-];
+export function OnlineUserList(props: OnlineUserListProps) {
+  const userStore = useUserStore();
 
-export function OnlineUserList() {
   const { isOpenModal, clickModal, closeModal } = useOpenModal();
-  const [nickname, setNickname] = useState('');
+  const [selectedId, setSelectedId] = useState(userStore.id);
 
   return (
     <div>
       <div className={'rounded-lg bg-white bg-opacity-20 p-5 shadow-md'}>
-        {dummyData.map((item, index) => (
-          <OnlineUser
-            key={index}
+        {props.activeUsersInfo.map((user) => (
+          <div
+            key={user.id}
             onClick={() => {
-              setNickname(item.nickname);
+              setSelectedId(user.id);
               clickModal();
             }}
-            nickname={item.nickname}
-          />
+          >
+            <OnlineUser activeUserInfo={user} />
+          </div>
         ))}
       </div>
 
       <Modal isOpen={isOpenModal} onClose={closeModal}>
-        {myNickname == nickname ? <div>마이페이지</div> : <div>타인</div>}
+        {userStore.id == selectedId ? <div>마이페이지</div> : <div>타인</div>}
       </Modal>
     </div>
   );

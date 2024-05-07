@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { getChannelsApi } from '../api/api';
-import { channelInfo } from '../api/types';
+import { ChannelInfo } from '../api/types';
 
 export function useChannelsQuery(): {
-  data: channelInfo[];
+  data: ChannelInfo[];
   isError: boolean;
   isLoading: boolean;
 } {
-  const fallback: channelInfo[] = [];
+  const fallback: ChannelInfo[] = [];
 
   const {
     data = fallback,

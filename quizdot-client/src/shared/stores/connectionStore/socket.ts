@@ -4,6 +4,7 @@ import { Stomp, CompatClient } from '@stomp/stompjs';
 import { useRef } from 'react';
 import { baseApi } from '@/shared/apis';
 
+// store 추가 예정
 class SocketStore {
   private stompInstance = useRef<CompatClient | null>(null);
   private wsUrl = `${baseApi}/ws/chat`;

@@ -1,10 +1,11 @@
 import { useEffect } from 'react';
 import { Button } from '@/shared/ui';
-import { useNavigate } from 'react-router-dom';
 import { useChannelsQuery } from '../hooks/useChannelsQuery';
+import { useRouter } from '@/shared/hooks';
 
 export function ChannelPage() {
-  const navi = useNavigate();
+  const router = useRouter();
+
   const {
     data: channels,
     isError: isChannelsError,
@@ -16,8 +17,8 @@ export function ChannelPage() {
     document.body.style.backgroundSize = 'cover';
   }, []);
 
-  const clickChannel = (channel: number) => {
-    navi(`/${channel}/lobby`, { replace: true });
+  const clickChannel = (channelId: number) => {
+    router.routeTo(`/${channelId}/lobby`);
   };
 
   return (
@@ -27,12 +28,20 @@ export function ChannelPage() {
       }
     >
       <h1 className="p-5">채널</h1>
+      <Button
+        value={'테스트용 1채널'}
+        className="w-[150px]"
+        onClick={() => clickChannel(1)}
+      />
+
       {!isChannelsError && (
         <div>
-          <div>Error 발생</div>
+          <div>로비 목록을 불러올 수 없습니다.</div>
         </div>
       )}
-      {!isChannelsLoading && (
+      {isChannelsLoading ? (
+        <div>Loading . . .</div>
+      ) : (
         <div>
           {channels.map((item) => (
             <Button

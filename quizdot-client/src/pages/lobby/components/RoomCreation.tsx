@@ -1,8 +1,12 @@
 import { Button, Dropbox, Input } from '@/shared/ui';
 import { useState } from 'react';
-import { RoomInfoProps } from '../api/types';
+import { CreatingRoomInfo } from '../api/types';
+import { createRoomApi } from '../api/api';
+import { Toast } from '@/shared/ui/Toast';
+import { useRouter } from '@/shared/hooks';
 
 const statusList = ['공개', '비공개'];
+const statusDBList = [true, false];
 const modeList = ['일반 모드', '서바이벌 모드', '일대일 모드'];
 const modeDBList = ['multi', 'survival', 'onetoone'];
 const maxPeopleList = [8, 7, 6, 5, 4, 3, 2, 1];
@@ -16,85 +20,69 @@ const categoryDBList = [
 ];
 const maxQuestionList = [30, 20, 10];
 
-export function RoomCreation() {
+interface RoomCreationProps {
+  channelId: number;
+}
+
+export function RoomCreation(props: RoomCreationProps) {
   const [title, setTitle] = useState<string>('덤벼라');
-  const [status, setStatus] = useState<boolean>(true);
+  const [status, setStatus] = useState<number>(0);
   const [password, setPassword] = useState<string>('');
-  const [mode, setMode] = useState<string>('multi');
-  const [maxPeople, setMaxPeople] = useState<number>(10);
-  const [category, setCategory] = useState<string>('random');
-  const [maxQuestion, setMaxQuestion] = useState<number>(1);
+  const [mode, setMode] = useState<number>(0);
+  const [maxPeople, setMaxPeople] = useState<number>(0);
+  const [category, setCategory] = useState<number>(0);
+  const [maxQuestion, setMaxQuestion] = useState<number>(0);
+
+  const [toastState, setToastState] = useState(false);
+
+  const router = useRouter();
 
   const changeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.currentTarget.value);
   };
 
-  const selectedStatus = (e: React.MouseEvent<HTMLDivElement>) => {
-    switch (e.currentTarget.innerText) {
-      case '공개':
-        setStatus(true);
-        break;
-      default:
-        setStatus(false);
-    }
+  const selectedStatus = (index: number) => {
+    setStatus(index);
   };
 
   const changePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.currentTarget.value);
   };
 
-  const selectedMode = (e: React.MouseEvent<HTMLDivElement>) => {
-    switch (e.currentTarget.innerText) {
-      case modeList[0]:
-        setMode(modeDBList[0]);
-        break;
-      case modeList[1]:
-        setMode(modeDBList[1]);
-        break;
-      default:
-        setMode(modeDBList[2]);
-    }
+  const selectedMode = (index: number) => {
+    setMode(index);
   };
 
-  const selectedMaxPeoPle = (e: React.MouseEvent<HTMLDivElement>) => {
-    setMaxPeople(Number(e.currentTarget.innerText));
+  const selectedMaxPeople = (index: number) => {
+    setMaxPeople(index);
   };
 
-  const selectedCategory = (e: React.MouseEvent<HTMLDivElement>) => {
-    switch (e.currentTarget.innerText) {
-      case categoryList[0]:
-        setCategory(categoryDBList[0]);
-        break;
-      case categoryList[1]:
-        setCategory(categoryDBList[1]);
-        break;
-      case categoryList[2]:
-        setCategory(categoryDBList[2]);
-        break;
-      case categoryList[3]:
-        setCategory(categoryDBList[3]);
-        break;
-      default:
-        setCategory(categoryDBList[4]);
-    }
+  const selectedCategory = (index: number) => {
+    setCategory(index);
   };
 
-  const selectedMaxQuestion = (e: React.MouseEvent<HTMLDivElement>) => {
-    setMaxQuestion(Number(e.currentTarget.innerText));
+  const selectedMaxQuestion = (index: number) => {
+    setMaxQuestion(index);
   };
 
   const createTheRoom = async () => {
-    const request: RoomInfoProps = {
+    const creatingRoomInfo: CreatingRoomInfo = {
       title: title,
-      public: status,
+      public: statusDBList[status],
       password: password,
-      mode: mode,
-      maxPeople: maxPeople,
-      category: category,
-      maxQuestion: maxQuestion,
+      mode: modeDBList[mode],
+      maxPeople: maxPeopleList[maxPeople],
+      category: categoryDBList[category],
+      maxQuestion: maxQuestionList[maxQuestion],
     };
 
-    console.log(request);
+    const response = await createRoomApi(props.channelId, creatingRoomInfo);
+
+    if (response.status != 201) {
+      setToastState(true);
+    } else {
+      router.routeTo(`/${props.channelId}/${mode}`);
+    }
   };
 
   return (
@@ -113,12 +101,12 @@ export function RoomCreation() {
           <p className={'p-2'}>공개 여부</p>
           <Dropbox
             size="w-[150px]"
-            item={statusList[0]}
+            item={statusList[status]}
             options={statusList}
             selectedItem={selectedStatus}
           />
         </div>
-        {!status && (
+        {status && (
           <div>
             <p className={'p-2'}>비밀번호</p>
             <Input
@@ -135,7 +123,7 @@ export function RoomCreation() {
           <p className={'p-2'}>게임 모드</p>
           <Dropbox
             size="w-[200px]"
-            item={modeList[0]}
+            item={modeList[mode]}
             options={modeList}
             selectedItem={selectedMode}
           />
@@ -144,9 +132,9 @@ export function RoomCreation() {
           <p className={'p-2'}>인원 수</p>
           <Dropbox
             size="w-[100px]"
-            item={maxPeopleList[0]}
+            item={maxPeopleList[maxPeople]}
             options={maxPeopleList}
-            selectedItem={selectedMaxPeoPle}
+            selectedItem={selectedMaxPeople}
           />
         </div>
       </div>
@@ -155,7 +143,7 @@ export function RoomCreation() {
           <p className={'p-2'}>문제 카테고리</p>
           <Dropbox
             size="w-[200px]"
-            item={categoryList[0]}
+            item={categoryList[category]}
             options={categoryList}
             selectedItem={selectedCategory}
           />
@@ -164,7 +152,7 @@ export function RoomCreation() {
           <p className={'px-5 py-2'}>문제 수</p>
           <Dropbox
             size="w-[100px]"
-            item={maxQuestionList[0]}
+            item={maxQuestionList[maxQuestion]}
             options={maxQuestionList}
             selectedItem={selectedMaxQuestion}
           />
@@ -173,6 +161,13 @@ export function RoomCreation() {
       <div className={'px-20 py-10'}>
         <Button className={'w-full'} value="방 생성" onClick={createTheRoom} />
       </div>
+
+      {toastState === true ? (
+        <Toast
+          message={'방을 생성하지 못했습니다.'}
+          setToastState={setToastState}
+        />
+      ) : null}
     </div>
   );
 }
