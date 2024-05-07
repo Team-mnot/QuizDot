@@ -34,6 +34,7 @@ public class SurvivalServiceImpl implements SurvivalService {
     private final RedisUtil redisUtil;
     private final SimpMessagingTemplate messagingTemplate;
     private final MemberRepository memberRepository;
+    private final QuizService quizService;
 
     /**
      * 서바이벌 모드 점수 업데이트
@@ -136,14 +137,13 @@ public class SurvivalServiceImpl implements SurvivalService {
         // 생존자 중에서 정답을 맞힌 사람이 없는 경우
         // 생존자는 그대로 다음 문제로 넘어가되, 정답을 맞힌 탈락자는 추가로 부활시킨다
         if (redisTemplate.opsForZSet().count(surviveKey, 0, MAX_SCORE) == 0) {
-            Set<TypedTuple<String>> resurrections = redisTemplate.opsForZSet()
-                .rangeByScoreWithScores(eliminatedKey, 0, MAX_SCORE);
+            Set<String> resurrections = redisTemplate.opsForZSet()
+                .rangeByScore(eliminatedKey, 0, MAX_SCORE);
             Set<TypedTuple<String>> newRessurections = new HashSet<>();
-            for (TypedTuple<String> resurrection : resurrections) {
+            for (String playerId : resurrections) {
                 // 부활 처리
-                String playerId = resurrection.getValue();
                 Double originalScore = redisTemplate.opsForZSet().score(boardKey, playerId);
-                newRessurections.add(TypedTuple.of(resurrection.getValue(), originalScore * (-1)));
+                newRessurections.add(TypedTuple.of(playerId, originalScore * (-1)));
                 // TODO: REDIS 호출 최적화 (현재는 생존자/탈락자 수만큼 반복하며 REDIS 호출)
             }
 
