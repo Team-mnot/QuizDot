@@ -16,7 +16,7 @@ export function SurvivalPage() {
     <div className={'flex h-full flex-col items-center justify-center'}>
       <QuizComponent />
       <CharacterPreview />
-      <ChattingBox />
+      <ChattingBox onSend={() => {}} messages={[]} />
     </div>
   );
 }
