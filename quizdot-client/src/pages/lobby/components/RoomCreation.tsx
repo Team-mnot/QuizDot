@@ -1,8 +1,6 @@
 import { Button, Dropbox, Input } from '@/shared/ui';
 import { useState } from 'react';
-import { createTheRoomApi } from '../api/api';
 import { RoomInfoProps } from '../api/types';
-import { useNavigate } from 'react-router-dom';
 
 const statusList = ['공개', '비공개'];
 const modeList = ['일반 모드', '서바이벌 모드', '일대일 모드'];
@@ -19,9 +17,6 @@ const categoryDBList = [
 const maxQuestionList = [30, 20, 10];
 
 export function RoomCreation() {
-  const channel = 1;
-  const navi = useNavigate();
-
   const [title, setTitle] = useState<string>('덤벼라');
   const [status, setStatus] = useState<boolean>(true);
   const [password, setPassword] = useState<string>('');
@@ -99,11 +94,7 @@ export function RoomCreation() {
       maxQuestion: maxQuestion,
     };
 
-    const response = await createTheRoomApi(request);
-
-    if (response != null) {
-      navi(`/${channel}/${mode}`, { replace: true });
-    }
+    console.log(request);
   };
 
   return (

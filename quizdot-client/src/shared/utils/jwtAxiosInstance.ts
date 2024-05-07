@@ -1,106 +1,40 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import axios, {
-  AxiosError,
-  AxiosInstance,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from 'axios';
-
+import axios, { InternalAxiosRequestConfig } from 'axios';
 import qs from 'qs';
-import axiosInstance from './axiosInstance';
 
-const jwtAxiosInstance: AxiosInstance = axios.create({
+const jwtAxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 60000,
+  withCredentials: true,
   headers: {
-    accept: '*/*',
     'Content-Type': 'application/json;charset=UTF-8',
   },
-  withCredentials: true,
 });
 
-jwtAxiosInstance.defaults.paramsSerializer = (params) => {
-  return qs.stringify(params);
-};
-
-const refreshJWT = async (refreshToken: string) => {
-  const body = { refreshToken: refreshToken };
-  const res = await axiosInstance.post(`/api/user/token`, body);
-  return res;
-};
-
-const beforeReq = (
+const beforeRequest = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   config: InternalAxiosRequestConfig<any>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): InternalAxiosRequestConfig<any> | Promise<any> => {
-  const userInfo = localStorage.getItem('userInfo');
+  const accessToken = localStorage.getItem('accessToken');
 
-  if (!userInfo) {
-    console.log('USERINFO NOT FOUND');
+  if (!accessToken) {
+    console.log('ACCESS TOKEN NOT FOUNT');
+
     return Promise.reject({
       response: { status: 401, data: { message: '로그인이 필요합니다.' } },
     });
   }
 
-  const { accessToken } = JSON.parse(userInfo);
-
   // Authorization 헤더 처리
-  config.headers.Authorization = `Bearer ${accessToken}`;
+  config.headers.Authorization = `Bearer ${JSON.parse(accessToken)}`;
 
   return config;
 };
 
-// fail request
-const requestFail = (err: AxiosError | Error): Promise<AxiosError> => {
-  return Promise.reject(err);
+jwtAxiosInstance.defaults.paramsSerializer = (params) => {
+  return qs.stringify(params);
 };
 
-// before return response
-const beforeRes = async (res: AxiosResponse): Promise<any> => {
-  const data = res.data;
-
-  if (data?.message === 'TOKEN_EXPIRED') {
-    const userInfo: any = localStorage.getItem('userInfo');
-
-    if (!userInfo) {
-      console.log('USERINFO NOT FOUND');
-    }
-
-    const confirmedUserInfo = JSON.parse(userInfo);
-
-    const result: any = await refreshJWT(confirmedUserInfo.refreshToken);
-
-    confirmedUserInfo.accessToken = result.data?.accessToken;
-    localStorage.setItem('userInfo', JSON.stringify(confirmedUserInfo));
-
-    // 원래의 호출
-    const originalRequest = res.config;
-
-    console.log(originalRequest);
-
-    originalRequest.headers.Authorization = `Bearer ${result.accessToken}`;
-
-    return await axios(originalRequest);
-  } else if (
-    data?.message === 'MALFORMED_TOKEN' ||
-    data?.message === 'INVALID_TOKEN' ||
-    data?.message === 'JWT_TOKEN_ERROR'
-  ) {
-    return Promise.reject({
-      response: { status: 401, data: { message: '다시 로그인이 필요합니다.' } },
-    });
-  }
-
-  return res;
-};
-
-// fail response
-const responseFail = (err: AxiosError | Error): Promise<Error> => {
-  console.log('response fail error.............');
-
-  return Promise.reject(err);
-};
-
-jwtAxiosInstance.interceptors.request.use(beforeReq, requestFail);
-jwtAxiosInstance.interceptors.response.use(beforeRes, responseFail);
+jwtAxiosInstance.interceptors.request.use(beforeRequest);
 
 export default jwtAxiosInstance;
