@@ -16,7 +16,7 @@ public enum ErrorCode {
     ENTITY_NOT_FOUND(404, "존재하지 않는 Entity입니다."),
     FORBIDDEN_ERROR(403, "작업을 수행하기 위한 권한이 없습니다."),
     IS_NOT_IMAGE(400, "이미지가 아닙니다."),
-    JSON_PROCESSING_ERROR(400, " JSON 데이터를 처리할 수 없습니다."),
+    JSON_PROCESSING_ERROR(400, "JSON 데이터를 처리할 수 없습니다."),
 
     //Room
     ROOM_LIMIT_EXCEEDED(409, "채널 내 대기실 생성 한도를 초과하였습니다."),
@@ -25,6 +25,7 @@ public enum ErrorCode {
     PLAYER_LIMIT_EXCEEDED(400, "대기실 최대 인원을 초과하였습니다."),
     NOT_EXISTS_IN_ROOM(400, "대기실에 존재하지 않는 회원입니다."),
     INVALID_ROOM_PASSWORD(400, "비밀번호가 일치하지 않습니다."),
+    INVITE_NOT_ALLOWED(403, "방장만 초대할 수 있습니다."),
 
     // Member
     LOGIN_ERROR(400, "로그인에 실패했습니다."),
