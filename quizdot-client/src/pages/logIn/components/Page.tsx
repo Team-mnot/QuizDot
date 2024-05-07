@@ -11,16 +11,28 @@ export function LoginPage() {
     document.body.style.backgroundSize = 'cover';
   }, []);
   return (
-    <div className="flex h-screen w-screen flex-col items-center justify-center text-center">
+    <div
+      className={
+        'flex h-screen w-screen flex-col items-center justify-center text-center'
+      }
+    >
       <LogInForm />
       <div>
         <Link to={'/sign-up'}>
-          <button className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600">
+          <button
+            className={
+              'rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600'
+            }
+          >
             회원가입
           </button>
         </Link>
         <Link to="/find-pwd">
-          <button className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600">
+          <button
+            className={
+              'rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600'
+            }
+          >
             비밀번호 찾기
           </button>
         </Link>
