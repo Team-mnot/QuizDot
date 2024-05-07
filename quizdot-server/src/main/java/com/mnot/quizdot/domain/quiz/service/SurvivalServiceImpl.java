@@ -1,13 +1,17 @@
 package com.mnot.quizdot.domain.quiz.service;
 
 import com.mnot.quizdot.domain.member.entity.Member;
+import com.mnot.quizdot.domain.member.entity.ModeType;
+import com.mnot.quizdot.domain.member.entity.MultiRecord;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
+import com.mnot.quizdot.domain.member.repository.MultiRecordRepository;
 import com.mnot.quizdot.domain.quiz.dto.MessageDto;
 import com.mnot.quizdot.domain.quiz.dto.MessageType;
 import com.mnot.quizdot.domain.quiz.dto.ResultDto;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import com.mnot.quizdot.global.util.RedisUtil;
+import com.mnot.quizdot.global.util.TitleUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -32,6 +36,8 @@ public class SurvivalServiceImpl implements SurvivalService {
     private final RedisUtil redisUtil;
     private final SimpMessagingTemplate messagingTemplate;
     private final MemberRepository memberRepository;
+    private final MultiRecordRepository multiRecordRepository;
+    private final TitleUtil titleUtil;
 
     /**
      * 서바이벌 모드 점수 업데이트
@@ -86,9 +92,13 @@ public class SurvivalServiceImpl implements SurvivalService {
             boolean isFirst = true;
             int rank = 1;
             for (TypedTuple<String> score : scores) {
-                String id = score.getValue();
-                Member member = memberRepository.findById(Integer.parseInt(id))
+                int id = Integer.parseInt(score.getValue());
+                Member member = memberRepository.findById(id)
                     .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
+                MultiRecord multiRecord = multiRecordRepository.findByMemberIdAndMode(
+                    id,
+                    ModeType.SURVIVAL).orElseThrow(() -> new BusinessException(
+                    ErrorCode.NOT_FOUND_RECORD));
                 double memberScore = score.getScore();
                 if (isFirst) {
                     exp = ((totalPlayer) + 1) * 200;
@@ -98,33 +108,45 @@ public class SurvivalServiceImpl implements SurvivalService {
                     rank = 2;
                 }
 
-                member.updateReward(member.getPoint() + exp, member.getExp() + exp);
-
+                int curLevel = member.updateReward(member.getPoint() + exp, member.getExp() + exp);
+                multiRecord.updateRecord(rank == 1 ? 1 : 0, 1);
+                if (curLevel != 0) {
+                    titleUtil.checkLevel(id);
+                }
                 ResultDto resultDto = ResultDto.builder()
-                    .id(Integer.parseInt(id))
+                    .id(id)
                     .level(member.getLevel())
+                    .curLevel(curLevel)
                     .nickname(member.getNickname())
                     .rank(rank)
                     .score(exp)
                     .point(exp)
-                    .exp(exp)
                     .curExp(member.getExp())
                     .build();
                 resultDtoList.add(resultDto);
+                /*
+                TODO : 칭호를 해금
+                칭호를 체크하는 별도의 메서드 작성, 레벨업은 모든 유저에게 알려줘도 되지 않을까
+                해금은 해당 유저에게만 알려주기
+                 */
+
+                messagingTemplate.convertAndSend("/");
             }
         }
         messagingTemplate.convertAndSend("/sub/info/game/" + roomId,
             MessageDto.of(SERVER_SENDER, "리워드 지급 및 결과 계산이 완료되었습니다.",
-                MessageType.EXIT, resultDtoList));
+                MessageType.REWARD, resultDtoList));
         return resultDtoList;
     }
 
     private String getSurviveKey(int roomId) {
         return String.format("rooms:%d:survivors", roomId);
-
     }
 
     private String getEliminatedKey(int roomId) {
         return String.format("rooms:%d:eliminated", roomId);
     }
+
+    //TODO : 칭호 해금 체크, 리팩토링시 비트마스크 적용해보가(되면)
+
 }

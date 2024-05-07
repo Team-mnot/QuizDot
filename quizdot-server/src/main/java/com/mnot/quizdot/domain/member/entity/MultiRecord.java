@@ -41,4 +41,9 @@ public class MultiRecord {
         this.member = member;
         this.mode = mode;
     }
+
+    public void updateRecord(int winCount, int totalCount) {
+        this.winCount += winCount;
+        this.totalCount += totalCount;
+    }
 }
