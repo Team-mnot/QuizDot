@@ -8,7 +8,9 @@ import com.mnot.quizdot.global.result.ResultResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -53,7 +55,9 @@ public class SurvivalController {
     public ResponseEntity<ResultResponse> getStageResult(
         @AuthenticationPrincipal CustomMemberDetail memberDetail,
         @PathVariable("room_id") int roomId) {
-        survivalService.getStageResult(roomId, memberDetail.getId());
-        return ResponseEntity.ok(ResultResponse.of(200, "리워드 지급 및 결과 계산을 성공하였습니다."));
+        Set<TypedTuple<String>> result = survivalService.getStageResult(roomId,
+            memberDetail.getId());
+        survivalService.initStageResult(roomId);
+        return ResponseEntity.ok(ResultResponse.of(200, "서바이벌 스테이지 결과 업데이트에 성공하였습니다.", result));
     }
 }
