@@ -40,12 +40,12 @@ public class RoomInfoDto {
     private int hostId;
 
     // 게임 진행 여부
-//    private boolean
+    private GameState state;
 
     @Builder
-    public RoomInfoDto(int roomId, String title, boolean isPublic, String password,
-        String gameMode,
-        int maxPeople, String category, int maxQuestion, int hostId) {
+    public RoomInfoDto(int roomId, String title, boolean isPublic, String password, String gameMode,
+        int maxPeople, String category, int maxQuestion, int hostId,
+        GameState state) {
         this.roomId = roomId;
         this.title = title;
         this.isPublic = isPublic;
@@ -55,6 +55,7 @@ public class RoomInfoDto {
         this.category = category;
         this.maxQuestion = maxQuestion;
         this.hostId = hostId;
+        this.state = state;
     }
 
     public void modifyInfo(RoomReq roomReq) {
@@ -69,5 +70,9 @@ public class RoomInfoDto {
 
     public void modifyHost(int hostId) {
         this.hostId = hostId;
+    }
+
+    public void modifyState(GameState state) {
+        this.state = state;
     }
 }
