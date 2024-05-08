@@ -1,16 +1,8 @@
 // src/pages/survival/components/CharacterWithPositionComponent.tsx
-import { CharacterProps } from '../api/types';
-import { CharacterComponent } from './CharacterComponent';
+import { Character } from '@/shared/ui/Character';
+import { iCharacterInSurvivalMode } from '../api/types';
 
 // `CharacterWithPositionProps` 타입에 `position` 프로퍼티를 추가해야 합니다.
-interface CharacterInSurvivalModeProps extends CharacterProps {
-  position: {
-    top: number;
-    left: number;
-  };
-  isAlive: boolean;
-  isRevive: boolean;
-}
 
 export function CharacterInSurvivalModeComponent({
   imageUrl,
@@ -19,7 +11,7 @@ export function CharacterInSurvivalModeComponent({
   position,
   isAlive,
   isRevive,
-}: CharacterInSurvivalModeProps) {
+}: iCharacterInSurvivalMode) {
   const characterImageUrl = isAlive ? imageUrl : '/images/deadBall.png';
 
   return (
@@ -36,7 +28,7 @@ export function CharacterInSurvivalModeComponent({
       <div
         className="relative z-10" // characterImageUrl의 z-index를 설정합니다.
       >
-        <CharacterComponent
+        <Character
           imageUrl={characterImageUrl}
           title={title}
           nickname={nickname}

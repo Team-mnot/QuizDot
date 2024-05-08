@@ -1,18 +1,13 @@
 //src/shared/ui/CharacterComponent.tsx
 
-export interface CharacterProps {
+export interface iCharacter {
   imageUrl: string;
   title: string;
   nickname: string;
-  score: number;
+  score?: number;
 }
 
-export function Character({
-  imageUrl,
-  title,
-  nickname,
-  score, // 서바이벌모드에서 필요 없음
-}: CharacterProps) {
+export function Character({ imageUrl, title, nickname, score }: iCharacter) {
   return (
     <div className="m-2 flex w-36 flex-col items-center rounded-lg p-2">
       <img
@@ -26,9 +21,11 @@ export function Character({
       <p className="mb-1 rounded-lg border-2 border-solid border-black bg-white bg-opacity-80 px-2 text-xs font-bold">
         {nickname}
       </p>
-      <div className="rounded-lg border-2 border-solid border-black bg-white bg-opacity-80 px-2 text-xs">
-        {score}
-      </div>
+      {score !== undefined && (
+        <div className="rounded-lg border-2 border-solid border-black bg-white bg-opacity-80 px-2 text-xs">
+          {score}
+        </div>
+      )}
     </div>
   );
 }

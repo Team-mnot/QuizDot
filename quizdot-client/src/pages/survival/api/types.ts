@@ -1,15 +1,36 @@
 //src/pages/survival/api/types.ts
 
-export interface CharacterProps {
+export interface iCharacter {
   imageUrl: string;
   title: string;
   nickname: string;
-  score: number;
+  score?: number;
+  isAlive: boolean;
+  isRevive: boolean;
 }
 
-export interface CharacterData {
-  photo: string;
-  title: string;
-  nickname: string;
-  score: number;
+export interface iCharacterInSurvivalMode extends iCharacter {
+  position: {
+    top: number;
+    left: number;
+  };
+}
+
+export interface iQuiz {
+  id: number;
+  question: string;
+  hint: string;
+  imagePath: string;
+  category: string;
+  questionType: string;
+  description: string;
+  answers: string[];
+}
+
+export interface iQuizList {
+  status: number;
+  message: string;
+  data: {
+    quizResList: iQuiz[];
+  };
 }
