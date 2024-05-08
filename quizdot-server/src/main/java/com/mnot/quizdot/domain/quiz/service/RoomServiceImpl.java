@@ -192,7 +192,7 @@ public class RoomServiceImpl implements RoomService {
         String params = String.format("roomId=%d&time=%s", roomId, now);
         String base64UrlEncoded = Base64.getUrlEncoder().withoutPadding()
             .encodeToString(params.getBytes());
-        String link = String.format("https://k10d102.p.ssafy.io/invite?%s",base64UrlEncoded);
+        String link = String.format("https://k10d102.p.ssafy.io/api/invite?%s",base64UrlEncoded);
         // redis에 초대링크 저장
         roomInfoDto.setInviteLink(link);
             String obj = objectMapper.writeValueAsString(roomInfoDto);
