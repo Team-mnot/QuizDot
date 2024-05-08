@@ -108,10 +108,10 @@ public class MultiServiceImpl implements MultiService {
                     .rank(rank)
                     .score((int) curScore)
                     .point(exp)
-                    .exp(exp)
                     .curExp(member.getExp())
                     .build();
                 resultDtoList.add(resultDto);
+                //TODO : 전적도 함께 저장하기, 칭호를 해금하거나 레벨업했을 경우 해당 유저에게 알려주기
             }
         }
         log.info("resultDtoList 확인 : {}", resultDtoList);
