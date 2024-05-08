@@ -6,11 +6,8 @@ import com.mnot.quizdot.domain.member.entity.Member;
 import com.mnot.quizdot.domain.member.entity.ModeType;
 import com.mnot.quizdot.domain.member.entity.MultiRecord;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
-<<<<<<< quizdot-server/src/main/java/com/mnot/quizdot/domain/quiz/service/SurvivalServiceImpl.java
-import com.mnot.quizdot.domain.quiz.dto.MatchRoomDto;
-=======
 import com.mnot.quizdot.domain.member.repository.MultiRecordRepository;
->>>>>>> quizdot-server/src/main/java/com/mnot/quizdot/domain/quiz/service/SurvivalServiceImpl.java
+import com.mnot.quizdot.domain.quiz.dto.MatchRoomDto;
 import com.mnot.quizdot.domain.quiz.dto.MessageDto;
 import com.mnot.quizdot.domain.quiz.dto.MessageType;
 import com.mnot.quizdot.domain.quiz.dto.PlayerInfoDto;
