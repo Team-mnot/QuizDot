@@ -57,6 +57,7 @@ public class QuizServiceImpl implements QuizService {
             category, quizParam.getCount(), quizList);
 
         List<QuizRes> quizListRes = quizRepository.getQuizzesByIds(quizIdList);
+
         // 중복 출제 방지를 위해 조회한 문제 PK를 REDIS에 저장
         quizListRes
             .forEach(
