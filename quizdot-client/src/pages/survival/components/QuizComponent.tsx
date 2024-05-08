@@ -93,26 +93,30 @@ export function QuizComponent({ roomId }: { roomId: number }) {
       </div>
 
       {/* 정답 제출 합시다 ~ */}
-      <div
-        className={
-          'fixed bottom-64 left-0 right-0 mx-auto  max-w-3xl rounded-xl bg-white py-2 pl-10'
-        }
-      >
+      <div>
         {isAnswerSubmitted ? (
-          <div className="flex justify-center">다른사람 기다려</div>
+          <div className="fixed bottom-72 left-0 right-0 mx-auto flex justify-center text-4xl">
+            다른사람 기다려
+          </div>
         ) : (
-          <div className="flex justify-between">
-            <input
-              type="text"
-              value={userAnswer}
-              onChange={(e) => setUserAnswer(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="정답을~ 적어줘요~"
-              className="w-5/6"
-            />
-            <button onClick={handleAnswerSubmit} disabled={submitLoading}>
-              {'정답 제출'}
-            </button>
+          <div
+            className={
+              'fixed bottom-64 left-0 right-0 mx-auto  max-w-3xl rounded-xl bg-white py-2'
+            }
+          >
+            <div className="flex justify-between">
+              <input
+                type="text"
+                value={userAnswer}
+                onChange={(e) => setUserAnswer(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="정답을~ 적어줘요~"
+                className="w-5/6 pl-10"
+              />
+              <button onClick={handleAnswerSubmit} disabled={submitLoading}>
+                {'정답 제출'}
+              </button>
+            </div>
           </div>
         )}
       </div>

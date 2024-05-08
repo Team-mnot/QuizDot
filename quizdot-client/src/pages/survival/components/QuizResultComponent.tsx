@@ -19,8 +19,8 @@ export function QuizResultComponent() {
   }, []);
 
   return (
-    <div className="fixed left-0 right-0 top-10 mx-auto max-w-3xl rounded-xl bg-white p-4">
-      <div className="flex justify-center">{resultMessage}</div>
+    <div className="text-4lx fixed left-0 right-0 top-10 mx-auto flex h-44 max-w-3xl items-center justify-center rounded-xl bg-white p-4">
+      <div className="flex justify-center text-4xl">{resultMessage}</div>
     </div>
   );
 }
