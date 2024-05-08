@@ -13,7 +13,6 @@ export async function GetUserInfoApi(props: number): Promise<UserInfo | null> {
       },
     );
     if (response.status === 200) {
-      console.log('유저 정보 조회 성공');
       return response.data.data!;
     }
   } catch (error) {
@@ -22,15 +21,17 @@ export async function GetUserInfoApi(props: number): Promise<UserInfo | null> {
   return null;
 }
 
-export async function ChangeNickname(props: string) {
+export async function ChangeNicknameApi(props: string) {
+  const accessToken = localStorage.getItem('accessToken');
+
   try {
-    // check : Response 그냥 써도 되는지?
     const response: AxiosResponse<Response> = await axios.post(
       `${baseApi}/member/nickname`,
       props,
       {
         headers: {
           'Content-Type': 'application/json',
+          access: accessToken,
         },
       },
     );
@@ -43,13 +44,16 @@ export async function ChangeNickname(props: string) {
   }
 }
 
-export async function ChangeCharacter(props: number) {
+export async function ChangeCharacterApi(props: number) {
+  const accessToken = localStorage.getItem('accessToken');
+
   try {
     const response: AxiosResponse<Response> = await axios.post(
       `${baseApi}/member/character/${props}`,
       {
         headers: {
           'Content-Type': 'application/json',
+          access: accessToken,
         },
       },
     );
@@ -62,13 +66,16 @@ export async function ChangeCharacter(props: number) {
   }
 }
 
-export async function ChangeTitle(props: number) {
+export async function ChangeTitleApi(props: number) {
+  const accessToken = localStorage.getItem('accessToken');
+
   try {
     const response: AxiosResponse<Response> = await axios.post(
       `${baseApi}/member/title/${props}`,
       {
         headers: {
           'Content-Type': 'application/json',
+          access: accessToken,
         },
       },
     );
@@ -81,7 +88,9 @@ export async function ChangeTitle(props: number) {
   }
 }
 
-export async function ChangePwd(props: ChangePwdProps) {
+export async function ChangePwdApi(props: ChangePwdProps) {
+  const accessToken = localStorage.getItem('accessToken');
+
   try {
     const response: AxiosResponse<Response> = await axios.post(
       `${baseApi}/member/info/pwd`,
@@ -89,6 +98,7 @@ export async function ChangePwd(props: ChangePwdProps) {
       {
         headers: {
           'Content-Type': 'application/json',
+          access: accessToken,
         },
       },
     );

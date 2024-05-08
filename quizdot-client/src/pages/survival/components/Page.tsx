@@ -53,7 +53,11 @@ export function SurvivalPage() {
       <CharacterPreview />
 
       {/* 조건부 렌더링 */}
-      {showChatBox ? <ChattingBox /> : <ChattingBoxBlind />}
+      {showChatBox ? (
+        <ChattingBox onSend={() => {}} messages={[]} />
+      ) : (
+        <ChattingBoxBlind />
+      )}
     </div>
   );
 }

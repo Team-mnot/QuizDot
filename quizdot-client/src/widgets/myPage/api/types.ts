@@ -5,18 +5,35 @@ interface Response {
   errors?: null;
 }
 
-// Todo: 레벨, 경험치 추가하기
 interface UserInfo {
   id: number;
+  totalRate: number;
   normalRate: number;
   survivalRate: number;
   nickname: string;
   nicknameColor: string;
+  totalWinCount: number;
   normalWinCount: number;
   survivalWinCount: number;
-  titleId: number;
-  avartarId: number;
+  title: number;
+  titleListDtos: Title[];
+  characterId: number;
+  characterListDtos: Character[];
+  level: number;
+  exp: number;
   point: number;
+}
+
+interface Title {
+  id: number;
+  title: string;
+  requirement: string;
+  get: boolean;
+}
+
+interface Character {
+  id: number;
+  name: string;
 }
 
 interface ChangePwdProps {
@@ -24,4 +41,4 @@ interface ChangePwdProps {
   chkPassword: string;
 }
 
-export type { Response, UserInfo, ChangePwdProps };
+export type { Response, UserInfo, ChangePwdProps, Character, Title };

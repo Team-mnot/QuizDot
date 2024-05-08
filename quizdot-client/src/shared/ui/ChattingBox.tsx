@@ -3,21 +3,17 @@
 import { Button } from '@/shared/ui';
 import { useEffect, useRef, useState } from 'react';
 
-const dummyUserData = {
-  nickname: '김익환',
-};
+interface ChattingBoxProps {
+  onSend: (data: string) => void;
+  messages: { nickname: string; content: string }[];
+}
 
-export function ChattingBox() {
-  const [messages, setMessages] = useState<
-    { nickname: string; content: string }[]
-  >([]);
+export function ChattingBox(props: ChattingBoxProps) {
   const [input, setInput] = useState<string>(''); // 사용자 입력을 상태로 관리
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const sendMessage = () => {
-    const newMessage = { nickname: dummyUserData.nickname, content: input };
-    const newMessages = [...messages, newMessage];
-    setMessages(newMessages);
+    props.onSend(input);
     setInput('');
   };
 
@@ -28,7 +24,7 @@ export function ChattingBox() {
       chatContainerRef.current.scrollTop =
         chatContainerRef.current.scrollHeight;
     }
-  }, [messages]); // 메시지 배열이 변경될 때마다 이 효과를 재실행
+  }, [props.messages]); // 메시지 배열이 변경될 때마다 이 효과를 재실행
 
   return (
     <div
@@ -41,7 +37,7 @@ export function ChattingBox() {
         className={'chat-messages mb-2 h-36 overflow-auto'}
         ref={chatContainerRef}
       >
-        {messages.map((message, index) => (
+        {props.messages.map((message, index) => (
           <div key={index} className={'chat-message flex break-words text-sm '}>
             {/* 이렇게 하려면 닉네임 6자 이하라던가 기준이 있어야 할 듯 */}
             <div className={'min-w-max pr-[80px]'}>{message.nickname}</div>

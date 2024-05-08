@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -20,7 +20,7 @@ const schema = z.object({
 
 export function LogInForm() {
   const store = useUserStore();
-  const navi = useNavigate();
+  // const navi = useNavigate();
   const {
     register,
     handleSubmit,
@@ -32,14 +32,14 @@ export function LogInForm() {
   type CustomSubmitHandler = SubmitHandler<FieldValues>;
 
   const onSubmit: CustomSubmitHandler = async (data) => {
-    const formData: LogInProps = {
+    const logInProps: LogInProps = {
       memberId: data.memberId as string,
       password: data.password as string,
     };
-    const info = await LogInApi(formData);
+    const info = await LogInApi(logInProps);
     if (info !== null) {
       store.getData(info);
-      navi('/channel');
+      // navi('/channel');
     }
   };
 

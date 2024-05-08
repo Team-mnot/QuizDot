@@ -2,7 +2,9 @@ import axios, { AxiosResponse } from 'axios';
 import { baseApi } from '@/shared/apis';
 import type { SignUpProps, Response } from './types';
 
-export async function SignUpApi(props: SignUpProps): Promise<void> {
+export async function SignUpApi(
+  props: SignUpProps,
+): Promise<'success' | 'fail'> {
   try {
     const response: AxiosResponse<Response> = await axios.post(
       `${baseApi}/member/join`,
@@ -20,8 +22,11 @@ export async function SignUpApi(props: SignUpProps): Promise<void> {
     );
     if (response.status === 200) {
       window.alert('회원가입 성공');
+      return 'success';
     }
   } catch (error) {
     console.error('Error SignUp', error);
+    return 'fail';
   }
+  return 'fail';
 }

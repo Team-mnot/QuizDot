@@ -2,13 +2,12 @@ import { useEffect, useState } from 'react';
 import { GetUserInfoApi } from '../api/api';
 import type { UserInfo } from '../api/types';
 
-export function UserInfo(props: number) {
+export function UserInfo(props: { id: number }) {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userinfo = await GetUserInfoApi(props);
-        console.log(userinfo);
+        const userinfo = await GetUserInfoApi(props.id);
         if (userinfo) {
           setUserInfo(userinfo);
         }
@@ -19,14 +18,15 @@ export function UserInfo(props: number) {
     fetchData();
   }, []);
 
-  // Todo: 레벨, 경험치 추가하기
   return (
-    <div>
+    <div className="flex border bg-slate-300">
       <div>
         <div>{userInfo?.characterId}</div>
         <span>{userInfo?.title}</span>
-        <span>{userInfo?.level}</span>
-        <span>{userInfo?.nickname}</span>
+        <div>
+          <span>lv: {userInfo?.level} </span>
+          <span>{userInfo?.nickname}</span>
+        </div>
         <span>{userInfo?.exp}</span>
       </div>
       <div>

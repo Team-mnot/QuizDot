@@ -31,11 +31,11 @@ export const router = createBrowserRouter([
     element: <ChannelPage />,
   },
   {
-    path: '/:channel/lobby',
+    path: '/:channelId/lobby',
     element: <LobbyPage />,
   },
   {
-    path: '/multi',
+    path: '/:channelId/multi',
     element: <MultiPage />,
   },
   {
