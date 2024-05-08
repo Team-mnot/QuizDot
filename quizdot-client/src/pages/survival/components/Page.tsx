@@ -19,9 +19,11 @@ export function SurvivalPage() {
     showCountDown,
     setQuizzes,
   } = useQuizStore();
+
+  // 여기서 설정..하는건 아니겠지만~?
   const roomId = 8001;
   const category = 'RANDOM';
-  const count = 3;
+  const count = 2;
 
   useEffect(() => {
     // 페이지가 로드될 때 body의 스타일을 설정합니다.

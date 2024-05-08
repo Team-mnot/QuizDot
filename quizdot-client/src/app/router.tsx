@@ -39,7 +39,7 @@ export const router = createBrowserRouter([
     element: <MultiPage />,
   },
   {
-    path: '/survival',
+    path: ':roomId/survival',
     element: <SurvivalPage />,
   },
 ]);
