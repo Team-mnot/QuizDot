@@ -1,16 +1,24 @@
 package com.mnot.quizdot.domain.quiz.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnot.quizdot.domain.member.entity.Member;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
+import com.mnot.quizdot.domain.quiz.dto.MatchRoomDto;
 import com.mnot.quizdot.domain.quiz.dto.MessageDto;
 import com.mnot.quizdot.domain.quiz.dto.MessageType;
+import com.mnot.quizdot.domain.quiz.dto.PlayerInfoDto;
 import com.mnot.quizdot.domain.quiz.dto.ResultDto;
+import com.mnot.quizdot.domain.quiz.dto.RoomEnterRes;
+import com.mnot.quizdot.domain.quiz.dto.RoomInfoDto;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import com.mnot.quizdot.global.util.RedisUtil;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,11 +37,14 @@ public class SurvivalServiceImpl implements SurvivalService {
     private static final int MIN_SCORE = -1000;
     private static final int MAX_SCORE = 1000;
     private static final String SERVER_SENDER = "SYSTEM";
-    private static final String GAME_DESTINATION = "/sub/info/game/";
+    private static final String GAME_DEFAULT_ID = "0520";
+    private static final String MATCH_KEY = "match:";
+
     private final RedisTemplate redisTemplate;
     private final RedisUtil redisUtil;
     private final SimpMessagingTemplate messagingTemplate;
     private final MemberRepository memberRepository;
+    private final ObjectMapper objectMapper;
 
     /**
      * 서바이벌 모드 점수 업데이트
@@ -63,7 +74,7 @@ public class SurvivalServiceImpl implements SurvivalService {
         log.info("survive : {}, submit : {}", survivePeople, submitPeople);
 
         if (submitPeople == survivePeople) {
-            messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
+            messagingTemplate.convertAndSend(getGameDestination(roomId),
                 MessageDto.of(SERVER_SENDER, "모든 생존자가 답안을 제출하였습니다.", MessageType.PASS,
                     System.currentTimeMillis()));
         }
@@ -114,7 +125,7 @@ public class SurvivalServiceImpl implements SurvivalService {
                 resultDtoList.add(resultDto);
             }
         }
-        messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
+        messagingTemplate.convertAndSend(getGameDestination(roomId),
             MessageDto.of(SERVER_SENDER, "리워드 지급 및 결과 계산이 완료되었습니다.",
                 MessageType.EXIT, resultDtoList));
         return resultDtoList;
@@ -136,14 +147,13 @@ public class SurvivalServiceImpl implements SurvivalService {
         // 생존자 중에서 정답을 맞힌 사람이 없는 경우
         // 생존자는 그대로 다음 문제로 넘어가되, 정답을 맞힌 탈락자는 추가로 부활시킨다
         if (redisTemplate.opsForZSet().count(surviveKey, 0, MAX_SCORE) == 0) {
-            Set<TypedTuple<String>> resurrections = redisTemplate.opsForZSet()
+            Set<String> resurrections = redisTemplate.opsForZSet()
                 .rangeByScoreWithScores(eliminatedKey, 0, MAX_SCORE);
             Set<TypedTuple<String>> newRessurections = new HashSet<>();
-            for (TypedTuple<String> resurrection : resurrections) {
+            for (String playerId : resurrections) {
                 // 부활 처리
-                String playerId = resurrection.getValue();
                 Double originalScore = redisTemplate.opsForZSet().score(boardKey, playerId);
-                newRessurections.add(TypedTuple.of(resurrection.getValue(), originalScore * (-1)));
+                newRessurections.add(TypedTuple.of(playerId, originalScore * (-1)));
                 // TODO: REDIS 호출 최적화 (현재는 생존자/탈락자 수만큼 반복하며 REDIS 호출)
             }
 
@@ -152,7 +162,7 @@ public class SurvivalServiceImpl implements SurvivalService {
             // 부활 메시지 전송
             if (!newRessurections.isEmpty()) {
                 redisTemplate.opsForZSet().add(boardKey, newRessurections);
-                messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
+                messagingTemplate.convertAndSend(getGameDestination(roomId),
                     MessageDto.of(SERVER_SENDER, newRessurections.size() + "명의 플레이어가 부활했습니다 !!",
                         MessageType.RESURRECT));
             }
@@ -191,10 +201,75 @@ public class SurvivalServiceImpl implements SurvivalService {
             .rangeByScoreWithScores(boardKey, MIN_SCORE, MAX_SCORE);
         long left = redisTemplate.opsForZSet().count(boardKey, 0, MAX_SCORE);
         MessageType messageType = (left == 1) ? MessageType.EXIT : MessageType.STAGE_RESULT;
-        messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
+        messagingTemplate.convertAndSend(getGameDestination(roomId),
             MessageDto.of(SERVER_SENDER, messageType, results));
 
         return results;
+    }
+
+    @Override
+    public boolean registMatchmaking(int roomId, String category) throws JsonProcessingException {
+        String strRoomId = String.valueOf(roomId);
+        String gameId = strRoomId + GAME_DEFAULT_ID;
+        String matchKey = MATCH_KEY + category;
+        Set<MatchRoomDto> matchRooms = new HashSet<>();
+
+        String playersKey = redisUtil.getPlayersKey(roomId);
+        int playerCount = redisUtil.getPlayers(playersKey).size();
+
+        // 게임 시작 여부 확인
+        if (playerCount < 10) {
+            // 대기실 인원이 10명 미만이면, 매칭 등록 후 게임 시작 여부를 다시 확인한다
+            String jsonMatchRoom = objectMapper.writeValueAsString(
+                new MatchRoomDto(strRoomId, playerCount));
+            redisTemplate.opsForSet().add(matchKey, jsonMatchRoom);
+
+            // 매칭 대기자가 10명 이상이면 게임 시작
+            int totalPlayer = 0;
+            Set<MatchRoomDto> existRooms = new HashSet<>();
+            for (Object o : redisTemplate.opsForSet().members(matchKey)) {
+                MatchRoomDto mathRoomDto = objectMapper.readValue((String) o, MatchRoomDto.class);
+                totalPlayer += mathRoomDto.getPlayerCount();
+                existRooms.add(mathRoomDto);
+            }
+
+            // 매칭 대기자가 10명 미만이면 기다린다
+            if (totalPlayer < 10) {
+                messagingTemplate.convertAndSend("/sub/info/game" + roomId,
+                    MessageDto.of("SYSTEM", MessageType.MATCH_INPROGRESS));
+                return false;
+            }
+
+            // 매칭이 완료되면 매칭 큐를 초기화한다
+            matchRooms.addAll(existRooms);
+//            redisTemplate.unlink(matchKey);
+        } else {
+            // 대기실 인원이 10명 이상이면, 바로 게임을 시작한다
+            matchRooms.add(new MatchRoomDto(strRoomId, playerCount));
+        }
+
+        // 서바이벌 게임 준비
+        // 임시 게임 대기실을 생성하고 모든 플레이어를 등록한다
+        RoomInfoDto gameRoomInfoDto = RoomInfoDto.builder()
+            .roomId(Integer.parseInt(gameId))
+            .category(category)
+            .hostId(redisUtil.getRoomInfo(redisUtil.getRoomInfoKey(roomId)).getHostId())
+            .build();
+
+        Map<String, PlayerInfoDto> matchPlayers = new HashMap<>();
+        for (MatchRoomDto matchRoom : matchRooms) {
+            matchPlayers.putAll(redisUtil.getPlayersInfo(redisUtil.getPlayersKey(
+                Integer.parseInt(matchRoom.getRoomId()))));
+        }
+
+        // 게임 시작
+        // 임시 게임 대기실 ID, 게임 플레이어 정보를 메세지로 전송
+        matchRooms.forEach(
+            (key) -> messagingTemplate.convertAndSend(getGameDestination(roomId),
+                MessageDto.of("SYSTEM", MessageType.START,
+                    new RoomEnterRes(matchPlayers, gameRoomInfoDto))));
+
+        return true;
     }
 
     private String getSurviveKey(int roomId) {
@@ -203,5 +278,9 @@ public class SurvivalServiceImpl implements SurvivalService {
 
     private String getEliminatedKey(int roomId) {
         return String.format("rooms:%d:eliminated", roomId);
+    }
+
+    private String getGameDestination(int roomId) {
+        return String.format("/sub/info/game/%d", roomId);
     }
 }
