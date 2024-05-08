@@ -14,7 +14,7 @@ import com.mnot.quizdot.domain.quiz.dto.RoomReq;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import com.mnot.quizdot.global.util.RedisUtil;
-import java.util.Map;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.Cursor;
@@ -68,7 +68,7 @@ public class RoomServiceImpl implements RoomService {
     public RoomEnterRes enterRoom(int roomId, int memberId) throws JsonProcessingException {
         // 대기실 회원 리스트 조회
         String memberKey = redisUtil.getPlayersKey(roomId);
-        Map<String, PlayerInfoDto> players = redisUtil.getPlayersInfo(memberKey);
+        List<PlayerInfoDto> players = redisUtil.getPlayersInfo(memberKey);
 
         // 대기실 정보 조회
         String roomKey = redisUtil.getRoomInfoKey(roomId);
