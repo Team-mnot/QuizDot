@@ -12,4 +12,7 @@ public interface RoomService {
 
     void leaveRoom(int roomId, String memberId) throws JsonProcessingException;
 
+    String inviteRoom(int roomId, int memberId) throws JsonProcessingException;
+
+    RoomEnterRes enterInvitedRoom(String encodedParam, int memberId) throws JsonProcessingException;
 }

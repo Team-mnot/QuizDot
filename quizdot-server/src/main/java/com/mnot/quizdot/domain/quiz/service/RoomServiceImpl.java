@@ -15,6 +15,10 @@ import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import com.mnot.quizdot.global.util.RedisUtil;
 import java.util.Map;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.Cursor;
@@ -178,4 +182,53 @@ public class RoomServiceImpl implements RoomService {
         log.info("[deleteRoom] channelId : {}, roomId : {}", channelId, roomNum);
     }
 
+    /**
+     * 대기실 초대 링크 생성
+     */
+    public String inviteRoom(int roomId, int memberId) throws JsonProcessingException {
+        String key = redisUtil.getRoomInfoKey(roomId);
+        RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(key);
+        // 링크를 생성하는 사용자가 방장인지 확인
+        redisUtil.checkHost(roomId, memberId);
+        // 초대 링크 생성시간 저장(방 번호 재사용 시, 초대 링크 중복 방지)
+        String now = String.valueOf(System.currentTimeMillis());
+        // base64url로 파라미터 인코딩
+        String params = String.format("roomId=%d&time=%s", roomId, now);
+        String base64UrlEncoded = Base64.getUrlEncoder().withoutPadding()
+            .encodeToString(params.getBytes());
+        String link = String.format("https://k10d102.p.ssafy.io/invite?data=%s",base64UrlEncoded);
+        // redis에 초대링크 저장
+        roomInfoDto.setInviteLink(link);
+        String obj = objectMapper.writeValueAsString(roomInfoDto);
+        redisTemplate.opsForValue().set(key, obj);
+
+        return link;
+    }
+
+
+    /**
+     * 초대 받은 대기실 입장
+     */
+    public RoomEnterRes enterInvitedRoom(String encodedParam, int memberId) throws JsonProcessingException {
+        // 파라미터를 디코딩해서 roomId 추출
+        String decodedParams = new String(Base64.getUrlDecoder().decode(encodedParam));
+        Map<String, String> paramsMap = new HashMap<>();
+        String[] params = decodedParams.split("&");
+        for (String param : params) {
+            String[] keyValuePair = param.split("=");
+            if (keyValuePair.length == 2) {
+                paramsMap.put(keyValuePair[0], keyValuePair[1]);
+            }
+        }
+        // 초대 링크가 유효한지 확인
+        int roomId = Integer.parseInt(paramsMap.get("roomId"));
+        String key = redisUtil.getRoomInfoKey(roomId);
+        RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(key);
+        String link = String.format("https://k10d102.p.ssafy.io/invite?data=%s", encodedParam);
+        if(!roomInfoDto.getInviteLink().equals(link)) {
+            throw new BusinessException(ErrorCode.INVALID_INVITE_LINK);
+        }
+        // 대기실 입장
+        return enterRoom(roomId, memberId);
+    }
 }

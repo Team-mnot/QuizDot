@@ -46,6 +46,14 @@ public class RoomInfoDto {
     public RoomInfoDto(int roomId, String title, boolean isPublic, String password, String gameMode,
         int maxPeople, String category, int maxQuestion, int hostId,
         GameState state) {
+
+    // 초대 링크
+    private String inviteLink;
+
+    @Builder
+    public RoomInfoDto(int roomId, String title, boolean isPublic, String password,
+        String gameMode,
+        int maxPeople, String category, int maxQuestion, int hostId, String inviteLink) {
         this.roomId = roomId;
         this.title = title;
         this.isPublic = isPublic;
@@ -56,6 +64,7 @@ public class RoomInfoDto {
         this.maxQuestion = maxQuestion;
         this.hostId = hostId;
         this.state = state;
+        this.inviteLink = inviteLink;
     }
 
     public void modifyInfo(RoomReq roomReq) {

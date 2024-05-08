@@ -12,6 +12,9 @@ public class ResultDto {
     //레벨
     private int level;
 
+    //레벨업 얼마나 했는지
+    private int curLevel;
+
     //닉네임
     private String nickname;
 
@@ -24,22 +27,20 @@ public class ResultDto {
     //획득 포인트
     private int point;
 
-    //획득 경험치
-    private int exp;
-
-    //원래 경험치
+    //리워드 지급 후 경험치
     int curExp;
 
     @Builder
-    public ResultDto(int id, int level, String nickname, int rank, int score, int point, int exp,
+    public ResultDto(int id, int level, int curLevel, String nickname, int rank, int score,
+        int point,
         int curExp) {
         this.id = id;
         this.level = level;
+        this.curLevel = curLevel;
         this.nickname = nickname;
         this.rank = rank;
         this.score = score;
         this.point = point;
-        this.exp = exp;
         this.curExp = curExp;
     }
 }
