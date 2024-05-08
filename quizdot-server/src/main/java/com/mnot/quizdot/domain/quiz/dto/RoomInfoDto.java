@@ -39,6 +39,9 @@ public class RoomInfoDto {
     // 방장 회원 PK
     private int hostId;
 
+    // 게임 진행 여부
+//    private boolean
+
     @Builder
     public RoomInfoDto(int roomId, String title, boolean isPublic, String password,
         String gameMode,

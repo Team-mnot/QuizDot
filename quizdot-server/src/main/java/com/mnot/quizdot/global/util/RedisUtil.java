@@ -1,5 +1,6 @@
 package com.mnot.quizdot.global.util;
 
+import com.amazonaws.util.json.Jackson;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,12 +9,14 @@ import com.mnot.quizdot.domain.quiz.dto.PlayerInfoDto;
 import com.mnot.quizdot.domain.quiz.dto.RoomInfoDto;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,6 +25,7 @@ public class RedisUtil {
 
     private final ObjectMapper objectMapper;
     private final RedisTemplate redisTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
 
 
     /**
@@ -66,18 +70,10 @@ public class RedisUtil {
     /**
      * 대기실 플레이어 정보 조회
      */
-    public List<PlayerInfoDto> getPlayersInfo(String key) {
-        String jsonPlayers = redisTemplate.opsForHash().values(key).toString();
-        List<PlayerInfoDto> players;
-
-        try {
-            players = objectMapper.readValue(jsonPlayers, new TypeReference<>() {
-            });
-        } catch (JsonProcessingException e) {
-            throw new BusinessException(ErrorCode.JSON_PROCESSING_ERROR);
-        }
-
-        return players;
+    public Map<String, PlayerInfoDto> getPlayersInfo(String key) {
+        Set<Entry<String, String>> playerSet = redisTemplate.opsForHash().entries(key).entrySet();
+        return playerSet.stream().collect(Collectors.toMap(entry -> entry.getKey(),
+            entry -> Jackson.fromJsonString(entry.getValue(), PlayerInfoDto.class)));
     }
 
     /**
