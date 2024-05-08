@@ -30,7 +30,7 @@ const useQuizStore = create<QuizStore>((set) => ({
   showChatBox: false, // 초기 채팅박스 표시 여부
   currentQuiz: null, // 초기 퀴즈는 null로 설정
   isQuizOver: false,
-  showCountDown: true,
+  showCountDown: false,
 
   setQuizzes: (quizzes: iQuiz[]) => set({ quizzes }),
   setCurrentQuiz: (quiz: iQuiz) => set({ currentQuiz: quiz }),

@@ -12,16 +12,22 @@ import { QuizResultComponent } from './QuizResultComponent';
 import { CountDown } from './CountDown';
 
 export function SurvivalPage() {
-  const { showChatBox, showResult, showCountDown, setQuizzes } = useQuizStore();
+  const {
+    showChatBox,
+    showResult,
+    setShowCountDown,
+    showCountDown,
+    setQuizzes,
+  } = useQuizStore();
   const roomId = 8001;
   const category = 'RANDOM';
-  const count = 2;
+  const count = 3;
 
   useEffect(() => {
     // 페이지가 로드될 때 body의 스타일을 설정합니다.
     document.body.style.backgroundImage = 'url(/images/SurvivalBackground.png)';
     document.body.style.backgroundSize = 'cover';
-
+    setShowCountDown(true);
     const loadData = async () => {
       try {
         const data = await fetchQuizData(roomId, category, count);

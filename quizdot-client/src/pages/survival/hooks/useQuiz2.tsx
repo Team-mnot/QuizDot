@@ -17,15 +17,10 @@ export function useQuiz2() {
     currentQuizIndex,
     setCurrentQuizIndex,
     setCurrentQuiz,
-    setResultMessage,
-    setShowChatBox,
-    setShowResult,
-    setShowCountDown,
   } = useQuizStore();
 
   useEffect(() => {
     if (quizzes.length > 0) {
-      setCurrentQuizIndex(0); // 처음에 QuizIndex 0으로 설정함
       setLoading(false);
       setError(null);
     } else {
@@ -34,25 +29,23 @@ export function useQuiz2() {
     }
   }, [quizzes]); // store의 quizzes 바뀌면 다시 인덱스 0으로 바꾸고 재시작해야죠 ?
 
+  useEffect(() => {
+    // 이 useEffect는 currentQuizIndex가 바뀔 때마다 자동으로 currentQuiz를 업데이트합니다.
+    setCurrentQuiz(quizzes[currentQuizIndex] || null);
+  }, [currentQuizIndex, quizzes, setCurrentQuiz]);
+
   // 다음 퀴즈로 ~!
   const handleNextQuiz = () => {
-    if (quizzes.length > 0 && currentQuizIndex < quizzes.length - 1) {
-      setShowResult(true); // 카운트다운 페이지 가져와~~!
+    if (quizzes.length > 0) {
+      // 다음 인덱스 계산
       const nextIndex = (currentQuizIndex + 1) % quizzes.length;
-
-      setCurrentQuizIndex(nextIndex); // 퀴즈 인덱스 변경해
-      const currentQuiz = quizzes[currentQuizIndex] || null; // 여기서 현재퀴즈 바꿔서 QuizComponent로 보내줘야지
-      setCurrentQuiz(currentQuiz);
-      setResultMessage('');
-      setShowChatBox(false);
-      setShowResult(false); // Delay for the countdown duration
-      setShowCountDown(false);
+      setCurrentQuizIndex(nextIndex); // 인덱스 업데이트
     }
   };
+
   // 퀴즈 제출 로직
   const handleQuizSubmission = (answers: string[]) => {
     console.log('Submitted answers:', answers);
-    setCurrentQuizIndex((currentQuizIndex + 1) % quizzes.length);
   };
 
   // 언마운트 될 때 타이머 없애야합니다~ 아니면 언마운트 돼도 타이머 계속돌아간대요

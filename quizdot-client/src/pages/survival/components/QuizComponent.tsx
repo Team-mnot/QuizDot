@@ -8,7 +8,7 @@ import useQuizStore from '../store';
 export function QuizComponent({ roomId }: { roomId: number }) {
   const {
     setShowChatBox,
-    resultMessage,
+    // resultMessage,
     setResultMessage,
     quizzes,
     setShowResult,
@@ -18,6 +18,7 @@ export function QuizComponent({ roomId }: { roomId: number }) {
 
   const { loading, error } = useQuiz2(); // 수정: useQuiz2에서 필요한 데이터를 가져오도록 함
   const [userAnswer, setUserAnswer] = useState(''); // 사용자 입력을 저장할 상태
+  const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false); // 사용자 입력을 저장할 상태
   const { currentQuiz } = useQuizStore();
 
   const {
@@ -28,29 +29,44 @@ export function QuizComponent({ roomId }: { roomId: number }) {
 
   useEffect(() => {
     const currentQuiz = quizzes[currentQuizIndex] || null;
+    setResultMessage('제출 안하니? 🐦');
     setCurrentQuiz(currentQuiz);
+    setShowChatBox(false);
   }, [currentQuizIndex, quizzes, setCurrentQuiz]);
 
+  // async 쓰지말까.. 어차피 정답 오답 내는건 데이터 보내는거 기다릴 필요 없긴한데
+  // 그래도 서버에 제출했다는 신호 주는거 확인은 해보자고 ~
   const handleAnswerSubmit = async () => {
-    // async 쓰지말까.. 어차피 정답 오답 내는건 데이터 보내는거 기다릴 필요 없긴한데
-    // 그래도 서버에 제출했다는 신호 주는거 확인은 해보자고 ~
-
+    setIsAnswerSubmitted(true);
     if (currentQuiz) {
-      await submitAnswer(roomId, currentQuiz.id);
-      setShowChatBox(true); // 정답제출시 채팅박스 표시
-      if (currentQuiz?.answers.includes(userAnswer.trim())) {
-        setResultMessage('정답');
+      if (
+        userAnswer.trim() === '' ||
+        !currentQuiz.answers.includes(userAnswer.trim())
+      ) {
+        setResultMessage('오답 😿');
       } else {
-        setResultMessage('오답');
+        setResultMessage('정답! 🐣');
       }
+
+      setShowChatBox(true);
       setUserAnswer('');
+      await submitAnswer(roomId, currentQuiz.id);
     }
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAnswerSubmit();
+    }
+  };
+
+  // 여기서 n초뒤에 결과창으로 넘어갈 때( 가기전 ) 모든 로직 수행해야함
   useEffect(() => {
     const timer = setTimeout(() => {
-      setShowResult(true); // 결과창 표시
-    }, 5000); // 10초 후 결과창으로 전환
+      setShowChatBox(true);
+      setShowResult(true);
+    }, 8000); // n초 후 결과창으로 전환
 
     return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 해제
   }, []);
@@ -77,17 +93,27 @@ export function QuizComponent({ roomId }: { roomId: number }) {
       </div>
 
       {/* 정답 제출 합시다 ~ */}
-      <div className={'mx-auto'}>
-        <input
-          type="text"
-          value={userAnswer}
-          onChange={(e) => setUserAnswer(e.target.value)}
-          placeholder="정답을~ 적어줘요~"
-        />
-        <button onClick={handleAnswerSubmit} disabled={submitLoading}>
-          {'정답 제출'}
-        </button>
-        {resultMessage && <p>진인사 대천명.. 결과를 기다리거라.. </p>}
+      <div
+        className={
+          'fixed bottom-72 left-0 right-0 mx-auto  max-w-3xl rounded-xl bg-white p-4'
+        }
+      >
+        {isAnswerSubmitted ? (
+          <div className="flex justify-center">다른사람 기다려</div>
+        ) : (
+          <div className="flex justify-between">
+            <input
+              type="text"
+              value={userAnswer}
+              onChange={(e) => setUserAnswer(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="정답을~ 적어줘요~"
+            />
+            <button onClick={handleAnswerSubmit} disabled={submitLoading}>
+              {'정답 제출'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

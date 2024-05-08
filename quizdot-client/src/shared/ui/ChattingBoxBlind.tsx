@@ -9,7 +9,7 @@ export function ChattingBoxBlind() {
     >
       {/* 채팅 메시지 표시 영역 */}
       <div className={'chat-messages mb-2 h-36 overflow-auto text-center'}>
-        정답을 제출하셔야 채팅 입력이 가능합니다
+        정답을 제출하셔야 채팅을 볼 수 있습니다
       </div>
     </div>
   );
