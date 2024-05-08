@@ -27,6 +27,7 @@ public enum ErrorCode {
     INVALID_ROOM_PASSWORD(400, "비밀번호가 일치하지 않습니다."),
     IS_NOT_WAITING(400, "이미 게임이 진행 중입니다."),
     INVITE_NOT_ALLOWED(403, "방장만 초대할 수 있습니다."),
+    INVALID_INVITE_LINK(400, "초대링크가 유효하지 않습니다."),
 
     // Member
     LOGIN_ERROR(400, "로그인에 실패했습니다."),
