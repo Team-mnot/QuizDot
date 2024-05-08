@@ -70,7 +70,7 @@ public class SurvivalServiceImpl implements SurvivalService {
         log.info("survive : {}, submit : {}", survivePeople, submitPeople);
 
         if (submitPeople == survivePeople) {
-            messagingTemplate.convertAndSend(TITLE_DESTINATION + roomId,
+            messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
                 MessageDto.of(SERVER_SENDER, "모든 생존자가 답안을 제출하였습니다.", MessageType.PASS,
                     System.currentTimeMillis()));
         }
@@ -226,7 +226,4 @@ public class SurvivalServiceImpl implements SurvivalService {
     private String getEliminatedKey(int roomId) {
         return String.format("rooms:%d:eliminated", roomId);
     }
-
-    //TODO : 칭호 해금 체크, 리팩토링시 비트마스크 적용해보가(되면)
-
 }
