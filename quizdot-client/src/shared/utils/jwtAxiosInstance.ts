@@ -25,8 +25,10 @@ const beforeRequest = (
     });
   }
 
+  const { token } = JSON.parse(accessToken);
+
   // Authorization 헤더 처리
-  config.headers.Authorization = `Bearer ${JSON.parse(accessToken)}`;
+  config.headers.Authorization = `Bearer ${JSON.parse(token)}`;
 
   return config;
 };

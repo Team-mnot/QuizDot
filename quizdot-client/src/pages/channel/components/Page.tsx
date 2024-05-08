@@ -34,14 +34,12 @@ export function ChannelPage() {
         onClick={() => clickChannel(1)}
       />
 
-      {!isChannelsError && (
-        <div>
-          <div>로비 목록을 불러올 수 없습니다.</div>
-        </div>
+      {isChannelsError && <div>채널 목록을 불러올 수 없습니다.</div>}
+      {isChannelsLoading && <div>Loading . . .</div>}
+      {!isChannelsLoading && channels.length == 0 && (
+        <div>채널 목록이 존재하지 않습니다.</div>
       )}
-      {isChannelsLoading ? (
-        <div>Loading . . .</div>
-      ) : (
+      {!isChannelsLoading && channels.length > 0 && (
         <div>
           {channels.map((item) => (
             <Button
