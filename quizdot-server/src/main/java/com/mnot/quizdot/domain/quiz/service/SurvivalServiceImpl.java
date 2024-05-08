@@ -36,7 +36,7 @@ public class SurvivalServiceImpl implements SurvivalService {
 
     private static final int MIN_SCORE = -1000;
     private static final int MAX_SCORE = 1000;
-    private static final String SERVER_SENDER = "SYSTEM";
+    private static final String SERVER_SENDER = SERVER_SENDER;
     private static final String GAME_DEFAULT_ID = "0520";
     private static final String MATCH_KEY = "match:";
 
@@ -228,15 +228,15 @@ public class SurvivalServiceImpl implements SurvivalService {
             int totalPlayer = 0;
             Set<MatchRoomDto> existRooms = new HashSet<>();
             for (Object o : redisTemplate.opsForSet().members(matchKey)) {
-                MatchRoomDto mathRoomDto = objectMapper.readValue((String) o, MatchRoomDto.class);
-                totalPlayer += mathRoomDto.getPlayerCount();
-                existRooms.add(mathRoomDto);
+                MatchRoomDto matchRoomDto = objectMapper.readValue((String) o, MatchRoomDto.class);
+                totalPlayer += matchRoomDto.getPlayerCount();
+                existRooms.add(matchRoomDto);
             }
 
             // 매칭 대기자가 10명 미만이면 기다린다
             if (totalPlayer < 10) {
-                messagingTemplate.convertAndSend("/sub/info/game" + roomId,
-                    MessageDto.of("SYSTEM", MessageType.MATCH_INPROGRESS));
+                messagingTemplate.convertAndSend(getGameDestination(roomId),
+                    MessageDto.of(SERVER_SENDER, MessageType.MATCH_INPROGRESS));
                 return false;
             }
 
@@ -264,9 +264,9 @@ public class SurvivalServiceImpl implements SurvivalService {
 
         // 게임 시작
         // 임시 게임 대기실 ID, 게임 플레이어 정보를 메세지로 전송
-        matchRooms.forEach(
-            (key) -> messagingTemplate.convertAndSend(getGameDestination(roomId),
-                MessageDto.of("SYSTEM", MessageType.START,
+        matchRooms.forEach((key) ->
+            messagingTemplate.convertAndSend(getGameDestination(roomId),
+                MessageDto.of(SERVER_SENDER, MessageType.START,
                     new RoomEnterRes(matchPlayers, gameRoomInfoDto))));
 
         return true;
