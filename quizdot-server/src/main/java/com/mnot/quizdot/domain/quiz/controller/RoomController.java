@@ -60,4 +60,13 @@ public class RoomController {
         roomService.leaveRoom(roomId, String.valueOf(memberDetail.getId()));
         return ResponseEntity.ok(ResultResponse.of(200, "대기실 퇴장에 성공하였습니다."));
     }
+
+    @GetMapping("/{room_id}/invite")
+    @Operation(summary = "초대 링크 생성 API")
+    public ResponseEntity<ResultResponse> inviteRoom(
+        @AuthenticationPrincipal CustomMemberDetail memberDetail,
+        @PathVariable("room_id") int roomId) throws JsonProcessingException {
+        String inviteLink = roomService.inviteRoom(roomId, memberDetail.getId());
+        return ResponseEntity.ok(ResultResponse.of(200, "대기실 초대 링크 생성에 성공하였습니다.", inviteLink));
+    }
 }
