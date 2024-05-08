@@ -12,6 +12,8 @@ class SocketStore {
   private wsUrl = `${baseApi}/ws/chat`;
 
   public async onConnect(address: string, callback: (message: any) => void) {
+    this.stompInstance.current?.onWebSocketClose;
+
     this.stompInstance.current = Stomp.over(() => new SockJS(this.wsUrl));
     this.stompInstance.current?.connect(
       {},
@@ -92,8 +94,8 @@ class SocketStore {
   public async onDisconnect() {
     if (!this.stompInstance.current || !this.stompInstance.current.active)
       return;
-    if (this.stompInstance.current.connected) this.onUnsubscribe();
 
+    this.stompInstance.current?.deactivate();
     this.stompInstance.current?.disconnect({}, {});
     console.log('[연결 해제 성공] ', this.stompInstance.current);
   }

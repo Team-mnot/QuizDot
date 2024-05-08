@@ -15,7 +15,7 @@ export function useChannelsQuery(): {
     isLoading,
   } = useQuery({
     queryKey: ['getChannels'],
-    queryFn: getChannelsApi,
+    queryFn: () => getChannelsApi(),
   });
 
   return { data, isError, isLoading };

@@ -4,21 +4,16 @@ import { CreatingRoomInfo } from '../api/types';
 import { createRoomApi } from '../api/api';
 import { Toast } from '@/shared/ui/Toast';
 import { useRouter } from '@/shared/hooks';
-
-const statusList = ['공개', '비공개'];
-const statusDBList = [true, false];
-const modeList = ['일반 모드', '서바이벌 모드', '일대일 모드'];
-const modeDBList = ['multi', 'survival', 'onetoone'];
-const maxPeopleList = [8, 7, 6, 5, 4, 3, 2, 1];
-const categoryList = ['랜덤', '상식', '역사', '문화', '한국어'];
-const categoryDBList = [
-  'random',
-  'common sense',
-  'history',
-  'culture',
-  'korean',
-];
-const maxQuestionList = [30, 20, 10];
+import {
+  categoryDBList,
+  categoryList,
+  maxPeopleList,
+  maxQuestionList,
+  modeDBList,
+  modeList,
+  statusDBList,
+  statusList,
+} from '../constants';
 
 interface RoomCreationProps {
   channelId: number;
@@ -26,7 +21,7 @@ interface RoomCreationProps {
 
 export function RoomCreation(props: RoomCreationProps) {
   const [title, setTitle] = useState<string>('덤벼라');
-  const [status, setStatus] = useState<number>(0);
+  const [isPublic, setIsPublic] = useState<number>(0);
   const [password, setPassword] = useState<string>('');
   const [mode, setMode] = useState<number>(0);
   const [maxPeople, setMaxPeople] = useState<number>(0);
@@ -41,8 +36,8 @@ export function RoomCreation(props: RoomCreationProps) {
     setTitle(e.currentTarget.value);
   };
 
-  const selectedStatus = (index: number) => {
-    setStatus(index);
+  const selectedIsPublic = (index: number) => {
+    setIsPublic(index);
   };
 
   const changePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,17 +63,17 @@ export function RoomCreation(props: RoomCreationProps) {
   const createTheRoom = async () => {
     const creatingRoomInfo: CreatingRoomInfo = {
       title: title,
-      public: statusDBList[status],
+      isPublic: statusDBList[isPublic],
       password: password,
       mode: modeDBList[mode],
-      maxPeople: maxPeopleList[maxPeople],
       category: categoryDBList[category],
+      maxPeople: maxPeopleList[maxPeople],
       maxQuestion: maxQuestionList[maxQuestion],
     };
 
     const response = await createRoomApi(props.channelId, creatingRoomInfo);
 
-    if (response.status != 201) {
+    if (response.status != 200) {
       setToastState(true);
     } else {
       router.routeTo(`/${props.channelId}/${mode}`);
@@ -101,9 +96,9 @@ export function RoomCreation(props: RoomCreationProps) {
           <p className={'p-2'}>공개 여부</p>
           <Dropbox
             size="w-[150px]"
-            item={statusList[status]}
+            item={statusList[isPublic]}
             options={statusList}
-            selectedItem={selectedStatus}
+            selectedItem={selectedIsPublic}
           />
         </div>
         {status && (

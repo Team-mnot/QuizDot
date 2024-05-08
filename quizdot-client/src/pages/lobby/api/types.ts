@@ -25,7 +25,7 @@ interface RoomInfo {
   category: string;
   maxQuestion: number;
   hostId: number;
-  public: boolean;
+  isPublic: boolean;
 }
 
 interface CreatingRoomInfo {
@@ -35,7 +35,7 @@ interface CreatingRoomInfo {
   maxPeople: number;
   category: string;
   maxQuestion: number;
-  public: boolean;
+  isPublic: boolean;
 }
 
 interface CreatedRoomInfo {
