@@ -8,7 +8,7 @@ export function useLobbyQuery(channelId: number): {
   isLoading: boolean;
 } {
   const fallback: LobbyInfo = {
-    channelId: channelId,
+    channelId: 8,
     activeUsersInfo: [],
     roomsInfo: [],
   };
@@ -16,14 +16,11 @@ export function useLobbyQuery(channelId: number): {
   const {
     data = fallback,
     isError,
-    error,
     isLoading,
   } = useQuery({
     queryKey: ['enterLobby'],
     queryFn: () => enterLobbyApi(channelId),
   });
-
-  console.log(error);
 
   return { data, isError, isLoading };
 }

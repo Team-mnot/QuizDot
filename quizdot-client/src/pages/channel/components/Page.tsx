@@ -37,7 +37,7 @@ export function ChannelPage() {
       {isChannelsError && <div>채널 목록을 불러올 수 없습니다.</div>}
       {isChannelsLoading && <div>Loading . . .</div>}
       {!isChannelsLoading && channels.length == 0 && (
-        <div>채널 목록이 존재하지 않습니다.</div>
+        <div>채널 목록이 존재하지 않습니다. ({channels.length})</div>
       )}
       {!isChannelsLoading && channels.length > 0 && (
         <div>

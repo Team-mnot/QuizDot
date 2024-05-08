@@ -24,6 +24,7 @@ export function LobbyWebsocket(props: LobbyWebsocketProps) {
       {isLobbyLoading && <div>Loading . . .</div>}
       {!isLobbyLoading && !isLobbyError && (
         <div>
+          <div>{lobby.channelId}</div>
           <div className={'flex'}>
             <OnlineUserList activeUsersInfo={lobby.activeUsersInfo} />
             <RoomList roomsInfo={lobby.roomsInfo} channelId={lobby.channelId} />
