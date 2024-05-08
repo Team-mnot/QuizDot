@@ -1,24 +1,21 @@
 package com.mnot.quizdot.domain.quiz.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
+import com.mnot.quizdot.domain.member.entity.ModeType;
 import com.mnot.quizdot.domain.quiz.dto.ResultDto;
 import com.mnot.quizdot.domain.quiz.dto.SurvivalAnswerDto;
-import com.mnot.quizdot.domain.quiz.service.LobbyService;
+import com.mnot.quizdot.domain.quiz.service.QuizService;
 import com.mnot.quizdot.domain.quiz.service.SurvivalService;
 import com.mnot.quizdot.global.result.ResultResponse;
-import com.mnot.quizdot.global.util.RedisUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,11 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SurvivalController {
 
     private final SurvivalService survivalService;
-    private final RedisUtil redisUtil;
-    private final RedisTemplate redisTemplate;
-    private final SimpMessagingTemplate messagingTemplate;
-    private final LobbyService lobbyService;
-    private final ObjectMapper objectMapper;
+    private final QuizService quizService;
 
     @PostMapping("/score/{room_id}")
     @Operation(summary = "서바이벌 점수 업데이트 API")
@@ -76,11 +69,15 @@ public class SurvivalController {
 
     @PostMapping("/match/{room_id}/enter")
     @Operation(summary = "서바이벌 게임 매칭 등록 API")
-    public ResponseEntity<ResultResponse> registMatchmaking(@PathVariable("room_id") int roomId,
+    public ResponseEntity<ResultResponse> registMatchmaking(
+        @AuthenticationPrincipal CustomMemberDetail memberDetail,
+        @PathVariable("room_id") int roomId,
         @RequestParam String category) throws JsonProcessingException {
         if (!survivalService.registMatchmaking(roomId, category)) {
             return ResponseEntity.ok(ResultResponse.of(200, "서바이벌 게임 매칭을 기다리고 있습니다."));
         }
+
+        quizService.initGame(roomId, memberDetail.getId(), ModeType.SURVIVAL);
         return ResponseEntity.ok(ResultResponse.of(200, "매칭에 성공하여 서바이벌 게임을 시작합니다."));
     }
 }
