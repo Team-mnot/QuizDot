@@ -3,8 +3,14 @@ package com.mnot.quizdot.domain.quiz.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnot.quizdot.domain.member.entity.Member;
+import com.mnot.quizdot.domain.member.entity.ModeType;
+import com.mnot.quizdot.domain.member.entity.MultiRecord;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
+<<<<<<< quizdot-server/src/main/java/com/mnot/quizdot/domain/quiz/service/SurvivalServiceImpl.java
 import com.mnot.quizdot.domain.quiz.dto.MatchRoomDto;
+=======
+import com.mnot.quizdot.domain.member.repository.MultiRecordRepository;
+>>>>>>> quizdot-server/src/main/java/com/mnot/quizdot/domain/quiz/service/SurvivalServiceImpl.java
 import com.mnot.quizdot.domain.quiz.dto.MessageDto;
 import com.mnot.quizdot.domain.quiz.dto.MessageType;
 import com.mnot.quizdot.domain.quiz.dto.PlayerInfoDto;
@@ -14,6 +20,7 @@ import com.mnot.quizdot.domain.quiz.dto.RoomInfoDto;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import com.mnot.quizdot.global.util.RedisUtil;
+import com.mnot.quizdot.global.util.TitleUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,11 +47,16 @@ public class SurvivalServiceImpl implements SurvivalService {
     private static final String GAME_DEFAULT_ID = "0520";
     private static final String MATCH_KEY = "match:";
 
+
+    private static final String GAME_DESTINATION = "/sub/info/game/";
+    private static final String TITLE_DESTINATION = "/sub/title/";
     private final RedisTemplate redisTemplate;
     private final RedisUtil redisUtil;
     private final SimpMessagingTemplate messagingTemplate;
     private final MemberRepository memberRepository;
     private final ObjectMapper objectMapper;
+    private final MultiRecordRepository multiRecordRepository;
+    private final TitleUtil titleUtil;
 
     /**
      * 서바이벌 모드 점수 업데이트
@@ -83,6 +95,7 @@ public class SurvivalServiceImpl implements SurvivalService {
     /**
      * 결과에 따라 경험치 및 포인트 업데이트, 결과 정보 제공
      */
+    @Transactional
     @Override
     public List<ResultDto> exitGame(int roomId, int memberId) {
         String boardKey = redisUtil.getBoardKey(roomId);
@@ -98,9 +111,13 @@ public class SurvivalServiceImpl implements SurvivalService {
             boolean isFirst = true;
             int rank = 1;
             for (TypedTuple<String> score : scores) {
-                String id = score.getValue();
-                Member member = memberRepository.findById(Integer.parseInt(id))
+                int id = Integer.parseInt(score.getValue());
+                Member member = memberRepository.findById(id)
                     .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
+                MultiRecord multiRecord = multiRecordRepository.findByMemberIdAndMode(
+                    id,
+                    ModeType.SURVIVAL).orElseThrow(() -> new BusinessException(
+                    ErrorCode.NOT_FOUND_RECORD));
                 double memberScore = score.getScore();
                 if (isFirst) {
                     exp = ((totalPlayer) + 1) * 200;
@@ -110,16 +127,26 @@ public class SurvivalServiceImpl implements SurvivalService {
                     rank = 2;
                 }
 
-                member.updateReward(member.getPoint() + exp, member.getExp() + exp);
+                int curLevel = member.updateReward(exp, exp);
+                multiRecord.updateRecord(rank == 1 ? 1 : 0, 1);
+
+                //칭호 얻은게 있으면
+                List<String> unlockList = titleUtil.checkRequirment(id, ModeType.SURVIVAL);
+                if (!unlockList.isEmpty()) {
+                    log.info("멤버 pk : {}", id);
+                    log.info("칭호 체크 : {}", unlockList);
+                    messagingTemplate.convertAndSend(TITLE_DESTINATION + id,
+                        MessageDto.of(SERVER_SENDER, "칭호가 해금되었습니다", MessageType.TILE, unlockList));
+                }
 
                 ResultDto resultDto = ResultDto.builder()
-                    .id(Integer.parseInt(id))
+                    .id(id)
                     .level(member.getLevel())
+                    .curLevel(curLevel)
                     .nickname(member.getNickname())
                     .rank(rank)
                     .score(exp)
                     .point(exp)
-                    .exp(exp)
                     .curExp(member.getExp())
                     .build();
                 resultDtoList.add(resultDto);
@@ -127,7 +154,7 @@ public class SurvivalServiceImpl implements SurvivalService {
         }
         messagingTemplate.convertAndSend(getGameDestination(roomId),
             MessageDto.of(SERVER_SENDER, "리워드 지급 및 결과 계산이 완료되었습니다.",
-                MessageType.EXIT, resultDtoList));
+                MessageType.REWARD, resultDtoList));
         return resultDtoList;
     }
 
