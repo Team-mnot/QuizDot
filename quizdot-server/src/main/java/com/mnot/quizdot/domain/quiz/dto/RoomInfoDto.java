@@ -42,18 +42,13 @@ public class RoomInfoDto {
     // 게임 진행 여부
     private GameState state;
 
-    @Builder
-    public RoomInfoDto(int roomId, String title, boolean isPublic, String password, String gameMode,
-        int maxPeople, String category, int maxQuestion, int hostId,
-        GameState state) {
-
     // 초대 링크
     private String inviteLink;
 
     @Builder
     public RoomInfoDto(int roomId, String title, boolean isPublic, String password,
-        String gameMode,
-        int maxPeople, String category, int maxQuestion, int hostId, String inviteLink) {
+        String gameMode, int maxPeople, String category, int maxQuestion, int hostId,
+        GameState state, String inviteLink) {
         this.roomId = roomId;
         this.title = title;
         this.isPublic = isPublic;
