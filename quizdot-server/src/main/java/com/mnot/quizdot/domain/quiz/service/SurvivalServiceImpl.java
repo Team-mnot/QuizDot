@@ -36,7 +36,7 @@ public class SurvivalServiceImpl implements SurvivalService {
 
     private static final int MIN_SCORE = -1000;
     private static final int MAX_SCORE = 1000;
-    private static final String SERVER_SENDER = SERVER_SENDER;
+    private static final String SERVER_SENDER = "SYSTEM";
     private static final String GAME_DEFAULT_ID = "0520";
     private static final String MATCH_KEY = "match:";
 
