@@ -95,7 +95,7 @@ export function QuizComponent({ roomId }: { roomId: number }) {
       {/* 정답 제출 합시다 ~ */}
       <div
         className={
-          'fixed bottom-72 left-0 right-0 mx-auto  max-w-3xl rounded-xl bg-white p-4'
+          'fixed bottom-64 left-0 right-0 mx-auto  max-w-3xl rounded-xl bg-white py-2 pl-10'
         }
       >
         {isAnswerSubmitted ? (
@@ -108,6 +108,7 @@ export function QuizComponent({ roomId }: { roomId: number }) {
               onChange={(e) => setUserAnswer(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="정답을~ 적어줘요~"
+              className="w-5/6"
             />
             <button onClick={handleAnswerSubmit} disabled={submitLoading}>
               {'정답 제출'}

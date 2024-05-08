@@ -1,15 +1,17 @@
 // src/pages/survival/components/Page.tsx
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { fetchQuizData } from '../api/api';
 import useQuizStore from '../store';
 
 import { CharacterPreview } from './CharacterPreview';
-import { ChattingBox } from '../../../shared/ui/ChattingBox';
+// import { ChattingBox } from '@/shared/ui/ChattingBox';
+import { SurvivalChattingBox } from './SurvivalChattingBox';
 import { ChattingBoxBlind } from '@/shared/ui/ChattingBoxBlind';
 import { QuizComponent } from './QuizComponent';
 import { QuizResultComponent } from './QuizResultComponent';
 import { CountDown } from './CountDown';
+import { SocketStore } from '@/shared/stores/connectionStore/socket';
 
 export function SurvivalPage() {
   const {
@@ -19,6 +21,8 @@ export function SurvivalPage() {
     showCountDown,
     setQuizzes,
   } = useQuizStore();
+
+  const stompInstance = useRef(new SocketStore());
 
   // 여기서 설정..하는건 아니겠지만~?
   const roomId = 8001;
@@ -51,15 +55,12 @@ export function SurvivalPage() {
       ) : (
         <QuizComponent roomId={roomId} />
       )}
-
       <CharacterPreview />
-
-      {/* 조건부 렌더링 */}
-      {showChatBox ? (
-        <ChattingBox onSend={() => {}} messages={[]} />
-      ) : (
-        <ChattingBoxBlind />
-      )}
+      <SurvivalChattingBox
+        stompInstance={stompInstance.current}
+        roomId={roomId}
+      />
+      {!showChatBox ? <ChattingBoxBlind /> : null}
     </div>
   );
 }

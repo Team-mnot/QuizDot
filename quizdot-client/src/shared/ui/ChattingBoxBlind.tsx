@@ -4,12 +4,15 @@ export function ChattingBoxBlind() {
   return (
     <div
       className={
-        'fixed bottom-3 left-0 right-0 mx-auto max-w-3xl rounded-3xl bg-white bg-opacity-80 p-4'
+        'fixed bottom-3 left-0 right-0 mx-auto max-w-3xl rounded-3xl bg-black p-4'
       }
     >
-      {/* 채팅 메시지 표시 영역 */}
-      <div className={'chat-messages mb-2 h-36 overflow-auto text-center'}>
-        정답을 제출하셔야 채팅을 볼 수 있습니다
+      <div
+        className={
+          'chat-messages mb-2 flex h-48 items-center justify-center overflow-auto text-4xl text-white'
+        }
+      >
+        히히 정답 제출 전까지 채팅 못봐 ㅋㅋ
       </div>
     </div>
   );

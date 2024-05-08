@@ -10,6 +10,6 @@ export async function getChannelsApi(): Promise<ChannelInfo[]> {
 
   console.log(`[${response.data.status}] ${response.data.message}`);
 
-  if (response.data.status == 201) return response.data.data;
+  if (response.data.status == 200) return response.data.data;
   else return [];
 }
