@@ -16,4 +16,6 @@ public interface QuizService {
 
     void deleteGame(int roomId);
 
+    void initGame(int roomId, int memberId, ModeType mode);
+
 }

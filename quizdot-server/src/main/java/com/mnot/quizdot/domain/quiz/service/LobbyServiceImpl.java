@@ -6,6 +6,7 @@ import com.mnot.quizdot.domain.member.entity.Member;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
 import com.mnot.quizdot.domain.quiz.dto.ActiveUserDto;
 import com.mnot.quizdot.domain.quiz.dto.Channelnfo;
+import com.mnot.quizdot.domain.quiz.dto.GameState;
 import com.mnot.quizdot.domain.quiz.dto.RoomInfoDto;
 import com.mnot.quizdot.domain.quiz.dto.RoomReq;
 import com.mnot.quizdot.domain.quiz.dto.RoomRes;
@@ -15,10 +16,8 @@ import com.mnot.quizdot.global.util.RedisUtil;
 import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.Cursor;
@@ -83,6 +82,7 @@ public class LobbyServiceImpl implements LobbyService {
             .maxQuestion(roomReq.getMaxQuestion())
             .maxPeople(roomReq.getMaxPeople())
             .hostId(hostId)
+            .state(GameState.WAITING)
             .build();
 
         String key = redisUtil.getRoomInfoKey(roomId);
@@ -132,7 +132,8 @@ public class LobbyServiceImpl implements LobbyService {
         List<RoomInfoDto> roomsList = new ArrayList<>();
 
         redisTemplate.execute((RedisConnection connection) -> {
-            try (Cursor<byte[]> cursor = connection.scan(ScanOptions.scanOptions().match(pattern).count(MAX_ROOM).build())) {
+            try (Cursor<byte[]> cursor = connection.scan(
+                ScanOptions.scanOptions().match(pattern).count(MAX_ROOM).build())) {
                 while (cursor.hasNext()) {
                     String key = new String(cursor.next());
                     RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(key);
@@ -150,7 +151,7 @@ public class LobbyServiceImpl implements LobbyService {
     public List<Channelnfo> getChannelList() {
         // 레디스에서 채널별로 동시접속자 수 구해오기
         List<Channelnfo> channelnfos = new ArrayList<>();
-        for(int channel=1; channel<=MAX_CHANNEL; channel++) {
+        for (int channel = 1; channel <= MAX_CHANNEL; channel++) {
             String key = redisUtil.getActiveUserKey(channel);
             long activeUserCount = redisTemplate.opsForSet().size(key);
 
@@ -172,7 +173,7 @@ public class LobbyServiceImpl implements LobbyService {
     public void checkAvailable(int channelId) {
         String key = redisUtil.getActiveUserKey(channelId);
 
-        if(MAX_CAPACITY == redisTemplate.opsForSet().size(key)) {
+        if (MAX_CAPACITY == redisTemplate.opsForSet().size(key)) {
             throw new BusinessException(ErrorCode.CHANNEL_LIMIT_EXCEEDED);
         }
     }

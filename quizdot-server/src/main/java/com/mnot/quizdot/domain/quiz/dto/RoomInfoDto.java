@@ -39,6 +39,14 @@ public class RoomInfoDto {
     // 방장 회원 PK
     private int hostId;
 
+    // 게임 진행 여부
+    private GameState state;
+
+    @Builder
+    public RoomInfoDto(int roomId, String title, boolean isPublic, String password, String gameMode,
+        int maxPeople, String category, int maxQuestion, int hostId,
+        GameState state) {
+
     // 초대 링크
     private String inviteLink;
 
@@ -55,6 +63,7 @@ public class RoomInfoDto {
         this.category = category;
         this.maxQuestion = maxQuestion;
         this.hostId = hostId;
+        this.state = state;
         this.inviteLink = inviteLink;
     }
 
@@ -70,5 +79,9 @@ public class RoomInfoDto {
 
     public void modifyHost(int hostId) {
         this.hostId = hostId;
+    }
+
+    public void modifyState(GameState state) {
+        this.state = state;
     }
 }

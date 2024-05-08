@@ -14,6 +14,7 @@ import com.mnot.quizdot.domain.quiz.dto.RoomReq;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import com.mnot.quizdot.global.util.RedisUtil;
+import java.util.Map;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -69,13 +70,16 @@ public class RoomServiceImpl implements RoomService {
      * 대기실 입장
      */
     public RoomEnterRes enterRoom(int roomId, int memberId) throws JsonProcessingException {
-        // 대기실 회원 리스트 조회
-        String memberKey = redisUtil.getPlayersKey(roomId);
-        List<PlayerInfoDto> players = redisUtil.getPlayersInfo(memberKey);
-
         // 대기실 정보 조회
         String roomKey = redisUtil.getRoomInfoKey(roomId);
         RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(roomKey);
+        if (!"WAITING".equals(roomInfoDto.getState())) {
+            throw new BusinessException(ErrorCode.IS_NOT_WAITING);
+        }
+
+        // 대기실 회원 리스트 조회
+        String memberKey = redisUtil.getPlayersKey(roomId);
+        Map<String, PlayerInfoDto> players = redisUtil.getPlayersInfo(memberKey);
 
         if (roomInfoDto == null) {
             throw new BusinessException(ErrorCode.ROOM_NOT_FOUND);

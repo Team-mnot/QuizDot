@@ -1,5 +1,6 @@
 package com.mnot.quizdot.domain.quiz.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mnot.quizdot.domain.quiz.dto.ResultDto;
 import java.util.List;
 import java.util.Set;
@@ -13,4 +14,5 @@ public interface SurvivalService {
 
     Set<TypedTuple<String>> getStageResult(int roomId, int memberId);
 
+    boolean registMatchmaking(int roomId, String category) throws JsonProcessingException;
 }

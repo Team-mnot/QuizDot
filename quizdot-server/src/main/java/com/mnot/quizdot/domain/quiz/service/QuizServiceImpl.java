@@ -57,7 +57,6 @@ public class QuizServiceImpl implements QuizService {
             category, quizParam.getCount(), quizList);
 
         List<QuizRes> quizListRes = quizRepository.getQuizzesByIds(quizIdList);
-
         // 중복 출제 방지를 위해 조회한 문제 PK를 REDIS에 저장
         quizListRes
             .forEach(
@@ -106,17 +105,8 @@ public class QuizServiceImpl implements QuizService {
         // 방장 권한 체크
         redisUtil.checkHost(roomId, memberId);
 
-        // 현재 대기실 관련 게임 기록이 남아 있다면 초기화
-        deleteGame(roomId);
-
-        // 게임 모드에 따라 REDIS 값 초기화
-        String boardKey = redisUtil.getBoardKey(roomId);
-        String memberKey = redisUtil.getPlayersKey(roomId);
-        List<Integer> players = redisUtil.getPlayers(memberKey);
-
-        int defaultValue = (ModeType.NORMAL.equals(mode)) ? 0 : 1;
-        players.forEach((playerId) -> redisTemplate.opsForZSet()
-            .add(boardKey, String.valueOf(playerId), defaultValue));
+        // 게임 초기화
+        initGame(roomId, memberId, mode);
 
         // 모든 플레이어에게 게임 시작을 알린다
         messagingTemplate.convertAndSend("/sub/info/room/" + roomId,
@@ -138,5 +128,22 @@ public class QuizServiceImpl implements QuizService {
         // 스코어 보드 삭제
         String boardKey = redisUtil.getBoardKey(roomId);
         redisTemplate.delete(boardKey);
+    }
+
+    public void initGame(int roomId, int memberId, ModeType mode) {
+        // 방장 권한 체크
+        redisUtil.checkHost(roomId, memberId);
+
+        // 현재 대기실 관련 게임 기록이 남아 있다면 초기화
+        deleteGame(roomId);
+
+        // 게임 모드에 따라 REDIS 값 초기화
+        String boardKey = redisUtil.getBoardKey(roomId);
+        String memberKey = redisUtil.getPlayersKey(roomId);
+        List<Integer> players = redisUtil.getPlayers(memberKey);
+
+        int defaultValue = (ModeType.NORMAL.equals(mode)) ? 0 : 1;
+        players.forEach((playerId) -> redisTemplate.opsForZSet()
+            .add(boardKey, String.valueOf(playerId), defaultValue));
     }
 }
