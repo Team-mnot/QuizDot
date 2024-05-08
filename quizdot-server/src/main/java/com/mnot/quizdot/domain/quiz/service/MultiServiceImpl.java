@@ -1,7 +1,10 @@
 package com.mnot.quizdot.domain.quiz.service;
 
 import com.mnot.quizdot.domain.member.entity.Member;
+import com.mnot.quizdot.domain.member.entity.ModeType;
+import com.mnot.quizdot.domain.member.entity.MultiRecord;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
+import com.mnot.quizdot.domain.member.repository.MultiRecordRepository;
 import com.mnot.quizdot.domain.quiz.dto.MessageDto;
 import com.mnot.quizdot.domain.quiz.dto.MessageType;
 import com.mnot.quizdot.domain.quiz.dto.ResultDto;
@@ -9,6 +12,7 @@ import com.mnot.quizdot.domain.quiz.dto.ScoreDto;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import com.mnot.quizdot.global.util.RedisUtil;
+import com.mnot.quizdot.global.util.TitleUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -28,10 +32,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class MultiServiceImpl implements MultiService {
 
     private static final String SERVER_SENDER = "SYSTEM";
+    private static final String GAME_DESTINATION = "/sub/info/game/";
+    private static final String TITLE_DESTINATION = "/sub/title/";
     private final RedisUtil redisUtil;
     private final RedisTemplate redisTemplate;
     private final SimpMessagingTemplate messagingTemplate;
     private final MemberRepository memberRepository;
+    private final MultiRecordRepository multiRecordRepository;
+    private final TitleUtil titleUtil;
 
     /**
      * 멀티 점수 업데이트 (문제를 맞힌 순서에 따라 점수 업데이트)
@@ -56,7 +64,7 @@ public class MultiServiceImpl implements MultiService {
 
         // 다른 플레이어들에게 실시간 점수 업데이트 메시지 보내기
         ScoreDto updatedScore = new ScoreDto(memberId, newScore);
-        messagingTemplate.convertAndSend("/sub/info/game/" + roomId,
+        messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
             MessageDto.of(memberId, MessageType.UPDATE, updatedScore));
 
         // TODO: 전체 플레이어가 풀었을 경우 패스 메세지 보내기
@@ -68,7 +76,6 @@ public class MultiServiceImpl implements MultiService {
 
     @Override
     public List<ResultDto> exitGame(int roomId, int memberId) {
-        log.info("계산 시작 : START");
         String boardKey = redisUtil.getBoardKey(roomId);
         redisUtil.checkHost(roomId, memberId);
         Set<TypedTuple<String>> scores = redisTemplate.opsForZSet()
@@ -84,9 +91,12 @@ public class MultiServiceImpl implements MultiService {
             double curScore = -1;
             int exp;
             for (ZSetOperations.TypedTuple<String> score : scores) {
-                String id = score.getValue();
-                Member member = memberRepository.findById(Integer.parseInt(id))
+                int id = Integer.parseInt(score.getValue());
+                Member member = memberRepository.findById(id)
                     .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
+                MultiRecord multiRecord = multiRecordRepository.findByMemberIdAndMode(id,
+                        ModeType.NORMAL)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_RECORD));
                 double memberScore = score.getScore();
 
                 if (curScore != -1 && curScore != memberScore) {
@@ -99,11 +109,19 @@ public class MultiServiceImpl implements MultiService {
                 curScore = memberScore;
                 exp = (totalPlayer + 1 - rank) * 100;
 
-                member.updateReward(member.getPoint() + exp, member.getExp() + exp);
+                int curLevel = member.updateReward(exp, exp);
+                multiRecord.updateRecord(rank == 1 ? 1 : 0, 1);
 
+                //칭호 확인
+                List<String> unlockList = titleUtil.checkRequirment(id, ModeType.NORMAL);
+                if (!unlockList.isEmpty()) {
+                    messagingTemplate.convertAndSend(TITLE_DESTINATION + id,
+                        MessageDto.of(SERVER_SENDER, "칭호가 해금되었습니다", MessageType.TILE, unlockList));
+                }
                 ResultDto resultDto = ResultDto.builder()
-                    .id(Integer.parseInt(id))
+                    .id(id)
                     .level(member.getLevel())
+                    .curLevel(curLevel)
                     .nickname(member.getNickname())
                     .rank(rank)
                     .score((int) curScore)
@@ -111,14 +129,12 @@ public class MultiServiceImpl implements MultiService {
                     .curExp(member.getExp())
                     .build();
                 resultDtoList.add(resultDto);
-                //TODO : 전적도 함께 저장하기, 칭호를 해금하거나 레벨업했을 경우 해당 유저에게 알려주기
             }
         }
         log.info("resultDtoList 확인 : {}", resultDtoList);
-        messagingTemplate.convertAndSend("/sub/info/game/" + roomId,
+        messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
             MessageDto.of(SERVER_SENDER, "리워드 지급 및 결과 계산이 완료되었습니다.", MessageType.EXIT,
                 resultDtoList));
-        log.info("계산 시작 : COMPLETE");
         return resultDtoList;
     }
 }
