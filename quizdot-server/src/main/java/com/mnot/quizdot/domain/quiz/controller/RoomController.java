@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -68,5 +69,14 @@ public class RoomController {
         @PathVariable("room_id") int roomId) throws JsonProcessingException {
         String inviteLink = roomService.inviteRoom(roomId, memberDetail.getId());
         return ResponseEntity.ok(ResultResponse.of(200, "대기실 초대 링크 생성에 성공하였습니다.", inviteLink));
+    }
+
+    @GetMapping("/invite")
+    @Operation(summary = "초대받은 대기실 입장 API")
+    public ResponseEntity<ResultResponse> enterInvitedRoom(
+        @AuthenticationPrincipal CustomMemberDetail memberDetail,
+        @RequestParam String data) throws JsonProcessingException {
+        RoomEnterRes roomEnterRes = roomService.enterInvitedRoom(data, memberDetail.getId());
+        return ResponseEntity.ok(ResultResponse.of(200, "초대받은 대기실 입장에 성공하였습니다.", roomEnterRes));
     }
 }
