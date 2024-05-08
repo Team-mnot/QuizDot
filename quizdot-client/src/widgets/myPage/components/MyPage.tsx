@@ -3,9 +3,9 @@ import { GetUserInfoApi } from '../api/api';
 import type { UserInfo } from '../api/types';
 
 import { Record } from './Record';
-import { CharacterList } from './characterList';
-import { TitleList } from './titleList';
-import { Settings } from './settings';
+import { CharacterList } from './CharacterList';
+import { TitleList } from './TitleList';
+import { Settings } from './Settings';
 
 export function MyPage(props: { id: number }) {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
@@ -16,7 +16,6 @@ export function MyPage(props: { id: number }) {
         const userinfo = await GetUserInfoApi(props.id);
         if (userinfo) {
           setUserInfo(userinfo);
-          console.log(userInfo);
         }
       } catch (error) {
         console.error('Error Fetching UserInfo', error);
