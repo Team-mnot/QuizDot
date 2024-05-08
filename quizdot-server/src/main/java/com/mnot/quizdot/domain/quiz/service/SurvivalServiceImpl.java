@@ -34,6 +34,7 @@ public class SurvivalServiceImpl implements SurvivalService {
     private static final int MAX_SCORE = 1000;
     private static final String SERVER_SENDER = "SYSTEM";
     private static final String GAME_DESTINATION = "/sub/info/game/";
+    private static final String TITLE_DESTINATION = "/sub/title/";
     private final RedisTemplate redisTemplate;
     private final RedisUtil redisUtil;
     private final SimpMessagingTemplate messagingTemplate;
@@ -69,7 +70,7 @@ public class SurvivalServiceImpl implements SurvivalService {
         log.info("survive : {}, submit : {}", survivePeople, submitPeople);
 
         if (submitPeople == survivePeople) {
-            messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
+            messagingTemplate.convertAndSend(TITLE_DESTINATION + roomId,
                 MessageDto.of(SERVER_SENDER, "모든 생존자가 답안을 제출하였습니다.", MessageType.PASS,
                     System.currentTimeMillis()));
         }
@@ -78,6 +79,7 @@ public class SurvivalServiceImpl implements SurvivalService {
     /**
      * 결과에 따라 경험치 및 포인트 업데이트, 결과 정보 제공
      */
+    @Transactional
     @Override
     public List<ResultDto> exitGame(int roomId, int memberId) {
         String boardKey = redisUtil.getBoardKey(roomId);
@@ -109,11 +111,18 @@ public class SurvivalServiceImpl implements SurvivalService {
                     rank = 2;
                 }
 
-                int curLevel = member.updateReward(member.getPoint() + exp, member.getExp() + exp);
+                int curLevel = member.updateReward(exp, exp);
                 multiRecord.updateRecord(rank == 1 ? 1 : 0, 1);
-                if (curLevel != 0) {
-                    titleUtil.checkLevel(id);
+
+                //칭호 얻은게 있으면
+                List<String> unlockList = titleUtil.checkRequirment(id, ModeType.SURVIVAL);
+                if (!unlockList.isEmpty()) {
+                    log.info("멤버 pk : {}", id);
+                    log.info("칭호 체크 : {}", unlockList);
+                    messagingTemplate.convertAndSend(TITLE_DESTINATION + id,
+                        MessageDto.of(SERVER_SENDER, "칭호가 해금되었습니다", MessageType.TILE, unlockList));
                 }
+
                 ResultDto resultDto = ResultDto.builder()
                     .id(id)
                     .level(member.getLevel())
@@ -125,13 +134,6 @@ public class SurvivalServiceImpl implements SurvivalService {
                     .curExp(member.getExp())
                     .build();
                 resultDtoList.add(resultDto);
-                /*
-                TODO : 칭호를 해금
-                칭호를 체크하는 별도의 메서드 작성, 레벨업은 모든 유저에게 알려줘도 되지 않을까
-                해금은 해당 유저에게만 알려주기
-                 */
-
-                messagingTemplate.convertAndSend("/");
             }
         }
         messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,

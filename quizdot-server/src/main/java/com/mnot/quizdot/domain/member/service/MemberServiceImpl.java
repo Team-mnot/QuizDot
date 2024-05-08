@@ -84,15 +84,17 @@ public class MemberServiceImpl implements MemberService {
             .build();
         multiRecordRepository.save(survivalRecord);
 
-        //TODO: 칭호는 해금방식이기 때문에 처음에 생성될 때 중계테이블에 모든 칭호를 담아주고 1번 칭호만 true를 설정해주고 나머지 칭호는 모두 false인 상태로 값을 추가해놓아야함.
-        Title defaultTitle = titleRepository.findById(1)
-            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_TITLE));
-        MemberTitle memberTitle = MemberTitle.builder()
-            .title(defaultTitle)
-            .member(member)
-            .isGet(true)
-            .build();
-        memberTitleRepository.save(memberTitle);
+        //칭호는 해금방식이기 때문에 처음에 생성될 때 중계테이블에 모든 칭호를 담아주고 1번 칭호만 true를 설정해주고 나머지 칭호는 모두 false인 상태로 값을 추가해놓아야함.
+        List<Title> titleList = titleRepository.findAll();
+        for (Title title : titleList) {
+            boolean isFirst = title.getId() == 1;
+            MemberTitle memberTitle = MemberTitle.builder()
+                .title(title)
+                .member(member)
+                .isGet(isFirst)
+                .build();
+            memberTitleRepository.save(memberTitle);
+        }
 
         Character defaultCharacter = characterRepository.findById(1)
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_CHRACTERS));
