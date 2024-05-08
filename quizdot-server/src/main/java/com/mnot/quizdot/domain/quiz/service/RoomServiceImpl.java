@@ -185,9 +185,7 @@ public class RoomServiceImpl implements RoomService {
         String key = redisUtil.getRoomInfoKey(roomId);
         RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(key);
         // 링크를 생성하는 사용자가 방장인지 확인
-        if (memberId != roomInfoDto.getHostId()) {
-            throw new BusinessException(ErrorCode.INVITE_NOT_ALLOWED);
-        }
+        redisUtil.checkHost(roomId, memberId);
         // 초대 링크 생성시간 저장(방 번호 재사용 시, 초대 링크 중복 방지)
         String now = String.valueOf(System.currentTimeMillis());
         // base64url로 파라미터 인코딩
@@ -197,11 +195,16 @@ public class RoomServiceImpl implements RoomService {
         String link = String.format("https://k10d102.p.ssafy.io/invite?data=%s",base64UrlEncoded);
         // redis에 초대링크 저장
         roomInfoDto.setInviteLink(link);
-            String obj = objectMapper.writeValueAsString(roomInfoDto);
-            redisTemplate.opsForValue().set(key, obj);
+        String obj = objectMapper.writeValueAsString(roomInfoDto);
+        redisTemplate.opsForValue().set(key, obj);
+
         return link;
     }
 
+
+    /**
+     * 초대 받은 대기실 입장
+     */
     public RoomEnterRes enterInvitedRoom(String encodedParam, int memberId) throws JsonProcessingException {
         // 파라미터를 디코딩해서 roomId 추출
         String decodedParams = new String(Base64.getUrlDecoder().decode(encodedParam));
