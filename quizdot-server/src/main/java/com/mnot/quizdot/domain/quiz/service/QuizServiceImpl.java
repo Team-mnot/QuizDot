@@ -143,7 +143,12 @@ public class QuizServiceImpl implements QuizService {
         List<Integer> players = redisUtil.getPlayers(memberKey);
 
         int defaultValue = (ModeType.NORMAL.equals(mode)) ? 0 : 1;
-        players.forEach((playerId) -> redisTemplate.opsForZSet()
-            .add(boardKey, String.valueOf(playerId), defaultValue));
+        for (int playerId : players) {
+            System.out.println("" + playerId);
+            redisTemplate.opsForZSet().add(boardKey, playerId, defaultValue);
+
+        }
+        players.forEach((playerId) -> {
+        });
     }
 }
