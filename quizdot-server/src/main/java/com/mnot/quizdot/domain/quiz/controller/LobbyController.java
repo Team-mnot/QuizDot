@@ -1,6 +1,5 @@
 package com.mnot.quizdot.domain.quiz.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
 import com.mnot.quizdot.domain.quiz.dto.ActiveUserDto;
 import com.mnot.quizdot.domain.quiz.dto.ChannelListRes;
@@ -16,7 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,34 +33,25 @@ public class LobbyController {
 
     @PostMapping("/channel/{channel_id}")
     @Operation(summary = "대기실 생성")
-    public ResponseEntity<ResultResponse> createRoom(Authentication authentication,
-        @PathVariable("channel_id") int channelId, @RequestBody RoomReq roomReq)
-        throws JsonProcessingException {
-
-        // 방장 회원 PK
-        CustomMemberDetail userDetails = (CustomMemberDetail) authentication.getPrincipal();
-        int hostId = userDetails.getId();
-
-        // 대기실 생성
-        RoomRes roomRes = lobbyService.createRoom(channelId, hostId, roomReq);
+    public ResponseEntity<ResultResponse> createRoom(
+        @AuthenticationPrincipal CustomMemberDetail memberDetail,
+        @PathVariable("channel_id") int channelId, @RequestBody RoomReq roomReq) {
+        RoomRes roomRes = lobbyService.createRoom(channelId, memberDetail.getId(), roomReq);
         return ResponseEntity.ok(ResultResponse.of(201, "대기실 생성에 성공하였습니다.", roomRes));
     }
 
     @GetMapping("/channel/{channel_id}")
     @Operation(summary = "채널 로비 입장")
-    public ResponseEntity<ResultResponse> enterLobby(Authentication authentication,
-        @PathVariable("channel_id") int channelId)
-        throws JsonProcessingException {
+    public ResponseEntity<ResultResponse> enterLobby(
+        @AuthenticationPrincipal CustomMemberDetail memberDetail,
+        @PathVariable("channel_id") int channelId) {
 
         // 입장 가능 여부 확인
         lobbyService.checkAvailable(channelId);
 
-        // 입장한 유저의 정보
-        CustomMemberDetail userDetails = (CustomMemberDetail) authentication.getPrincipal();
-        int memberId = userDetails.getId();
-
         // 동시 접속자 목록 조회
-        List<ActiveUserDto> activeUserDtos = lobbyService.getActiveUserList(channelId, memberId);
+        List<ActiveUserDto> activeUserDtos = lobbyService.getActiveUserList(channelId,
+            memberDetail.getId());
 
         // 방 목록 조회
         List<RoomInfoDto> roomInfoDtos = lobbyService.getRoomList(channelId);

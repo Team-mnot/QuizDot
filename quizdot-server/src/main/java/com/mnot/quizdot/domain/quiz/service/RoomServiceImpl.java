@@ -1,10 +1,9 @@
 package com.mnot.quizdot.domain.quiz.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnot.quizdot.domain.member.entity.Member;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
 import com.mnot.quizdot.domain.member.repository.TitleRepository;
+import com.mnot.quizdot.domain.quiz.dto.GameState;
 import com.mnot.quizdot.domain.quiz.dto.MessageDto;
 import com.mnot.quizdot.domain.quiz.dto.MessageType;
 import com.mnot.quizdot.domain.quiz.dto.PlayerInfoDto;
@@ -14,10 +13,8 @@ import com.mnot.quizdot.domain.quiz.dto.RoomReq;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import com.mnot.quizdot.global.util.RedisUtil;
-import java.util.Map;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,8 +31,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class RoomServiceImpl implements RoomService {
 
+    private static final String SERVER_SENDER = "SYSTEM";
+    private static final String ROOM_PLAYER_DESTINATION = "/sub/players/room/";
+    private static final String ROOM_INFO_DESTINATION = "/sub/info/room/";
+    private static final String ROOM_CHAT_DESTINATION = "/sub/chat/room/";
     private final LobbyService lobbyService;
-    private final ObjectMapper objectMapper;
     private final RedisTemplate redisTemplate;
     private final MemberRepository memberRepository;
     private final TitleRepository titleRepository;
@@ -45,35 +45,32 @@ public class RoomServiceImpl implements RoomService {
     /**
      * 대기실 정보 변경
      */
-    public void modifyRoomInfo(int roomId, int memberId, RoomReq roomReq)
-        throws JsonProcessingException {
-        String key = redisUtil.getRoomInfoKey(roomId);
-        RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(key);
-
+    public void modifyRoomInfo(int roomId, int memberId, RoomReq roomReq) {
+        String roomKey = redisUtil.getRoomInfoKey(roomId);
+        RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(roomKey);
         if (memberId != roomInfoDto.getHostId()) {
             throw new BusinessException(ErrorCode.IS_NOT_HOST);
         }
 
         // 대기실 정보 업데이트
         roomInfoDto.modifyInfo(roomReq);
-        String jsonRoom = objectMapper.writeValueAsString(roomInfoDto);
-        redisTemplate.opsForValue().set(key, jsonRoom);
+        redisTemplate.opsForValue().set(roomKey, roomInfoDto);
 
         // 업데이트 된 정보를 대기실 내 유저들에게 전송
-        messagingTemplate.convertAndSend("/sub/info/room/" + roomId,
-            MessageDto.of("System", MessageType.MODIFY, roomInfoDto));
-        messagingTemplate.convertAndSend("/sub/chat/room/" + roomId,
-            MessageDto.of("System", "대기실 정보가 변경되었습니다.", MessageType.CHAT));
+        messagingTemplate.convertAndSend(ROOM_INFO_DESTINATION + roomId,
+            MessageDto.of(SERVER_SENDER, MessageType.MODIFY, roomInfoDto));
+        messagingTemplate.convertAndSend(ROOM_CHAT_DESTINATION + roomId,
+            MessageDto.of(SERVER_SENDER, "대기실 정보가 변경되었습니다.", MessageType.CHAT));
     }
 
     /**
      * 대기실 입장
      */
-    public RoomEnterRes enterRoom(int roomId, int memberId) throws JsonProcessingException {
+    public RoomEnterRes enterRoom(int roomId, int memberId) {
         // 대기실 정보 조회
         String roomKey = redisUtil.getRoomInfoKey(roomId);
         RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(roomKey);
-        if (!"WAITING".equals(roomInfoDto.getState())) {
+        if (!GameState.WAITING.equals(roomInfoDto.getState())) {
             throw new BusinessException(ErrorCode.IS_NOT_WAITING);
         }
 
@@ -105,14 +102,13 @@ public class RoomServiceImpl implements RoomService {
             .nicknameColor(member.getNicknameColor())
             .build();
 
-        String obj = objectMapper.writeValueAsString(player);
-        redisTemplate.opsForHash().put(memberKey, String.valueOf(memberId), obj);
+        redisTemplate.opsForHash().put(memberKey, String.valueOf(memberId), player);
 
-        messagingTemplate.convertAndSend("/sub/players/room/" + roomId,
-            MessageDto.of("System", player.getNickname() + "님이 입장하셨습니다.", MessageType.ENTER,
+        messagingTemplate.convertAndSend(ROOM_PLAYER_DESTINATION + roomId,
+            MessageDto.of(SERVER_SENDER, player.getNickname() + "님이 입장하셨습니다.", MessageType.ENTER,
                 player));
-        messagingTemplate.convertAndSend("/sub/chat/room/" + roomId,
-            MessageDto.of("System", player.getNickname() + "님이 입장하셨습니다.", MessageType.CHAT));
+        messagingTemplate.convertAndSend(ROOM_CHAT_DESTINATION + roomId,
+            MessageDto.of(SERVER_SENDER, player.getNickname() + "님이 입장하셨습니다.", MessageType.CHAT));
         return new RoomEnterRes(players, roomInfoDto);
     }
 
@@ -120,28 +116,25 @@ public class RoomServiceImpl implements RoomService {
      * 대기실 퇴장
      */
     @Override
-    public void leaveRoom(int roomId, String memberId) throws JsonProcessingException {
+    public void leaveRoom(int roomId, String memberId) {
         // 대기열 참여 리스트에서 삭제
-        String memberKey = redisUtil.getPlayersKey(roomId);
-        String jsonPlayer = (String) redisTemplate.opsForHash().get(memberKey, memberId);
-        if (jsonPlayer == null) {
+        String playerKey = redisUtil.getPlayersKey(roomId);
+        PlayerInfoDto player = (PlayerInfoDto) redisTemplate.opsForHash().get(playerKey, memberId);
+        if (player == null) {
             throw new BusinessException(ErrorCode.NOT_EXISTS_IN_ROOM);
         }
 
-        PlayerInfoDto player = objectMapper.readValue(jsonPlayer, PlayerInfoDto.class);
-        redisTemplate.opsForHash().delete(memberKey, memberId);
-
-        messagingTemplate.convertAndSend("/sub/players/room/" + roomId,
-            MessageDto.of("System", MessageType.LEAVE, memberId));
-        messagingTemplate.convertAndSend("/sub/chat/room/" + roomId,
-            MessageDto.of("System", player.getNickname() + "님이 퇴장하셨습니다.", MessageType.CHAT));
+        redisTemplate.opsForHash().delete(playerKey, memberId);
+        messagingTemplate.convertAndSend(ROOM_PLAYER_DESTINATION + roomId,
+            MessageDto.of(SERVER_SENDER, MessageType.LEAVE, memberId));
+        messagingTemplate.convertAndSend(ROOM_CHAT_DESTINATION + roomId,
+            MessageDto.of(SERVER_SENDER, player.getNickname() + "님이 퇴장하셨습니다.", MessageType.CHAT));
 
         // 방장이 퇴장한 경우 체크
         String roomKey = redisUtil.getRoomInfoKey(roomId);
         RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(roomKey);
-
         if (memberId.equals(String.valueOf(roomInfoDto.getHostId()))) {
-            String newHostId = (String) redisTemplate.opsForHash().randomKey(memberKey);
+            String newHostId = (String) redisTemplate.opsForHash().randomKey(playerKey);
 
             // 모든 사람이 퇴장했으면, 대기실 데이터 삭제
             if (newHostId == null) {
@@ -151,16 +144,14 @@ public class RoomServiceImpl implements RoomService {
 
             // 아직 남아 있는 인원이 있다면, 방장 변경
             roomInfoDto.setHostId(Integer.parseInt(newHostId));
-            String jsonRoom = objectMapper.writeValueAsString(roomInfoDto);
-            redisTemplate.opsForValue().set(roomKey, jsonRoom);
+            redisTemplate.opsForValue().set(roomKey, roomInfoDto);
 
             log.info("[leaveRoom] Host 변경 : {}", newHostId);
-            messagingTemplate.convertAndSend("/sub/info/room/" + roomId, roomInfoDto);
-            messagingTemplate.convertAndSend("/sub/chat/room/" + roomId,
-                MessageDto.of("System", "방장이 변경되었습니다", MessageType.CHAT));
+            messagingTemplate.convertAndSend(ROOM_INFO_DESTINATION + roomId, roomInfoDto);
+            messagingTemplate.convertAndSend(ROOM_CHAT_DESTINATION + roomId,
+                MessageDto.of(SERVER_SENDER, "방장이 변경되었습니다", MessageType.CHAT));
         }
     }
-
 
     /**
      * 대기실 관련 모든 데이터 삭제
@@ -168,11 +159,9 @@ public class RoomServiceImpl implements RoomService {
     private void deleteRoom(int roomId) {
         // REDIS
         String pattern = String.format("rooms:%d:*", roomId);
-        Cursor keys = redisTemplate.scan(ScanOptions.scanOptions().match(pattern).build());
+        Cursor<String> keys = redisTemplate.scan(ScanOptions.scanOptions().match(pattern).build());
         keys.forEachRemaining((key) -> {
-            log.info("key : {}", key);
-            redisTemplate.delete((String) key);
-            return;
+            redisTemplate.delete(key);
         });
 
         // ID POOL 관리
@@ -185,23 +174,25 @@ public class RoomServiceImpl implements RoomService {
     /**
      * 대기실 초대 링크 생성
      */
-    public String inviteRoom(int roomId, int memberId) throws JsonProcessingException {
+    public String inviteRoom(int roomId, int memberId) {
         String key = redisUtil.getRoomInfoKey(roomId);
         RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(key);
+
         // 링크를 생성하는 사용자가 방장인지 확인
         redisUtil.checkHost(roomId, memberId);
+
         // 초대 링크 생성시간 저장(방 번호 재사용 시, 초대 링크 중복 방지)
         String now = String.valueOf(System.currentTimeMillis());
+
         // base64url로 파라미터 인코딩
         String params = String.format("roomId=%d&time=%s", roomId, now);
         String base64UrlEncoded = Base64.getUrlEncoder().withoutPadding()
             .encodeToString(params.getBytes());
-        String link = String.format("https://k10d102.p.ssafy.io/invite?data=%s",base64UrlEncoded);
+        String link = String.format("https://k10d102.p.ssafy.io/invite?data=%s", base64UrlEncoded);
+
         // redis에 초대링크 저장
         roomInfoDto.setInviteLink(link);
-        String obj = objectMapper.writeValueAsString(roomInfoDto);
-        redisTemplate.opsForValue().set(key, obj);
-
+        redisTemplate.opsForValue().set(key, roomInfoDto);
         return link;
     }
 
@@ -209,7 +200,7 @@ public class RoomServiceImpl implements RoomService {
     /**
      * 초대 받은 대기실 입장
      */
-    public RoomEnterRes enterInvitedRoom(String encodedParam, int memberId) throws JsonProcessingException {
+    public RoomEnterRes enterInvitedRoom(String encodedParam, int memberId) {
         // 파라미터를 디코딩해서 roomId 추출
         String decodedParams = new String(Base64.getUrlDecoder().decode(encodedParam));
         Map<String, String> paramsMap = new HashMap<>();
@@ -225,7 +216,7 @@ public class RoomServiceImpl implements RoomService {
         String key = redisUtil.getRoomInfoKey(roomId);
         RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(key);
         String link = String.format("https://k10d102.p.ssafy.io/invite?data=%s", encodedParam);
-        if(!roomInfoDto.getInviteLink().equals(link)) {
+        if (!roomInfoDto.getInviteLink().equals(link)) {
             throw new BusinessException(ErrorCode.INVALID_INVITE_LINK);
         }
         // 대기실 입장
