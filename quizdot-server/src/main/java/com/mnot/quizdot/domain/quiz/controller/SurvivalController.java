@@ -1,6 +1,5 @@
 package com.mnot.quizdot.domain.quiz.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
 import com.mnot.quizdot.domain.member.entity.ModeType;
 import com.mnot.quizdot.domain.quiz.dto.ResultDto;
@@ -16,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,17 +39,16 @@ public class SurvivalController {
     public ResponseEntity<ResultResponse> updateScores(
         @AuthenticationPrincipal CustomMemberDetail memberDetail,
         @PathVariable("room_id") int roomId, @RequestBody SurvivalAnswerDto answerDto) {
-        survivalService.updateScores(roomId, String.valueOf(memberDetail.getId()),
-            answerDto.getResult());
+        survivalService.updateScores(roomId, memberDetail.getId(), answerDto.getResult());
         return ResponseEntity.ok(ResultResponse.of(200, "점수 업데이트에 성공하였습니다."));
     }
 
 
     @PostMapping("/exit/{room_id}")
     @Operation(summary = "서바이벌 모드 리워드 지급 및 결과 정보 제공 API")
-    public ResponseEntity<ResultResponse> exitGame(Authentication authentication,
+    public ResponseEntity<ResultResponse> exitGame(
+        @AuthenticationPrincipal CustomMemberDetail memberDetail,
         @PathVariable("room_id") int roomId) {
-        CustomMemberDetail memberDetail = (CustomMemberDetail) authentication.getPrincipal();
         List<ResultDto> resultDtoList = survivalService.exitGame(roomId, memberDetail.getId());
         return ResponseEntity.ok(ResultResponse.of(200, "리워드 지급 및 결과 계산을 성공하였습니다.", resultDtoList));
 
@@ -72,12 +69,14 @@ public class SurvivalController {
     public ResponseEntity<ResultResponse> registMatchmaking(
         @AuthenticationPrincipal CustomMemberDetail memberDetail,
         @PathVariable("room_id") int roomId,
-        @RequestParam String category) throws JsonProcessingException {
-        if (!survivalService.registMatchmaking(roomId, category)) {
+        @RequestParam String category) {
+        String gameId = survivalService.registMatchmaking(roomId, category);
+        if (gameId == null) {
             return ResponseEntity.ok(ResultResponse.of(200, "서바이벌 게임 매칭을 기다리고 있습니다."));
         }
 
-        quizService.initGame(roomId, memberDetail.getId(), ModeType.SURVIVAL);
+        log.info("gameId : {}", gameId);
+        quizService.initGame(Integer.parseInt(gameId), memberDetail.getId(), ModeType.SURVIVAL);
         return ResponseEntity.ok(ResultResponse.of(200, "매칭에 성공하여 서바이벌 게임을 시작합니다."));
     }
 }

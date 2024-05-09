@@ -45,7 +45,7 @@ public class MultiServiceImpl implements MultiService {
      * 멀티 점수 업데이트 (문제를 맞힌 순서에 따라 점수 업데이트)
      */
     @Override
-    public void updateScores(int roomId, int questionId, String memberId) {
+    public void updateScores(int roomId, int questionId, int memberId) {
         // 나의 제출 순위 조회
         String stageKey = String.format("rooms:%d:%d", roomId, questionId);
         if (redisTemplate.opsForList().lastIndexOf(stageKey, memberId) != null) {
@@ -65,7 +65,7 @@ public class MultiServiceImpl implements MultiService {
         // 다른 플레이어들에게 실시간 점수 업데이트 메시지 보내기
         ScoreDto updatedScore = new ScoreDto(memberId, newScore);
         messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
-            MessageDto.of(memberId, MessageType.UPDATE, updatedScore));
+            MessageDto.of(SERVER_SENDER, MessageType.UPDATE, updatedScore));
 
         // TODO: 전체 플레이어가 풀었을 경우 패스 메세지 보내기
     }
