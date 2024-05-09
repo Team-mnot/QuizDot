@@ -42,6 +42,8 @@ public class MemberServiceImpl implements MemberService {
     //비밀번호 암호화
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    private final static int claimPoint = 10000;
+
     @Override
     public void joinMember(JoinDto joinDTO) {
 
@@ -236,6 +238,8 @@ public class MemberServiceImpl implements MemberService {
     public void modifyCharacter(CustomMemberDetail customMemberDetail, int characterId) {
         Member member = memberRepository.findByMemberId(customMemberDetail.getUsername())
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
+        characterRepository.findById(characterId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_CHRACTERS));
         member.updateCharacterId(characterId);
     }
 
@@ -255,13 +259,14 @@ public class MemberServiceImpl implements MemberService {
     public int gachaCharacter(CustomMemberDetail customMemberDetail) {
         Member member = memberRepository.findById(customMemberDetail.getId())
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
-        if (member.getPoint() < 50) {
+        if (member.getPoint() < claimPoint) {
             throw new BusinessException(ErrorCode.REJECT_ACCOUNT_POINT);
         }
 
+        //TODO : 캐릭터 정해지면 바꿀것
         //2부터 10까지
         int pickCharacter = (int) (Math.random() * 9) + 2;
-        member.updatePoint(member.getPoint() - 50);
+        member.updatePoint(member.getPoint() - claimPoint);
         List<Integer> characterList = memberCharacterRepository.findCharacterIdsByMemberId(
             member.getId());
 
@@ -283,11 +288,11 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findById(customMemberDetail.getId())
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
 
-        if (member.getPoint() < 50) {
+        if (member.getPoint() < claimPoint) {
             throw new BusinessException(ErrorCode.REJECT_ACCOUNT_POINT);
         }
 
-        member.updatePoint(member.getPoint() - 50);
+        member.updatePoint(member.getPoint() - claimPoint);
         int r = (int) (Math.random() * 256);
         int g = (int) (Math.random() * 256);
         int b = (int) (Math.random() * 256);
