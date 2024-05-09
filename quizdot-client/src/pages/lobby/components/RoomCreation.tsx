@@ -1,7 +1,6 @@
 import { Button, Dropbox, Input } from '@/shared/ui';
 import { useState } from 'react';
 import { CreatingRoomInfo } from '../api/types';
-import { createRoomApi } from '../api/api';
 import { Toast } from '@/shared/ui/Toast';
 import { useRouter } from '@/shared/hooks';
 import {
@@ -14,6 +13,7 @@ import {
   statusDBList,
   statusList,
 } from '../constants';
+import { createRoomApi } from '../api/api';
 
 interface RoomCreationProps {
   channelId: number;
@@ -73,7 +73,7 @@ export function RoomCreation(props: RoomCreationProps) {
 
     const response = await createRoomApi(props.channelId, creatingRoomInfo);
 
-    if (response.status != 200) {
+    if (response.roomNum == -1) {
       setToastState(true);
     } else {
       router.routeTo(`/${props.channelId}/${mode}`);

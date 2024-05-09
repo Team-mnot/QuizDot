@@ -6,17 +6,17 @@ interface LobbyResponse {
 
 interface LobbyInfo {
   channelId: number;
-  activeUsersInfo: ActiveUserInfo[];
-  roomsInfo: RoomInfo[];
+  activeUserDtos: ActiveUserDto[];
+  roomInfoDtos: RoomInfoDto[];
 }
 
-interface ActiveUserInfo {
+interface ActiveUserDto {
   id: number;
   level: number;
   nickname: string;
 }
 
-interface RoomInfo {
+interface RoomInfoDto {
   roomId: number;
   title: string;
   password: string;
@@ -41,10 +41,10 @@ interface CreatingRoomInfo {
 interface CreatedRoomInfo {
   channelId: number;
   hostId: number;
-  roomInfo: RoomInfo[];
+  roomInfo: RoomInfoDto[];
 }
 
-interface PrivateRoomInfo {
+interface CheckPasswordInfo {
   roomNum: number;
   password: string;
 }
@@ -52,9 +52,9 @@ interface PrivateRoomInfo {
 export type {
   LobbyResponse,
   LobbyInfo,
-  ActiveUserInfo,
-  RoomInfo,
+  ActiveUserDto,
+  RoomInfoDto,
   CreatingRoomInfo,
   CreatedRoomInfo,
-  PrivateRoomInfo,
+  CheckPasswordInfo,
 };

@@ -2,11 +2,11 @@ import { Modal } from '@/shared/ui';
 import { OnlineUser } from './OnlineUser';
 import { useOpenModal } from '@/shared/hooks';
 import { useState } from 'react';
-import { ActiveUserInfo } from '../api/types';
+import { ActiveUserDto } from '../api/types';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
 
 interface OnlineUserListProps {
-  activeUsersInfo: ActiveUserInfo[];
+  activeUserDtos: ActiveUserDto[];
 }
 
 export function OnlineUserList(props: OnlineUserListProps) {
@@ -18,7 +18,7 @@ export function OnlineUserList(props: OnlineUserListProps) {
   return (
     <div>
       <div className={'rounded-lg bg-white bg-opacity-20 p-5 shadow-md'}>
-        {props.activeUsersInfo.map((user) => (
+        {props.activeUserDtos.map((user) => (
           <div
             key={user.id}
             onClick={() => {
@@ -26,7 +26,7 @@ export function OnlineUserList(props: OnlineUserListProps) {
               clickModal();
             }}
           >
-            <OnlineUser activeUserInfo={user} />
+            <OnlineUser activeUserDto={user} />
           </div>
         ))}
       </div>
