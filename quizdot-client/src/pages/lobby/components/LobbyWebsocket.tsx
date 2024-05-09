@@ -22,12 +22,17 @@ export function LobbyWebsocket(props: LobbyWebsocketProps) {
     <div>
       {isLobbyError && <div>해당 로비의 정보를 불러올 수 없습니다.</div>}
       {isLobbyLoading && <div>Loading . . .</div>}
-      {!isLobbyLoading && !isLobbyError && (
+      {!isLobbyLoading && !lobby && (
+        <div>해당 로비의 정보가 존재하지 않습니다.</div>
+      )}
+      {!isLobbyLoading && lobby && lobby.channelId != -1 && (
         <div>
-          <div>{lobby.channelId}</div>
           <div className={'flex'}>
-            <OnlineUserList activeUsersInfo={lobby.activeUsersInfo} />
-            <RoomList roomsInfo={lobby.roomsInfo} channelId={lobby.channelId} />
+            <OnlineUserList activeUserDtos={lobby.activeUserDtos} />
+            <RoomList
+              roomInfoDtos={lobby.roomInfoDtos}
+              channelId={lobby.channelId}
+            />
           </div>
           <div className={'flex'}>
             <MyProfile />
