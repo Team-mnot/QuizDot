@@ -4,6 +4,7 @@ import { useQuiz2 } from '../hooks/useQuiz2';
 import { useState, useEffect } from 'react';
 import useIsSubmitAnswer from '../hooks/useIsSubmitAnswer';
 import useQuizStore from '../store';
+import { postQuizResult } from '../api/api';
 
 export function QuizComponent({ roomId }: { roomId: number }) {
   const {
@@ -20,7 +21,7 @@ export function QuizComponent({ roomId }: { roomId: number }) {
   const [userAnswer, setUserAnswer] = useState(''); // 사용자 입력을 저장할 상태
   const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false); // 사용자 입력을 저장할 상태
   const [showHint, setShowHint] = useState(false); // 힌트 줄 까 말 까 ~~
-  const { currentQuiz } = useQuizStore();
+  const { currentQuiz, isCorrect, setIsCorrect } = useQuizStore();
 
   const {
     submitAnswer,
@@ -30,6 +31,7 @@ export function QuizComponent({ roomId }: { roomId: number }) {
 
   useEffect(() => {
     const currentQuiz = quizzes[currentQuizIndex] || null;
+    setIsCorrect(false);
     setResultMessage('제출 안하니? 🐦');
     setCurrentQuiz(currentQuiz);
     setShowChatBox(false);
@@ -47,11 +49,14 @@ export function QuizComponent({ roomId }: { roomId: number }) {
         setResultMessage('오답 😿');
       } else {
         setResultMessage('정답! 🐣');
+        setIsCorrect(true);
       }
 
       setShowChatBox(true);
       setUserAnswer('');
-      await submitAnswer(roomId, currentQuiz.id); // 어라 이거 뭐지 .. ? 내일 볼래..
+
+      await submitAnswer(roomId, currentQuiz.id); // 이거 문제 제출했다고 알리는 함수 만들어놨던건데 안쓰이면 지워야징
+      await postQuizResult(roomId, isCorrect); // API 호출
     }
   };
 
@@ -117,7 +122,7 @@ export function QuizComponent({ roomId }: { roomId: number }) {
         ) : (
           <div
             className={
-              'fixed bottom-64 left-0 right-0 mx-auto  max-w-3xl rounded-xl bg-white py-2'
+              'fixed bottom-7 left-0 right-0 z-50 mx-auto max-w-2xl rounded-3xl bg-white'
             }
           >
             <div className="flex justify-between">
