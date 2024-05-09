@@ -262,7 +262,7 @@ public class SurvivalServiceImpl implements SurvivalService {
 
             // 매칭이 완료되면 매칭 큐를 초기화한다
             matchRooms.addAll(existRooms);
-//            redisTemplate.unlink(matchKey);
+            redisTemplate.unlink(matchKey);
         } else {
             // 대기실 인원이 10명 이상이면, 바로 게임을 시작한다
             matchRooms.add(new MatchRoomDto(strRoomId, playerCount));
