@@ -1,6 +1,5 @@
 package com.mnot.quizdot.domain.quiz.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
 import com.mnot.quizdot.domain.member.entity.ModeType;
 import com.mnot.quizdot.domain.quiz.dto.QuizListRes;
@@ -45,8 +44,7 @@ public class QuizController {
     public ResponseEntity<ResultResponse> passQuestion(
         @AuthenticationPrincipal CustomMemberDetail memberDetail,
         @PathVariable("room_id") int roomId,
-        @PathVariable("question_id") int questionId)
-        throws JsonProcessingException {
+        @PathVariable("question_id") int questionId) {
         quizService.passQuestion(roomId, questionId, memberDetail.getId(),
             memberDetail.getNickname());
         return ResponseEntity.ok(ResultResponse.of(200, "문제 패스에 성공하였습니다."));

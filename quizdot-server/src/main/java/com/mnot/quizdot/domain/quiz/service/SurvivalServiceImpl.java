@@ -1,6 +1,5 @@
 package com.mnot.quizdot.domain.quiz.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnot.quizdot.domain.member.entity.Member;
 import com.mnot.quizdot.domain.member.entity.ModeType;
@@ -230,7 +229,7 @@ public class SurvivalServiceImpl implements SurvivalService {
     }
 
     @Override
-    public String registMatchmaking(int roomId, String category) throws JsonProcessingException {
+    public String registMatchmaking(int roomId, String category) {
         String strRoomId = String.valueOf(roomId);
         String gameId = strRoomId + GAME_DEFAULT_ID;
 
@@ -287,8 +286,7 @@ public class SurvivalServiceImpl implements SurvivalService {
             matchPlayers.putAll(players);
         }
 
-        redisTemplate.opsForValue().set(redisUtil.getRoomInfoKey(intGameId),
-            objectMapper.writeValueAsString(gameRoomInfoDto));
+        redisTemplate.opsForValue().set(redisUtil.getRoomInfoKey(intGameId), gameRoomInfoDto);
         redisTemplate.opsForHash().putAll(redisUtil.getPlayersKey(intGameId), matchPlayers);
 
         // 게임 시작

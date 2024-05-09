@@ -1,19 +1,17 @@
 package com.mnot.quizdot.domain.quiz.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mnot.quizdot.domain.quiz.dto.RoomEnterRes;
 import com.mnot.quizdot.domain.quiz.dto.RoomReq;
 
 public interface RoomService {
 
-    void modifyRoomInfo(int roomId, int memberId, RoomReq roomReq) throws JsonProcessingException;
+    void modifyRoomInfo(int roomId, int memberId, RoomReq roomReq);
 
-    RoomEnterRes enterRoom(int roomId, int memberId)
-        throws JsonProcessingException;
+    RoomEnterRes enterRoom(int roomId, int memberId);
 
-    void leaveRoom(int roomId, String memberId) throws JsonProcessingException;
+    void leaveRoom(int roomId, String memberId);
 
-    String inviteRoom(int roomId, int memberId) throws JsonProcessingException;
+    String inviteRoom(int roomId, int memberId);
 
-    RoomEnterRes enterInvitedRoom(String encodedParam, int memberId) throws JsonProcessingException;
+    RoomEnterRes enterInvitedRoom(String encodedParam, int memberId);
 }

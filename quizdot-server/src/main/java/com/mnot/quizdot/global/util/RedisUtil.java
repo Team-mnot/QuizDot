@@ -1,17 +1,14 @@
 package com.mnot.quizdot.global.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnot.quizdot.domain.quiz.dto.ActiveUserDto;
 import com.mnot.quizdot.domain.quiz.dto.PlayerInfoDto;
 import com.mnot.quizdot.domain.quiz.dto.RoomInfoDto;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -75,15 +72,7 @@ public class RedisUtil {
      * 대기실 플레이어 PK 값 조회
      */
     public List<Integer> getPlayers(String key) {
-        String jsonPlayers = redisTemplate.opsForHash().keys(key).toString();
-        List<Integer> players = null;
-        try {
-            players = objectMapper.readValue(jsonPlayers, new TypeReference<>() {
-            });
-        } catch (JsonProcessingException e) {
-            throw new BusinessException(ErrorCode.JSON_PROCESSING_ERROR);
-        }
-        return players;
+        return new ArrayList<>(redisTemplate.opsForHash().keys(key));
     }
 
     /**
@@ -109,20 +98,6 @@ public class RedisUtil {
      */
     public List<ActiveUserDto> getActiveUsers(String key) {
         // 레디스에서 해당 채널의 동시 접속 유저 목록 추출
-        Set<Object> activeSet = redisTemplate.opsForSet().members(key);
-        List<ActiveUserDto> activeUsers = null;
-
-        activeUsers = activeSet.stream()
-            .map(Object::toString)
-            .map(jsonString -> {
-                try {
-                    return objectMapper.readValue(jsonString, ActiveUserDto.class);
-                } catch (JsonProcessingException e) {
-                    throw new BusinessException(ErrorCode.JSON_PROCESSING_ERROR);
-                }
-            })
-            .collect(Collectors.toList());
-
-        return activeUsers;
+        return new ArrayList<>(redisTemplate.opsForSet().members(key));
     }
 }

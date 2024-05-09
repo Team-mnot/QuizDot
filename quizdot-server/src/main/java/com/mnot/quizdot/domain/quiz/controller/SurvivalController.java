@@ -1,6 +1,5 @@
 package com.mnot.quizdot.domain.quiz.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
 import com.mnot.quizdot.domain.member.entity.ModeType;
 import com.mnot.quizdot.domain.quiz.dto.ResultDto;
@@ -70,7 +69,7 @@ public class SurvivalController {
     public ResponseEntity<ResultResponse> registMatchmaking(
         @AuthenticationPrincipal CustomMemberDetail memberDetail,
         @PathVariable("room_id") int roomId,
-        @RequestParam String category) throws JsonProcessingException {
+        @RequestParam String category) {
         String gameId = survivalService.registMatchmaking(roomId, category);
         if (gameId == null) {
             return ResponseEntity.ok(ResultResponse.of(200, "서바이벌 게임 매칭을 기다리고 있습니다."));

@@ -1,6 +1,5 @@
 package com.mnot.quizdot.domain.quiz.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
 import com.mnot.quizdot.domain.quiz.dto.ActiveUserDto;
 import com.mnot.quizdot.domain.quiz.dto.ChannelListRes;
@@ -36,8 +35,7 @@ public class LobbyController {
     @Operation(summary = "대기실 생성")
     public ResponseEntity<ResultResponse> createRoom(
         @AuthenticationPrincipal CustomMemberDetail memberDetail,
-        @PathVariable("channel_id") int channelId, @RequestBody RoomReq roomReq)
-        throws JsonProcessingException {
+        @PathVariable("channel_id") int channelId, @RequestBody RoomReq roomReq) {
         RoomRes roomRes = lobbyService.createRoom(channelId, memberDetail.getId(), roomReq);
         return ResponseEntity.ok(ResultResponse.of(201, "대기실 생성에 성공하였습니다.", roomRes));
     }
@@ -46,8 +44,7 @@ public class LobbyController {
     @Operation(summary = "채널 로비 입장")
     public ResponseEntity<ResultResponse> enterLobby(
         @AuthenticationPrincipal CustomMemberDetail memberDetail,
-        @PathVariable("channel_id") int channelId)
-        throws JsonProcessingException {
+        @PathVariable("channel_id") int channelId) {
 
         // 입장 가능 여부 확인
         lobbyService.checkAvailable(channelId);
