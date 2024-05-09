@@ -14,5 +14,5 @@ public interface SurvivalService {
 
     Set<TypedTuple<String>> getStageResult(int roomId, int memberId);
 
-    boolean registMatchmaking(int roomId, String category) throws JsonProcessingException;
+    String registMatchmaking(int roomId, String category) throws JsonProcessingException;
 }

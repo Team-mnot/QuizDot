@@ -73,11 +73,13 @@ public class SurvivalController {
         @AuthenticationPrincipal CustomMemberDetail memberDetail,
         @PathVariable("room_id") int roomId,
         @RequestParam String category) throws JsonProcessingException {
-        if (!survivalService.registMatchmaking(roomId, category)) {
+        String gameId = survivalService.registMatchmaking(roomId, category);
+        if (gameId == null) {
             return ResponseEntity.ok(ResultResponse.of(200, "서바이벌 게임 매칭을 기다리고 있습니다."));
         }
 
-        quizService.initGame(roomId, memberDetail.getId(), ModeType.SURVIVAL);
+        log.info("gameId : {}", gameId);
+        quizService.initGame(Integer.parseInt(gameId), memberDetail.getId(), ModeType.SURVIVAL);
         return ResponseEntity.ok(ResultResponse.of(200, "매칭에 성공하여 서바이벌 게임을 시작합니다."));
     }
 }

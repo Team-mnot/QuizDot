@@ -232,9 +232,10 @@ public class SurvivalServiceImpl implements SurvivalService {
     }
 
     @Override
-    public boolean registMatchmaking(int roomId, String category) throws JsonProcessingException {
+    public String registMatchmaking(int roomId, String category) throws JsonProcessingException {
         String strRoomId = String.valueOf(roomId);
         String gameId = strRoomId + GAME_DEFAULT_ID;
+
         String matchKey = MATCH_KEY + category;
         Set<MatchRoomDto> matchRooms = new HashSet<>();
 
@@ -244,24 +245,22 @@ public class SurvivalServiceImpl implements SurvivalService {
         // 게임 시작 여부 확인
         if (playerCount < 10) {
             // 대기실 인원이 10명 미만이면, 매칭 등록 후 게임 시작 여부를 다시 확인한다
-            String jsonMatchRoom = objectMapper.writeValueAsString(
-                new MatchRoomDto(strRoomId, playerCount));
-            redisTemplate.opsForSet().add(matchKey, jsonMatchRoom);
+            redisTemplate.opsForSet().add(matchKey, new MatchRoomDto(strRoomId, playerCount));
 
-            // 매칭 대기자가 10명 이상이면 게임 시작
+            // 매칭 대기자가 10명 이상이면  게임 시작
             int totalPlayer = 0;
-            Set<MatchRoomDto> existRooms = new HashSet<>();
-            for (Object o : redisTemplate.opsForSet().members(matchKey)) {
-                MatchRoomDto matchRoomDto = objectMapper.readValue((String) o, MatchRoomDto.class);
-                totalPlayer += matchRoomDto.getPlayerCount();
-                existRooms.add(matchRoomDto);
+            Set<MatchRoomDto> existRooms = redisTemplate.opsForSet().members(matchKey);
+            for (MatchRoomDto matchRoom : existRooms) {
+                totalPlayer += matchRoom.getPlayerCount();
             }
+
+            log.info("[registMatchMaking] 카테고리의 매칭 큐 : {}명", totalPlayer);
 
             // 매칭 대기자가 10명 미만이면 기다린다
             if (totalPlayer < 10) {
                 messagingTemplate.convertAndSend(getGameDestination(roomId),
                     MessageDto.of(SERVER_SENDER, MessageType.MATCH_INPROGRESS));
-                return false;
+                return null;
             }
 
             // 매칭이 완료되면 매칭 큐를 초기화한다
@@ -274,26 +273,34 @@ public class SurvivalServiceImpl implements SurvivalService {
 
         // 서바이벌 게임 준비
         // 임시 게임 대기실을 생성하고 모든 플레이어를 등록한다
+        int intGameId = Integer.parseInt(gameId);
+        String roomKey = redisUtil.getRoomInfoKey(roomId);
+        int hostId = redisUtil.getRoomInfo(roomKey).getHostId();
         RoomInfoDto gameRoomInfoDto = RoomInfoDto.builder()
-            .roomId(Integer.parseInt(gameId))
+            .roomId(intGameId)
             .category(category)
-            .hostId(redisUtil.getRoomInfo(redisUtil.getRoomInfoKey(roomId)).getHostId())
+            .hostId(hostId)
             .build();
 
         Map<String, PlayerInfoDto> matchPlayers = new HashMap<>();
         for (MatchRoomDto matchRoom : matchRooms) {
-            matchPlayers.putAll(redisUtil.getPlayersInfo(redisUtil.getPlayersKey(
-                Integer.parseInt(matchRoom.getRoomId()))));
+            String playerKey = redisUtil.getPlayersKey(Integer.parseInt(matchRoom.getRoomId()));
+            Map<String, PlayerInfoDto> players = redisUtil.getPlayersInfo(playerKey);
+            matchPlayers.putAll(players);
         }
+
+        redisTemplate.opsForValue().set(redisUtil.getRoomInfoKey(intGameId),
+            objectMapper.writeValueAsString(gameRoomInfoDto));
+        redisTemplate.opsForHash().putAll(redisUtil.getPlayersKey(intGameId), matchPlayers);
 
         // 게임 시작
         // 임시 게임 대기실 ID, 게임 플레이어 정보를 메세지로 전송
         matchRooms.forEach((key) ->
-            messagingTemplate.convertAndSend(getGameDestination(roomId),
+            messagingTemplate.convertAndSend(getGameDestination(Integer.parseInt(key.getRoomId())),
                 MessageDto.of(SERVER_SENDER, MessageType.START,
                     new RoomEnterRes(matchPlayers, gameRoomInfoDto))));
 
-        return true;
+        return gameId;
     }
 
     private String getSurviveKey(int roomId) {
