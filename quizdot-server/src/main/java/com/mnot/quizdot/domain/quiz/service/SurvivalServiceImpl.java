@@ -59,11 +59,10 @@ public class SurvivalServiceImpl implements SurvivalService {
      * 서바이벌 모드 점수 업데이트
      */
     @Override
-    public void updateScores(int roomId, String memberId, int isCorrect) {
+    public void updateScores(int roomId, int memberId, int isCorrect) {
         // 생존 여부 체크
         String boardKey = redisUtil.getBoardKey(roomId);
         Double doubleState = redisTemplate.opsForZSet().score(boardKey, memberId);
-
         if (doubleState == null) {
             throw new BusinessException(ErrorCode.PLAYER_NOT_EXISTS);
         }
@@ -79,7 +78,6 @@ public class SurvivalServiceImpl implements SurvivalService {
         long survivePeople = redisTemplate.opsForZSet().count(boardKey, 0, MAX_SCORE);
         long submitPeople = redisTemplate.opsForZSet()
             .count(getSurviveKey(roomId), MIN_SCORE, MAX_SCORE);
-
         log.info("survive : {}, submit : {}", survivePeople, submitPeople);
 
         if (submitPeople == survivePeople) {
@@ -195,11 +193,11 @@ public class SurvivalServiceImpl implements SurvivalService {
         // 맞힌 플레이어는 점수를 부여하고, 정답을 제출하지 않았거나 틀린 플레이어는 탈락 처리한다
         else {
             // 스코어보드에서 생존자들 정보를 가져온다
-            Set<TypedTuple<String>> survivors = redisTemplate.opsForZSet()
+            Set<TypedTuple<Integer>> survivors = redisTemplate.opsForZSet()
                 .rangeByScoreWithScores(boardKey, 0, MAX_SCORE);
-            Set<TypedTuple<String>> newSurvivors = new HashSet<>();
-            for (TypedTuple<String> survivor : survivors) {
-                String playerId = survivor.getValue();
+            Set<TypedTuple<Integer>> newSurvivors = new HashSet<>();
+            for (TypedTuple<Integer> survivor : survivors) {
+                Integer playerId = survivor.getValue();
                 Double originalScore = survivor.getScore();
                 Double state = redisTemplate.opsForZSet().score(surviveKey, playerId);
                 // TODO: REDIS 호출 최적화 (현재는 생존자/탈락자 수만큼 반복하며 REDIS 호출)

@@ -19,12 +19,14 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LobbyServiceImpl implements LobbyService {
@@ -85,9 +87,8 @@ public class LobbyServiceImpl implements LobbyService {
             .state(GameState.WAITING)
             .build();
 
-        String key = redisUtil.getRoomInfoKey(roomId);
-        String obj = objectMapper.writeValueAsString(roomInfoDto);
-        redisTemplate.opsForValue().set(key, obj);
+        String roomKey = redisUtil.getRoomInfoKey(roomId);
+        redisTemplate.opsForValue().set(roomKey, roomInfoDto);
 
         // 생성된 대기실 정보 반환
         return RoomRes.builder()

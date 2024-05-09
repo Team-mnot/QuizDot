@@ -60,7 +60,7 @@ public class QuizServiceImpl implements QuizService {
         // 중복 출제 방지를 위해 조회한 문제 PK를 REDIS에 저장
         quizListRes
             .forEach(
-                (quizRes -> redisTemplate.opsForSet().add(key, String.valueOf(quizRes.getId()))));
+                (quizRes -> redisTemplate.opsForSet().add(key, quizRes.getId())));
         return new QuizListRes(quizListRes);
     }
 
@@ -68,7 +68,7 @@ public class QuizServiceImpl implements QuizService {
      * 문제 패스 API (REDIS PASS 유저 집합에 추가, 모든 유저가 PASS 버튼을 누른 경우에는 PASS 메세지 전송)
      */
     @Override
-    public void passQuestion(int roomId, int questionId, String memberId, String nickname) {
+    public void passQuestion(int roomId, int questionId, int memberId, String nickname) {
         String passKey = String.format("rooms:%d:%d:pass", roomId, questionId);
 
         // 이미 패스한 유저가 시도하는 경우
@@ -90,10 +90,10 @@ public class QuizServiceImpl implements QuizService {
                     System.currentTimeMillis()));
         } else {
             // 아직 모든 유저가 PASS 버튼을 누르지 않았다면
-            String message = String.format("%s님이 문제를 패스했습니다. [%d명/%d명]", nickname, passPeople,
-                totalPeople);
             messagingTemplate.convertAndSend("/sub/chat/game/" + roomId,
-                MessageDto.of(SERVER_SENDER, message, MessageType.CHAT));
+                MessageDto.of(SERVER_SENDER,
+                    String.format("%s님이 문제를 패스했습니다. [%d명/%d명]", nickname, passPeople,
+                        totalPeople), MessageType.CHAT));
         }
     }
 

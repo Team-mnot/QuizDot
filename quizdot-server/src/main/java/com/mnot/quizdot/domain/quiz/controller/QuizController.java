@@ -47,7 +47,7 @@ public class QuizController {
         @PathVariable("room_id") int roomId,
         @PathVariable("question_id") int questionId)
         throws JsonProcessingException {
-        quizService.passQuestion(roomId, questionId, String.valueOf(memberDetail.getId()),
+        quizService.passQuestion(roomId, questionId, memberDetail.getId(),
             memberDetail.getNickname());
         return ResponseEntity.ok(ResultResponse.of(200, "문제 패스에 성공하였습니다."));
     }

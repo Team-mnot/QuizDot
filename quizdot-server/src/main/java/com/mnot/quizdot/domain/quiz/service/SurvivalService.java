@@ -8,7 +8,7 @@ import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 
 public interface SurvivalService {
 
-    void updateScores(int roomId, String memberId, int isCorrect);
+    void updateScores(int roomId, int memberId, int isCorrect);
 
     List<ResultDto> exitGame(int roomId, int memberId);
 

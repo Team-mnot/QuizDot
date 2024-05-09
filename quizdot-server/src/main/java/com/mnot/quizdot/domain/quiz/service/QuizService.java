@@ -9,7 +9,7 @@ public interface QuizService {
 
     QuizListRes getQuizzes(int roomNum, QuizParam quizParam);
 
-    void passQuestion(int roomId, int questionId, String memberId, String nickname)
+    void passQuestion(int roomId, int questionId, int memberId, String nickname)
         throws JsonProcessingException;
 
     void startGame(int roomId, int memberId, ModeType mode);

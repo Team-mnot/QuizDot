@@ -1,6 +1,5 @@
 package com.mnot.quizdot.global.util;
 
-import com.amazonaws.util.json.Jackson;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,14 +10,15 @@ import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class RedisUtil {
@@ -54,26 +54,21 @@ public class RedisUtil {
      */
     public RoomInfoDto getRoomInfo(String key) {
         // Redis 조회
-        String info = (String) redisTemplate.opsForValue().get(key);
-        if (info == null) {
+        RoomInfoDto roomInfoDto = (RoomInfoDto) redisTemplate.opsForValue().get(key);
+        if (roomInfoDto == null) {
             throw new BusinessException(ErrorCode.ROOM_NOT_FOUND);
         }
 
-        // 객체 변환
-        try {
-            return objectMapper.readValue(info, RoomInfoDto.class);
-        } catch (JsonProcessingException e) {
-            throw new BusinessException(ErrorCode.JSON_PROCESSING_ERROR);
-        }
+        log.info("[getRoomInfo] roomInfoDto : {}", roomInfoDto);
+        return roomInfoDto;
     }
 
     /**
      * 대기실 플레이어 정보 조회
      */
     public Map<String, PlayerInfoDto> getPlayersInfo(String key) {
-        Set<Entry<String, String>> playerSet = redisTemplate.opsForHash().entries(key).entrySet();
-        return playerSet.stream().collect(Collectors.toMap(entry -> entry.getKey(),
-            entry -> Jackson.fromJsonString(entry.getValue(), PlayerInfoDto.class)));
+        Map<String, PlayerInfoDto> playerMap = redisTemplate.opsForHash().entries(key);
+        return playerMap;
     }
 
     /**

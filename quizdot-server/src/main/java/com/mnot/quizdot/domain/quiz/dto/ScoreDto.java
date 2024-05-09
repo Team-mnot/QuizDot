@@ -13,8 +13,8 @@ public class ScoreDto {
 
     private Long score;
 
-    public ScoreDto(String memberId, Long score) {
-        this.playerId = Integer.parseInt(memberId);
+    public ScoreDto(int memberId, Long score) {
+        this.playerId = memberId;
         this.score = score;
     }
 }
