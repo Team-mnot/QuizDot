@@ -9,6 +9,8 @@ import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -72,7 +74,10 @@ public class RedisUtil {
      * 대기실 플레이어 PK 값 조회
      */
     public List<Integer> getPlayers(String key) {
-        return new ArrayList<>(redisTemplate.opsForHash().keys(key));
+        Set<String> playerKeySet = redisTemplate.opsForHash().keys(key);
+        return playerKeySet.stream()
+            .map((stringKey) -> Integer.parseInt(stringKey)).collect(
+                Collectors.toList());
     }
 
     /**
