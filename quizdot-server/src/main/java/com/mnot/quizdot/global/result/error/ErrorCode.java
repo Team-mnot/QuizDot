@@ -48,9 +48,11 @@ public enum ErrorCode {
 
 
     //Game
+    NOT_FOUND_QUIZ(404, "퀴즈가 존재하지 않습니다."),
     SUBMIT_ALREADY_COMPLETE(400, "이미 제출된 결과입니다."),
     PASS_ALREADY_COMPLETE(400, "패스를 이미 입력하셨습니다."),
     PLAYER_NOT_EXISTS(400, "플레이어 정보가 존재하지 않습니다."),
+    NOT_EXSITS_LIST(404, "퀴즈 리스트에 존재하지 않습니다."),
 
     // Lobby
     CHANNEL_LIMIT_EXCEEDED(400, "채널 최대 인원을 초과하였습니다.");

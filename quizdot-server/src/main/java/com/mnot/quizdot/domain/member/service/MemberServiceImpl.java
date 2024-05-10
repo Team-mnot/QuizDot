@@ -258,8 +258,8 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findByMemberId(customMemberDetail.getUsername())
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
         if (!memberTitleRepository.existsByTitleIdAndMemberIdAndIsGetTrue(
-            customMemberDetail.getId(),
-            titleId)) {
+            titleId, customMemberDetail.getId()
+        )) {
             throw new BusinessException(ErrorCode.LOCK_TITLE_ERROR);
         }
         member.updateTitleId(titleId);
@@ -297,7 +297,7 @@ public class MemberServiceImpl implements MemberService {
     public String gachaColor(CustomMemberDetail customMemberDetail) {
         Member member = memberRepository.findById(customMemberDetail.getId())
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
-
+        
         if (member.getPoint() < claimPoint) {
             throw new BusinessException(ErrorCode.REJECT_ACCOUNT_POINT);
         }
