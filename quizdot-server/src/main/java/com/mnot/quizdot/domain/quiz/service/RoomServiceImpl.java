@@ -102,7 +102,8 @@ public class RoomServiceImpl implements RoomService {
             .nicknameColor(member.getNicknameColor())
             .build();
 
-        redisTemplate.opsForHash().put(memberKey, String.valueOf(memberId), player);
+        players.put(String.valueOf(memberId), player);
+        redisTemplate.opsForHash().putAll(memberKey, players);
 
         messagingTemplate.convertAndSend(ROOM_PLAYER_DESTINATION + roomId,
             MessageDto.of(SERVER_SENDER, player.getNickname() + "님이 입장하셨습니다.", MessageType.ENTER,
