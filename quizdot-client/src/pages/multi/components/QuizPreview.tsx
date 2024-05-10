@@ -1,9 +1,9 @@
 import { Progress } from '@/shared/ui';
-import { QuizComponent } from './QuizComponent';
+import { Quiz } from './Quiz';
 import { useEffect, useState } from 'react';
-import { AnswerComponent } from './AnswerComponent';
-import { TextInputComponent } from './TextInputComponent';
-import { OXButtonComponent } from './OXButtonComponent';
+import { Answer } from './Answer';
+import { TextTypeInput } from './TextTypeInput';
+import { OXTypeBtn } from './OXTypeBtn';
 
 export function QuizPreview() {
   const [dummyIndex, setDummyIndex] = useState(0);
@@ -48,12 +48,12 @@ export function QuizPreview() {
       className={'-translate-x-1/2 transform p-5'}
     >
       <div>
-        <QuizComponent
+        <Quiz
           padding={'py-5'}
           size={'h-28 w-[500px]'}
           question={dummyQuestions[dummyIndex].question}
           category={dummyQuestions[dummyIndex].category}
-        ></QuizComponent>
+        ></Quiz>
 
         <Progress
           padding={'py-5'}
@@ -64,7 +64,7 @@ export function QuizPreview() {
           maxValue={dummyTimer.maxValue}
         ></Progress>
 
-        <AnswerComponent
+        <Answer
           padding={'py-5'}
           size={'h-[300px] w-[500px]'}
           sec={dummyTimer.currentValue}
@@ -76,9 +76,9 @@ export function QuizPreview() {
         />
       </div>
       {dummyQuestions[dummyIndex].type == 'ox' ? (
-        <OXButtonComponent padding={'py-20'} size={'h-24 w-[500px]'} />
+        <OXTypeBtn padding={'py-20'} size={'h-24 w-[500px]'} />
       ) : (
-        <TextInputComponent padding={'py-20'} size={'h-24 w-[500px]'} />
+        <TextTypeInput padding={'py-20'} size={'h-24 w-[500px]'} />
       )}
     </div>
   );

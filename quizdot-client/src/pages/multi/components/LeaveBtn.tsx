@@ -1,6 +1,6 @@
 import { Button } from '@/shared/ui';
 
-export function ExitButtonComponent() {
+export function LeaveBtn() {
   const handleClickExit = () => {};
 
   return (

@@ -1,5 +1,5 @@
-import { RoomInfoComponent } from './RoomInfoComponent';
-import { ExitButtonComponent } from './ExitButtonComponent';
+import { RoomInfo } from './RoomInfo';
+import { LeaveBtn } from './LeaveBtn';
 
 const dummyRoomInfo = {
   title: '익!',
@@ -22,18 +22,10 @@ export function RoomHeader() {
       className={'flex w-full justify-between p-5'}
     >
       <div>
-        <RoomInfoComponent
-          title={dummyRoomInfo.title}
-          public={dummyRoomInfo.public}
-          password={dummyRoomInfo.password}
-          mode={dummyRoomInfo.mode}
-          maxPeople={dummyRoomInfo.maxPeople}
-          category={dummyRoomInfo.category}
-          maxQuestion={dummyRoomInfo.maxQuestion}
-        ></RoomInfoComponent>
+        <RoomInfo roomInfo={dummyRoomInfo}></RoomInfo>
       </div>
       <div>
-        <ExitButtonComponent />
+        <LeaveBtn />
       </div>
     </div>
   );

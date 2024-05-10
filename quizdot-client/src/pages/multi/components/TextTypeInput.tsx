@@ -1,19 +1,14 @@
 import { Button, Input } from '@/shared/ui';
 import { useState } from 'react';
 
-interface PropsWithSize {
-  padding: string;
-  size: string;
-}
-
-export function TextInputComponent(props: PropsWithSize) {
+export function TextTypeInput(props: { padding: string; size: string }) {
   const [answer, setAnswer] = useState('');
 
-  const handleInputAnswer = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const inputAnswer = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAnswer(e.currentTarget.value);
   };
 
-  const handleClickPass = () => {};
+  const passQuestion = () => {};
 
   return (
     <div className={`flex justify-between ${props.padding} ${props.size}`}>
@@ -23,15 +18,11 @@ export function TextInputComponent(props: PropsWithSize) {
           type="text"
           placeholder="정답을 입력하세요"
           value={answer}
-          onChange={handleInputAnswer}
+          onChange={inputAnswer}
         />
       </div>
       <div>
-        <Button
-          className={'h-12 w-20'}
-          value="패스"
-          onClick={handleClickPass}
-        />
+        <Button className={'h-12 w-20'} value="패스" onClick={passQuestion} />
       </div>
     </div>
   );

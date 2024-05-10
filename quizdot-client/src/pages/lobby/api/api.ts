@@ -1,5 +1,4 @@
 import jwtAxiosInstance from '@/shared/utils/jwtAxiosInstance';
-import axiosInstance from '@/shared/utils/axiosInstance';
 import { baseApi } from '@/shared/apis';
 import { CreatingRoomInfo, LobbyInfo, LobbyResponse } from './types';
 
@@ -40,8 +39,8 @@ async function checkRoomPwdApi(
   roomId: number,
   password: string,
 ): Promise<number> {
-  const response = await axiosInstance.post(
-    `${baseApi}/${url}/channel/${roomId}/pwd-check`,
+  const response = await jwtAxiosInstance.post(
+    `${baseApi}/${url}/${roomId}/pwd-check`,
     password,
   );
 

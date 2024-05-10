@@ -1,6 +1,6 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { EnteringRoomInfo } from '../api/types';
 import { EnterRoomApi } from '../api/api';
+import { EnteringRoomInfo } from '../api/types';
 
 export function useEnterRoomQuery(roomId: number): {
   data: EnteringRoomInfo;
@@ -18,7 +18,9 @@ export function useEnterRoomQuery(roomId: number): {
       category: '',
       maxQuestion: -1,
       hostId: -1,
-      isPublic: true,
+      inviteLink: null,
+      state: '',
+      public: true,
     },
   };
 

@@ -26,7 +26,9 @@ interface RoomInfoDto {
   category: string;
   maxQuestion: number;
   hostId: number;
-  isPublic: boolean;
+  inviteLink: string | null;
+  state: string;
+  public: boolean;
 }
 
 interface CreatingRoomInfo {

@@ -1,6 +1,7 @@
-import { Button, Dropbox, Input, Toast } from '@/shared/ui';
+import { Button, Dropbox, Input } from '@/shared/ui';
 import { useState } from 'react';
-import { CreatingRoomInfo } from '../api/types';
+import { CreatingRoomInfo } from '../../lobby/api/types';
+import { Toast } from '@/shared/ui/Toast';
 import { useRouter } from '@/shared/hooks';
 import {
   categoryDBList,
@@ -11,14 +12,10 @@ import {
   modeList,
   statusDBList,
   statusList,
-} from '../constants';
-import { createRoomApi } from '../api/api';
+} from '../../lobby/constants';
+import { createRoomApi } from '../../lobby/api/api';
 
-interface RoomCreationProps {
-  channelId: number;
-}
-
-export function RoomCreation(props: RoomCreationProps) {
+export function RoomModification(props: { channelId: number }) {
   const [title, setTitle] = useState<string>('덤벼라');
   const [isPublic, setIsPublic] = useState<number>(0);
   const [password, setPassword] = useState<string>('');
@@ -59,7 +56,7 @@ export function RoomCreation(props: RoomCreationProps) {
     setMaxQuestion(index);
   };
 
-  const createRoom = async () => {
+  const createTheRoom = async () => {
     const creatingRoomInfo: CreatingRoomInfo = {
       title: title,
       isPublic: statusDBList[isPublic],
@@ -73,7 +70,9 @@ export function RoomCreation(props: RoomCreationProps) {
     const response = await createRoomApi(props.channelId, creatingRoomInfo);
 
     if (response.status == 201) {
-      router.routeTo(`/${props.channelId}/${response.data.roomId}/waiting`);
+      // 대기실로 이동
+      console.log('뭐예요?');
+      router.routeTo(`/${props.channelId}/${response.data.roomId}/temp`);
     } else {
       setToastState(true);
     }
@@ -155,8 +154,9 @@ export function RoomCreation(props: RoomCreationProps) {
         </div>
       </div>
       <div className={'px-20 py-10'}>
-        <Button className={'w-full'} value="방 생성" onClick={createRoom} />
+        <Button className={'w-full'} value="방 생성" onClick={createTheRoom} />
       </div>
+
       {toastState === true ? (
         <Toast
           message={'방을 생성하지 못했습니다.'}
