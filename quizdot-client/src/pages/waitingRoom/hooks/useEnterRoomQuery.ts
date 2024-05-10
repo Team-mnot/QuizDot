@@ -20,7 +20,7 @@ export function useEnterRoomQuery(roomId: number): {
       hostId: -1,
       inviteLink: null,
       state: '',
-      public: true,
+      open: true,
     },
   };
 

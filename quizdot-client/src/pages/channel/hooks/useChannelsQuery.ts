@@ -7,7 +7,7 @@ export function useChannelsQuery(): {
   isError: boolean;
   isLoading: boolean;
 } {
-  const fallback: ChannelInfos = { channelnfos: [] };
+  const fallback: ChannelInfos = { channelInfos: [] };
 
   const {
     data = fallback,

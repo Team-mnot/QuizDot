@@ -59,7 +59,7 @@ export function RoomModification(props: { channelId: number }) {
   const createTheRoom = async () => {
     const creatingRoomInfo: CreatingRoomInfo = {
       title: title,
-      isPublic: statusDBList[isPublic],
+      open: statusDBList[isPublic],
       password: password,
       mode: modeDBList[mode],
       category: categoryDBList[category],

@@ -5,7 +5,7 @@ export function RoomInfo(props: { roomInfo: RoomInfoDto }) {
     <div>
       <div className="flex">
         <p>[{props.roomInfo.title}]&nbsp;</p>
-        <p>{props.roomInfo.public ? '공개' : '비공개'}&nbsp;|&nbsp;</p>
+        <p>{props.roomInfo.open ? '공개' : '비공개'}&nbsp;|&nbsp;</p>
         <p>{props.roomInfo.gameMode}&nbsp;|&nbsp;</p>
         <p>{props.roomInfo.maxPeople}&nbsp;인&nbsp;|&nbsp;</p>
         <p>{props.roomInfo.category}&nbsp;|&nbsp;</p>

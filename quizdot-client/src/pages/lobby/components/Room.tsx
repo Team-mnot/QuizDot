@@ -11,7 +11,7 @@ export function Room(props: RoomProps) {
         <div className="flex justify-between">
           <p>{props.roomInfoDto.roomId}</p>
           <p>
-            ({props.roomInfoDto.public ? '공개' : '비공개'})
+            ({props.roomInfoDto.open ? '공개' : '비공개'})
             {props.roomInfoDto.title}
           </p>
           <p>{props.roomInfoDto.gameMode}</p>
