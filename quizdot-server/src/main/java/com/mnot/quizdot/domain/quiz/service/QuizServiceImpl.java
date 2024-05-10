@@ -12,6 +12,7 @@ import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import com.mnot.quizdot.global.util.RedisUtil;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
+import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,32 +120,56 @@ public class QuizServiceImpl implements QuizService {
      */
     public void deleteGame(int roomId) {
         // 스테이지 결과 삭제
-        String pattern = String.format("rooms:%d:*:*", roomId);
+        String pattern = String.format("rooms:%d:*", roomId);
         Cursor keys = redisTemplate.scan(ScanOptions.scanOptions().match(pattern).build());
-        keys.forEachRemaining((key) -> {
-            log.info("[deleteGame] key : {}", key);
-            redisTemplate.delete(key);
-        });
+
+        while (keys.hasNext()) {
+            String key = (String) keys.next();
+            if (!(key.endsWith(":info") || key.endsWith(":players"))) {
+                redisTemplate.delete(key);
+            }
+        }
 
         // 스코어 보드 삭제
         String boardKey = redisUtil.getBoardKey(roomId);
         redisTemplate.delete(boardKey);
     }
 
+    /**
+     * 게임 초기화 (불필요하게 남아 있던 게임 기록 삭제, 게임
+     */
     public void initGame(int roomId, int memberId, ModeType mode) {
         // 방장 권한 체크
         redisUtil.checkHost(roomId, memberId);
 
-        // 현재 대기실 관련 게임 기록이 남아 있다면 초기화
+        // 현재 대기실 관련 게임 기록이 남아 있다면 모두 삭제
         deleteGame(roomId);
 
-        // 게임 모드에 따라 REDIS 값 초기화
+        // 게임 모드에 따라 스코어보드 초기화
         String boardKey = redisUtil.getBoardKey(roomId);
-        String memberKey = redisUtil.getPlayersKey(roomId);
-        List<Integer> players = redisUtil.getPlayers(memberKey);
+        String playerKey = redisUtil.getPlayersKey(roomId);
+        List<Integer> players = redisUtil.getPlayers(playerKey);
+        Double defaultScore = getDefaultScore(mode);
 
-        int defaultValue = (ModeType.NORMAL.equals(mode)) ? 0 : 1;
-        players.forEach((playerId) -> redisTemplate.opsForZSet()
-            .add(boardKey, String.valueOf(playerId), defaultValue));
+        Set<TypedTuple<Integer>> defaultScoreSet = new HashSet<>();
+        for (int playerId : players) {
+            defaultScoreSet.add(TypedTuple.of(playerId, defaultScore));
+        }
+
+        redisTemplate.opsForZSet().add(boardKey, defaultScoreSet);
+    }
+
+    /**
+     * 게임 모드에 따른 스코어보드 초기화 값 리턴
+     */
+    private Double getDefaultScore(ModeType mode) {
+        switch (mode) {
+            case SURVIVAL:
+                return 1.0;
+            case ILGITO:
+                return 10.0;
+            default:
+                return 0.0;
+        }
     }
 }
