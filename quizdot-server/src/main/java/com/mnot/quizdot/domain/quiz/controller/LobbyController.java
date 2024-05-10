@@ -3,7 +3,7 @@ package com.mnot.quizdot.domain.quiz.controller;
 import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
 import com.mnot.quizdot.domain.quiz.dto.ActiveUserDto;
 import com.mnot.quizdot.domain.quiz.dto.ChannelListRes;
-import com.mnot.quizdot.domain.quiz.dto.Channelnfo;
+import com.mnot.quizdot.domain.quiz.dto.ChannelInfo;
 import com.mnot.quizdot.domain.quiz.dto.LobbyRes;
 import com.mnot.quizdot.domain.quiz.dto.RoomInfoDto;
 import com.mnot.quizdot.domain.quiz.dto.RoomReq;
@@ -69,7 +69,7 @@ public class LobbyController {
     @Operation(summary = "채널 목록 조회")
     public ResponseEntity<ResultResponse> getChannels() {
         // 각 채널의 동시 접속 수와 수용 가능 인원수 조회
-        List<Channelnfo> channels = lobbyService.getChannelList();
+        List<ChannelInfo> channels = lobbyService.getChannelList();
         ChannelListRes channelListRes = new ChannelListRes(channels);
         return ResponseEntity.ok(ResultResponse.of(200, "채널 목록 조회에 성공하였습니다.", channelListRes));
     }

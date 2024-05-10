@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnot.quizdot.domain.member.entity.Member;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
 import com.mnot.quizdot.domain.quiz.dto.ActiveUserDto;
-import com.mnot.quizdot.domain.quiz.dto.Channelnfo;
+import com.mnot.quizdot.domain.quiz.dto.ChannelInfo;
 import com.mnot.quizdot.domain.quiz.dto.GameState;
 import com.mnot.quizdot.domain.quiz.dto.RoomInfoDto;
 import com.mnot.quizdot.domain.quiz.dto.RoomReq;
@@ -75,7 +75,7 @@ public class LobbyServiceImpl implements LobbyService {
         RoomInfoDto roomInfoDto = RoomInfoDto.builder()
             .roomId(roomId)
             .title(roomReq.getTitle())
-            .isPublic(roomReq.isPublic())
+            .open(roomReq.isOpen())
             .password(roomReq.getPassword())
             .gameMode(String.valueOf(roomReq.getMode()))
             .category(String.valueOf(roomReq.getCategory()))
@@ -145,23 +145,23 @@ public class LobbyServiceImpl implements LobbyService {
     /**
      * 채널 목록 조회
      */
-    public List<Channelnfo> getChannelList() {
+    public List<ChannelInfo> getChannelList() {
         // 레디스에서 채널별로 동시접속자 수 구해오기
-        List<Channelnfo> channelnfos = new ArrayList<>();
+        List<ChannelInfo> channelInfos = new ArrayList<>();
         for (int channel = 1; channel <= MAX_CHANNEL; channel++) {
             String key = redisUtil.getActiveUserKey(channel);
             long activeUserCount = redisTemplate.opsForSet().size(key);
 
             // 각 채널의 동시접속자 반영
-            Channelnfo channelnfo = Channelnfo.builder()
+            ChannelInfo channelInfo = ChannelInfo.builder()
                 .channelId(channel)
                 .activeUserCount(activeUserCount)
                 .totalAvailable(MAX_CAPACITY)
                 .build();
 
-            channelnfos.add(channelnfo);
+            channelInfos.add(channelInfo);
         }
-        return channelnfos;
+        return channelInfos;
     }
 
     /**

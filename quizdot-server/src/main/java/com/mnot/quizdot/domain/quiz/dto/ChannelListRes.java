@@ -10,5 +10,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ChannelListRes {
 
-    private List<Channelnfo> channelnfos;
+    private List<ChannelInfo> channelInfos;
 }
