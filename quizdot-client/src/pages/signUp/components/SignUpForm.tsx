@@ -13,7 +13,7 @@ import { useUserStore } from '@/shared/stores/userStore/userStore';
 const idRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
 const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 const hintRegex = /^[0-9]{6}$/;
-const nicknameRegex = /^[A-Za-z0-9]{2,8}$/;
+const nicknameRegex = /^[A-Za-z0-9가-힣]{2,8}$/;
 
 // 스키마
 const schema = z.object({
