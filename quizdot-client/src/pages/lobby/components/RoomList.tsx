@@ -1,6 +1,6 @@
 import { Button, Modal } from '@/shared/ui';
 import { Room } from './Room';
-import { useOpenModal } from '@/shared/hooks';
+import { useOpenModal, useRouter } from '@/shared/hooks';
 import { RoomCreation } from './RoomCreation';
 import { RoomInfoDto } from '../api/types';
 
@@ -12,6 +12,7 @@ interface RoomListProps {
 export function RoomList(props: RoomListProps) {
   const { isOpenModal, clickModal, closeModal } = useOpenModal();
 
+  const router = useRouter();
   return (
     <div>
       <div>
@@ -23,7 +24,12 @@ export function RoomList(props: RoomListProps) {
       </div>
       <div className={'rounded-lg bg-white bg-opacity-20 p-5 shadow-md'}>
         {props.roomInfoDtos.map((room) => (
-          <div key={room.roomId}>
+          <div
+            key={room.roomId}
+            onClick={() => {
+              router.routeTo(`/${props.channelId}/${room.roomId}/temp`);
+            }}
+          >
             <Room roomInfoDto={room} />
           </div>
         ))}

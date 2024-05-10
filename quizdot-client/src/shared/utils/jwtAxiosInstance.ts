@@ -12,7 +12,9 @@ const jwtAxiosInstance = axios.create({
 
 jwtAxiosInstance.interceptors.request.use(
   function (config) {
-    const token = localStorage.getItem('accessToken');
+    //const token = localStorage.getItem('accessToken');
+    const token =
+      'eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MjEsImNhdGVnb3J5IjoiYWNjZXNzIiwibWVtYmVySWQiOiIzN2pzYmVhbiIsInJvbGUiOiJST0xFX1VTRVIiLCJuaWNrbmFtZSI6InN1YmluIiwiaWF0IjoxNzE1Mjk5MzU4LCJleHAiOjE3MTUzMTAxNTh9.ToKy6hQvZVDtgFXG2o3qhvFFyNCpW4JR3WJ4aoIxLss';
     config.headers.access = `${token}`;
     return config;
   },
