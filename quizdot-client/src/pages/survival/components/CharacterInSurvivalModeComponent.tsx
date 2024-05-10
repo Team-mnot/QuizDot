@@ -1,18 +1,20 @@
 // src/pages/survival/components/CharacterWithPositionComponent.tsx
 import { Character } from '@/shared/ui/Character';
-import { iCharacterInSurvivalMode } from '../api/types';
+import { PlayerInSurvivalMode } from '../api/types';
 
 // `CharacterWithPositionProps` 타입에 `position` 프로퍼티를 추가해야 합니다.
 
-export function CharacterInSurvivalModeComponent({
-  imageUrl,
+export function PlayerInSurvivalModeComponent({
+  characterId,
   title,
+  level,
   nickname,
+  nicknameColor,
   position,
   isAlive,
   isRevive,
-}: iCharacterInSurvivalMode) {
-  const characterImageUrl = isAlive ? imageUrl : '/images/deadBall.png';
+}: PlayerInSurvivalMode) {
+  const displayCharacterId = isAlive ? characterId : 0;
 
   return (
     <div
@@ -29,9 +31,11 @@ export function CharacterInSurvivalModeComponent({
         className="relative z-10" // characterImageUrl의 z-index를 설정합니다.
       >
         <Character
-          imageUrl={characterImageUrl}
+          characterId={displayCharacterId}
           title={title}
           nickname={nickname}
+          nicknameColor={nicknameColor} // 색상 전달
+          level={level} // 레벨 전달
         />
       </div>
 

@@ -1,19 +1,19 @@
 // src/pages/survival/components/CharacterPreview.tsx
 
-import { getCharacterData } from '../api/api';
-import { CharacterInSurvivalModeComponent } from './CharacterInSurvivalModeComponent';
+import { getPlayerData } from '../api/api';
+import { PlayerInSurvivalModeComponent } from './CharacterInSurvivalModeComponent';
 
 // 미리 지정된 위치 정보
 const predefinedPositions = [
-  { id: 'grid-item-1', position: { top: 30, left: 22 } },
-  { id: 'grid-item-2', position: { top: 20, left: 42 } },
-  { id: 'grid-item-3', position: { top: 25, left: 64 } },
-  { id: 'grid-item-4', position: { top: 24, left: 90 } },
-  { id: 'grid-item-5', position: { top: 39, left: 67 } },
-  { id: 'grid-item-6', position: { top: 42, left: 97 } },
-  { id: 'grid-item-7', position: { top: 66, left: 6 } },
-  { id: 'grid-item-8', position: { top: 63, left: 12 } },
-  { id: 'grid-item-9', position: { top: 87, left: 13 } },
+  { id: 'grid-item-1', position: { top: 20, left: 10 } },
+  { id: 'grid-item-2', position: { top: 20, left: 20 } },
+  { id: 'grid-item-3', position: { top: 50, left: 30 } },
+  { id: 'grid-item-4', position: { top: 50, left: 40 } },
+  { id: 'grid-item-5', position: { top: 50, left: 50 } },
+  { id: 'grid-item-6', position: { top: 50, left: 60 } },
+  { id: 'grid-item-7', position: { top: 50, left: 70 } },
+  { id: 'grid-item-8', position: { top: 50, left: 80 } },
+  { id: 'grid-item-9', position: { top: 50, left: 90 } },
   { id: 'grid-item-10', position: { top: 16, left: 82 } },
   { id: 'grid-item-11', position: { top: 66, left: 86 } },
   { id: 'grid-item-12', position: { top: 0, left: 0 } },
@@ -27,20 +27,21 @@ const predefinedPositions = [
 
 export function CharacterPreview() {
   // 더미 캐릭터 데이터
-  const characterData = getCharacterData();
+  const playerData = getPlayerData();
 
   return (
     <div>
-      {characterData.map((character, index) => (
-        <CharacterInSurvivalModeComponent
+      {playerData.map((player, index) => (
+        <PlayerInSurvivalModeComponent
           key={index}
-          imageUrl={character.imageUrl}
-          title={character.title}
-          nickname={character.nickname}
-          score={character.score}
-          position={predefinedPositions[index].position} // 미리 지정된 위치 정보 사용
-          isAlive={character.isAlive}
-          isRevive={character.isRevive}
+          characterId={player.characterId} // character 객체의 characterId 속성 참조
+          title={player.title}
+          nickname={player.nickname}
+          nicknameColor={player.nicknameColor} // nicknameColor 추가
+          level={player.level} // level 추가
+          position={predefinedPositions[index]?.position} // 미리 지정된 위치 정보 사용
+          isAlive={player.isAlive}
+          isRevive={player.isRevive}
         />
       ))}
     </div>

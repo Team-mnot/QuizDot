@@ -41,7 +41,8 @@ class SocketStore {
       return;
     }
 
-    this.stompInstance.current?.subscribe(`/sub/chat/${address}`, callback);
+    this.stompInstance.current?.subscribe(`/sub/${address}`, callback);
+    console.log(address, '구독 쪼아요');
   }
 
   public async onError(error: any) {

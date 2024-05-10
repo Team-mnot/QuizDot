@@ -11,6 +11,8 @@ interface QuizStore {
   showChatBox: boolean; // 정답 제출 해야 채팅박스 보여줌
   isQuizOver: boolean; // 퀴즈 종료 여부 상태 추가
   showCountDown: boolean;
+  isCorrect: boolean;
+  roomId: number;
 
   setQuizzes: (quizzes: iQuiz[]) => void;
   setCurrentQuiz: (quiz: iQuiz) => void;
@@ -20,6 +22,8 @@ interface QuizStore {
   setShowChatBox: (show: boolean) => void;
   setIsQuizOver: (value: boolean) => void;
   setShowCountDown: (value: boolean) => void;
+  setIsCorrect: (isCorrect: boolean) => void;
+  setRoomId: (roomId: number) => void;
 }
 
 const useQuizStore = create<QuizStore>((set) => ({
@@ -29,8 +33,10 @@ const useQuizStore = create<QuizStore>((set) => ({
   showResult: false,
   showChatBox: false, // 초기 채팅박스 표시 여부
   currentQuiz: null, // 초기 퀴즈는 null로 설정
-  isQuizOver: false,
   showCountDown: false,
+  isQuizOver: false,
+  isCorrect: false,
+  roomId: 0,
 
   setQuizzes: (quizzes: iQuiz[]) => set({ quizzes }),
   setCurrentQuiz: (quiz: iQuiz) => set({ currentQuiz: quiz }),
@@ -38,8 +44,10 @@ const useQuizStore = create<QuizStore>((set) => ({
   setShowResult: (show: boolean) => set({ showResult: show }),
   setShowChatBox: (show: boolean) => set({ showChatBox: show }),
   setResultMessage: (message) => set({ resultMessage: message }), // message 받는 setMessageResult 함수 쓴다는 뜻 ㅎ
-  setIsQuizOver: (value: boolean) => set({ isQuizOver: value }),
   setShowCountDown: (show: boolean) => set({ showCountDown: show }),
+  setIsQuizOver: (value: boolean) => set({ isQuizOver: value }),
+  setIsCorrect: (value: boolean) => set({ isCorrect: value }),
+  setRoomId: (id: number) => set({ roomId: id }),
 }));
 
 export default useQuizStore;
