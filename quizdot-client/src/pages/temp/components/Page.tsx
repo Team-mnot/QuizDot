@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 import { RoomHeader } from './RoomHeader';
 import { useParams } from 'react-router-dom';
-import { useRouter } from '@/shared/hooks';
 import { useEnterRoomQuery } from '../hooks/useEnterRoomQuery';
 
 export function TempPage() {
@@ -19,14 +18,14 @@ export function TempPage() {
 
   const playerKeys = Object.keys(temp.players);
 
-  const router = useRouter();
-
   const [currentPeople, setCurrentPeople] = useState<number>(0);
   const [maxPeople, setMaxPeople] = useState<number>(8);
 
   useEffect(() => {
     document.body.style.backgroundImage = 'url(/images/MultiBackground.png)';
     document.body.style.backgroundSize = 'cover';
+    setCurrentPeople(0);
+    setMaxPeople(8);
   }, []);
 
   return (
