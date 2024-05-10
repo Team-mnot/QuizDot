@@ -4,6 +4,7 @@ import { useQuiz2 } from '../hooks/useQuiz2';
 import { useState, useEffect } from 'react';
 import useIsSubmitAnswer from '../hooks/useIsSubmitAnswer';
 import useQuizStore from '../store';
+import { postQuizResult } from '../api/api';
 
 export function QuizComponent({ roomId }: { roomId: number }) {
   const {
@@ -19,7 +20,8 @@ export function QuizComponent({ roomId }: { roomId: number }) {
   const { loading, error } = useQuiz2(); // 수정: useQuiz2에서 필요한 데이터를 가져오도록 함
   const [userAnswer, setUserAnswer] = useState(''); // 사용자 입력을 저장할 상태
   const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false); // 사용자 입력을 저장할 상태
-  const { currentQuiz } = useQuizStore();
+  const [showHint, setShowHint] = useState(false); // 힌트 줄 까 말 까 ~~
+  const { currentQuiz, isCorrect, setIsCorrect } = useQuizStore();
 
   const {
     submitAnswer,
@@ -29,6 +31,7 @@ export function QuizComponent({ roomId }: { roomId: number }) {
 
   useEffect(() => {
     const currentQuiz = quizzes[currentQuizIndex] || null;
+    setIsCorrect(false);
     setResultMessage('제출 안하니? 🐦');
     setCurrentQuiz(currentQuiz);
     setShowChatBox(false);
@@ -46,14 +49,18 @@ export function QuizComponent({ roomId }: { roomId: number }) {
         setResultMessage('오답 😿');
       } else {
         setResultMessage('정답! 🐣');
+        setIsCorrect(true);
       }
 
       setShowChatBox(true);
       setUserAnswer('');
-      await submitAnswer(roomId, currentQuiz.id);
+
+      await submitAnswer(roomId, currentQuiz.id); // 이거 문제 제출했다고 알리는 함수 만들어놨던건데 안쓰이면 지워야징
+      await postQuizResult(roomId, isCorrect); // API 호출
     }
   };
 
+  // 엔타 눌라도 제출될라요
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -61,12 +68,22 @@ export function QuizComponent({ roomId }: { roomId: number }) {
     }
   };
 
+  // 힌트 몇초뒤에 띄울까?
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowHint(true);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   // 여기서 n초뒤에 결과창으로 넘어갈 때( 가기전 ) 모든 로직 수행해야함
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowChatBox(true);
       setShowResult(true);
-    }, 8000); // n초 후 결과창으로 전환
+      setShowHint(false);
+    }, 6000);
 
     return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 해제
   }, []);
@@ -79,18 +96,22 @@ export function QuizComponent({ roomId }: { roomId: number }) {
     <div>
       <div
         className={
-          'fixed left-0 right-0 top-10 mx-auto max-w-3xl rounded-xl bg-white p-4'
+          'fixed left-0 right-0 top-10 mx-auto h-44 max-w-3xl rounded-xl bg-white p-4'
         }
       >
         <div key={currentQuiz.id}>
           <h2>{currentQuiz.question}</h2>
           <p>{currentQuiz.description}</p>
-          <p>Hint: {currentQuiz.hint}</p>
-          <p>Category: {currentQuiz.category}</p>
-          <p>Type: {currentQuiz.questionType}</p>
-          <p>Answers: {currentQuiz.answers.join(', ')}</p>
+          {/* <p>Category: {currentQuiz.category}</p> */}
+          {/* <p>Type: {currentQuiz.questionType}</p> */}
+          {/* <p>Answers: {currentQuiz.answers.join(', ')}</p> */}
         </div>
       </div>
+      {showHint && (
+        <div className="fixed left-0 right-0 top-56 mx-auto max-w-3xl">
+          초성힌트: {currentQuiz.hint}
+        </div>
+      )}
 
       {/* 정답 제출 합시다 ~ */}
       <div>
@@ -101,7 +122,7 @@ export function QuizComponent({ roomId }: { roomId: number }) {
         ) : (
           <div
             className={
-              'fixed bottom-64 left-0 right-0 mx-auto  max-w-3xl rounded-xl bg-white py-2'
+              'fixed bottom-7 left-0 right-0 z-50 mx-auto max-w-2xl rounded-3xl bg-white'
             }
           >
             <div className="flex justify-between">

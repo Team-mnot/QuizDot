@@ -19,11 +19,11 @@ interface Players {
 }
 
 interface Player {
+  characterId: number;
   level: number;
   nickname: string;
   nicknameColor: string;
-  title: number;
-  avatar: number;
+  title: string;
 }
 
 export type { WaitingRoomResponse, ModifyingRoomInfo, EnteringRoomInfo };

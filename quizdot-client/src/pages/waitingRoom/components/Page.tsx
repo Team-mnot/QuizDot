@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { RoomHeader } from './RoomHeader';
 import { useParams } from 'react-router-dom';
 import { useEnterRoomQuery } from '../hooks/useEnterRoomQuery';
+import { Character } from '@/shared/ui/Character';
 
 export function WaitingRoomPage() {
   const { channelId, roomId } = useParams() as {
@@ -16,7 +17,7 @@ export function WaitingRoomPage() {
     isLoading: isTempLoading,
   } = useEnterRoomQuery(Number(roomId));
 
-  const playerKeys = Object.keys(temp.players);
+  // const playerKeys = Object.keys(temp.players);
 
   const [currentPeople, setCurrentPeople] = useState<number>(0);
   const [maxPeople, setMaxPeople] = useState<number>(8);
@@ -53,11 +54,19 @@ export function WaitingRoomPage() {
               <p>게임 시작</p>
             </div>
           )}
-
           <div>
             <p>유저 리스트</p>
-            {playerKeys &&
-              playerKeys.map((item) => <div key={item}>{item}</div>)}
+            {temp.players &&
+              Object.entries(temp.players).map(([key, player]) => (
+                <Character
+                  key={key}
+                  title={player.title}
+                  nickname={player.nickname}
+                  nicknameColor={player.nicknameColor}
+                  level={player.level}
+                  characterId={player.characterId}
+                />
+              ))}
           </div>
         </div>
       )}
