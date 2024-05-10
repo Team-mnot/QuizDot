@@ -21,6 +21,7 @@ interface RoomInfoDto {
   roomId: number;
   title: string;
   password: string;
+  open: boolean;
   gameMode: string;
   maxPeople: number;
   category: string;
@@ -28,17 +29,16 @@ interface RoomInfoDto {
   hostId: number;
   inviteLink: string | null;
   state: string;
-  public: boolean;
 }
 
 interface CreatingRoomInfo {
   title: string;
+  open: boolean;
   password: string;
   mode: string;
-  maxPeople: number;
   category: string;
+  maxPeople: number;
   maxQuestion: number;
-  isPublic: boolean;
 }
 
 interface CreatedRoomInfo {

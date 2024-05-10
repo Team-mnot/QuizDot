@@ -50,7 +50,7 @@ export function RoomList(props: RoomListProps) {
           <div
             key={room.roomId}
             onClick={() => {
-              clickRoom(room.roomId, room.public);
+              clickRoom(room.roomId, room.open);
             }}
           >
             <Room roomInfoDto={room} />

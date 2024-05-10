@@ -35,7 +35,7 @@ export function ChannelPage() {
       )}
       {!isChannelsLoading &&
         channels &&
-        channels.channelnfos.map((item) => (
+        channels.channelInfos.map((item) => (
           <div key={item.channelId}>
             <Button
               value={`${item.channelId} 채널 (${item.activeUserCount}/${item.totalAvailable})`}

@@ -5,7 +5,7 @@ interface ChannelResponse {
 }
 
 interface ChannelInfos {
-  channelnfos: ChannelInfo[];
+  channelInfos: ChannelInfo[];
 }
 
 interface ChannelInfo {

@@ -26,7 +26,7 @@ async function EnterRoomApi(roomId: number): Promise<EnteringRoomInfo> {
         category: '',
         maxQuestion: -1,
         hostId: -1,
-        public: true,
+        open: true,
         inviteLink: null,
         state: 'WAITING',
       },
