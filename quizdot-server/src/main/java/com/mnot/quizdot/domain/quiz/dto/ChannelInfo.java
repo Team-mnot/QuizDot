@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Channelnfo {
+public class ChannelInfo {
     private int channelId;
     // 동시 접속자
     private long activeUserCount;
@@ -16,7 +16,7 @@ public class Channelnfo {
     private long totalAvailable;
 
     @Builder
-    public Channelnfo(int channelId, long activeUserCount, long totalAvailable) {
+    public ChannelInfo(int channelId, long activeUserCount, long totalAvailable) {
         this.channelId = channelId;
         this.activeUserCount = activeUserCount;
         this.totalAvailable = totalAvailable;
