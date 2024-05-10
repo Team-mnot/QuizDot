@@ -24,7 +24,7 @@ export function RoomPwd(props: RoomPwdProps) {
     const response = await checkRoomPwdApi(props.roomId, password);
 
     if (response == 200) {
-      router.routeTo(`/${props.channelId}/${props.roomId}/temp`);
+      router.routeTo(`/${props.channelId}/${props.roomId}/waiting`);
     } else {
       setToastState(true);
     }

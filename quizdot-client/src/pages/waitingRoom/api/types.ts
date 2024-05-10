@@ -1,6 +1,6 @@
 import { CreatingRoomInfo, RoomInfoDto } from '@/pages/lobby/api/types';
 
-interface TempResponse {
+interface WaitingRoomResponse {
   status: number;
   message: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -26,4 +26,4 @@ interface Player {
   avatar: number;
 }
 
-export type { TempResponse, ModifyingRoomInfo, EnteringRoomInfo };
+export type { WaitingRoomResponse, ModifyingRoomInfo, EnteringRoomInfo };

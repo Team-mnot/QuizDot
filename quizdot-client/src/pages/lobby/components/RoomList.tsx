@@ -28,7 +28,7 @@ export function RoomList(props: RoomListProps) {
 
   const clickRoom = async (roomId: number, isPublic: boolean) => {
     if (isPublic) {
-      router.routeTo(`/${props.channelId}/${roomId}/temp`);
+      router.routeTo(`/${props.channelId}/${roomId}/waiting`);
     } else {
       setClickedRoom(roomId);
       if (roomId == -1) return;

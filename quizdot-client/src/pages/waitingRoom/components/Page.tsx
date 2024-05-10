@@ -4,7 +4,7 @@ import { RoomHeader } from './RoomHeader';
 import { useParams } from 'react-router-dom';
 import { useEnterRoomQuery } from '../hooks/useEnterRoomQuery';
 
-export function TempPage() {
+export function WaitingRoomPage() {
   const { channelId, roomId } = useParams() as {
     channelId: string;
     roomId: string;

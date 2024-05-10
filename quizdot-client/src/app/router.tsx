@@ -8,7 +8,7 @@ import { ChannelPage } from '@/pages/channel';
 import { LobbyPage } from '@/pages/lobby';
 import { MultiPage } from '@/pages/multi';
 import { SurvivalPage } from '@/pages/survival';
-import { TempPage } from '@/pages/temp';
+import { WaitingRoomPage } from '@/pages/waitingRoom';
 
 export const router = createBrowserRouter([
   {
@@ -36,8 +36,8 @@ export const router = createBrowserRouter([
     element: <LobbyPage />,
   },
   {
-    path: '/:channelId/:roomId/temp',
-    element: <TempPage />,
+    path: '/:channelId/:roomId/waiting',
+    element: <WaitingRoomPage />,
   },
   {
     path: '/:channelId/multi',

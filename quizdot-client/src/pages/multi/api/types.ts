@@ -23,7 +23,7 @@ interface AnswerProps {
   description: string;
 }
 
-interface RoomInfo {
+interface RoomInfoDto {
   title: string;
   public: boolean;
   password: string;
@@ -33,4 +33,10 @@ interface RoomInfo {
   maxQuestion: number;
 }
 
-export type { CharacterProps, QuizSetProps, QuizProps, AnswerProps, RoomInfo };
+export type {
+  CharacterProps,
+  QuizSetProps,
+  QuizProps,
+  AnswerProps,
+  RoomInfoDto,
+};

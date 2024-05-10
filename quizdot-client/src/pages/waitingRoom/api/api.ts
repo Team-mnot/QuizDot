@@ -1,6 +1,10 @@
 import jwtAxiosInstance from '@/shared/utils/jwtAxiosInstance';
 import { baseApi } from '@/shared/apis';
-import { EnteringRoomInfo, ModifyingRoomInfo, TempResponse } from './types';
+import {
+  EnteringRoomInfo,
+  ModifyingRoomInfo,
+  WaitingRoomResponse,
+} from './types';
 
 const url = 'room';
 
@@ -52,7 +56,9 @@ async function ModifyRoomApi(
 }
 
 /*** 초대 링크 생성 ***/
-async function InviteRoomWithLinkApi(roomId: number): Promise<TempResponse> {
+async function InviteRoomWithLinkApi(
+  roomId: number,
+): Promise<WaitingRoomResponse> {
   const response = await jwtAxiosInstance.get(
     `${baseApi}/${url}/${roomId}/invite`,
   );
@@ -62,7 +68,9 @@ async function InviteRoomWithLinkApi(roomId: number): Promise<TempResponse> {
 }
 
 /*** 초대 링크로 게임 대기실 입장 ***/
-async function EnterRoomWithLinkApi(tempData: string): Promise<TempResponse> {
+async function EnterRoomWithLinkApi(
+  tempData: string,
+): Promise<WaitingRoomResponse> {
   const response = await jwtAxiosInstance.get(
     `${baseApi}/${url}/invite/data=${tempData}`,
   );

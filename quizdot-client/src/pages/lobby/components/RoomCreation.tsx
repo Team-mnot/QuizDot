@@ -73,7 +73,7 @@ export function RoomCreation(props: RoomCreationProps) {
     const response = await createRoomApi(props.channelId, creatingRoomInfo);
 
     if (response.status == 201) {
-      router.routeTo(`/${props.channelId}/${response.data.roomId}/temp`);
+      router.routeTo(`/${props.channelId}/${response.data.roomId}/waiting`);
     } else {
       setToastState(true);
     }

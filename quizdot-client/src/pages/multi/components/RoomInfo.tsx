@@ -1,6 +1,6 @@
-import { RoomInfo } from '../api/types';
+import { RoomInfoDto } from '../api/types';
 
-export function RoomInfo(props: { roomInfo: RoomInfo }) {
+export function RoomInfo(props: { roomInfo: RoomInfoDto }) {
   return (
     <div>
       <div className="flex">
