@@ -75,7 +75,7 @@ public class LobbyServiceImpl implements LobbyService {
         RoomInfoDto roomInfoDto = RoomInfoDto.builder()
             .roomId(roomId)
             .title(roomReq.getTitle())
-            .isPublic(roomReq.isPublic())
+            .open(roomReq.isOpen())
             .password(roomReq.getPassword())
             .gameMode(String.valueOf(roomReq.getMode()))
             .category(String.valueOf(roomReq.getCategory()))
