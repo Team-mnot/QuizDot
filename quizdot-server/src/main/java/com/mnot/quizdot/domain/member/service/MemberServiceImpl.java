@@ -108,6 +108,16 @@ public class MemberServiceImpl implements MemberService {
         log.info("회원 가입 서비스 : COMPLETE");
     }
 
+    @Override
+    public boolean checkNickname(String nickname) {
+        return memberRepository.existsByNickname(nickname);
+    }
+
+    @Override
+    public boolean checkId(String id) {
+        return memberRepository.existsByMemberId(id);
+    }
+
 
     @Override
     public void deleteMember(@AuthenticationPrincipal CustomMemberDetail customMemberDetail) {

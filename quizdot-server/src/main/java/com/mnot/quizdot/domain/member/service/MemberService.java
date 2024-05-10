@@ -9,6 +9,10 @@ public interface MemberService {
     //회원가입
     void joinMember(JoinDto joinDto);
 
+    boolean checkNickname(String nickname);
+
+    boolean checkId(String id);
+
     //회원 탈퇴
     void deleteMember(CustomMemberDetail member);
 
