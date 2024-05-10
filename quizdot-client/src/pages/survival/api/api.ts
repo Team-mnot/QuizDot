@@ -1,11 +1,11 @@
 // src/pages/survival/api/api.ts
 // import { iCharacter } from '@/shared/ui/Character';
-import { iCharacter, iQuizList } from './types';
+import { PlayerInSurvivalMode, iQuizList } from './types';
 import { dummyCharacters } from './dummyCharacters';
+import axios from 'axios';
 
-export function getCharacterData(): iCharacter[] {
-  const data = dummyCharacters;
-  return data;
+export function getPlayerData(): PlayerInSurvivalMode[] {
+  return dummyCharacters as PlayerInSurvivalMode[];
 }
 
 export async function fetchQuizData(
@@ -14,15 +14,18 @@ export async function fetchQuizData(
   count: number,
 ): Promise<iQuizList> {
   const apiUrl = `http://k10d102.p.ssafy.io/api/game/quiz/${roomId}?category=${category}&count=${count}`;
-  const response = await fetch(apiUrl);
-  if (!response.ok) {
-    throw new Error('네트워크 응답이 올바르지 않다네요');
-  }
 
-  const data = await response.json();
-  2;
-  console.log(data);
-  return data;
+  try {
+    const response = await axios.get(apiUrl);
+
+    if (response.status !== 200) {
+      throw new Error('네트워크 응답이 올바르지 않습니다');
+    }
+
+    return response.data;
+  } catch (error) {
+    throw new Error('네트워크 요청 중 오류가 발생했습니다');
+  }
 }
 
 export async function postQuizResult(

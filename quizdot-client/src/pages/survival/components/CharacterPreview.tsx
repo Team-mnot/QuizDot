@@ -1,7 +1,7 @@
 // src/pages/survival/components/CharacterPreview.tsx
 
-import { getCharacterData } from '../api/api';
-import { CharacterInSurvivalModeComponent } from './CharacterInSurvivalModeComponent';
+import { getPlayerData } from '../api/api';
+import { PlayerInSurvivalModeComponent } from './CharacterInSurvivalModeComponent';
 
 // 미리 지정된 위치 정보
 const predefinedPositions = [
@@ -27,20 +27,21 @@ const predefinedPositions = [
 
 export function CharacterPreview() {
   // 더미 캐릭터 데이터
-  const characterData = getCharacterData();
+  const playerData = getPlayerData();
 
   return (
     <div>
-      {characterData.map((character, index) => (
-        <CharacterInSurvivalModeComponent
+      {playerData.map((player, index) => (
+        <PlayerInSurvivalModeComponent
           key={index}
-          imageUrl={character.imageUrl}
-          title={character.title}
-          nickname={character.nickname}
-          score={character.score}
-          position={predefinedPositions[index].position} // 미리 지정된 위치 정보 사용
-          isAlive={character.isAlive}
-          isRevive={character.isRevive}
+          characterId={player.characterId} // character 객체의 characterId 속성 참조
+          title={player.title}
+          nickname={player.nickname}
+          nicknameColor={player.nicknameColor} // nicknameColor 추가
+          level={player.level} // level 추가
+          position={predefinedPositions[index]?.position} // 미리 지정된 위치 정보 사용
+          isAlive={player.isAlive}
+          isRevive={player.isRevive}
         />
       ))}
     </div>
