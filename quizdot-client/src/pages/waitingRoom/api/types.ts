@@ -26,4 +26,9 @@ interface Player {
   title: string;
 }
 
-export type { WaitingRoomResponse, ModifyingRoomInfo, EnteringRoomInfo };
+export type {
+  WaitingRoomResponse,
+  ModifyingRoomInfo,
+  EnteringRoomInfo,
+  Player,
+};
