@@ -73,10 +73,12 @@ export function RoomCreation(props: RoomCreationProps) {
 
     const response = await createRoomApi(props.channelId, creatingRoomInfo);
 
-    if (response.roomNum == -1) {
-      setToastState(true);
+    if (response.status == 200) {
+      // 대기실로 이동
+      console.log('뭐예요?');
+      router.routeTo(`/${props.channelId}/${response.data.roomId}/temp`);
     } else {
-      router.routeTo(`/${props.channelId}/${mode}`);
+      setToastState(true);
     }
   };
 

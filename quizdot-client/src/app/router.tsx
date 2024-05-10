@@ -8,6 +8,7 @@ import { ChannelPage } from '@/pages/channel';
 import { LobbyPage } from '@/pages/lobby';
 import { MultiPage } from '@/pages/multi';
 import { SurvivalPage } from '@/pages/survival';
+import { TempPage } from '@/pages/temp';
 
 export const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ export const router = createBrowserRouter([
   {
     path: '/:channelId/lobby',
     element: <LobbyPage />,
+  },
+  {
+    path: '/:channelId/:roomId/temp',
+    element: <TempPage />,
   },
   {
     path: '/:channelId/multi',

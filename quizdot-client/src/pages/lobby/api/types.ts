@@ -1,7 +1,8 @@
 interface LobbyResponse {
   status: number;
   message: string;
-  data: LobbyInfo;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any;
 }
 
 interface LobbyInfo {
@@ -44,9 +45,13 @@ interface CreatedRoomInfo {
   roomInfo: RoomInfoDto[];
 }
 
-interface CheckPasswordInfo {
+interface CheckRoomPwdInfo {
   roomNum: number;
   password: string;
+}
+
+interface RoomIdInfo {
+  roomId: number;
 }
 
 export type {
@@ -56,5 +61,6 @@ export type {
   RoomInfoDto,
   CreatingRoomInfo,
   CreatedRoomInfo,
-  CheckPasswordInfo,
+  CheckRoomPwdInfo,
+  RoomIdInfo,
 };
