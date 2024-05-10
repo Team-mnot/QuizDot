@@ -22,7 +22,9 @@ async function EnterRoomApi(roomId: number): Promise<EnteringRoomInfo> {
         category: '',
         maxQuestion: -1,
         hostId: -1,
-        isPublic: true,
+        public: true,
+        inviteLink: null,
+        state: 'WAITING',
       },
     };
 }

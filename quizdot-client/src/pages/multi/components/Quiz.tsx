@@ -5,7 +5,7 @@ interface QuizPropsWithSize extends QuizProps {
   size: string;
 }
 
-export function QuizComponent(props: QuizPropsWithSize) {
+export function Quiz(props: QuizPropsWithSize) {
   return (
     <div
       className={`rounded-md border-r-2 bg-white p-4 shadow-md ${props.padding} ${props.size}`}

@@ -5,7 +5,7 @@ interface CharacterPropsWithSize extends CharacterProps {
   size: string;
 }
 
-export function CharacterComponent(props: CharacterPropsWithSize) {
+export function Character(props: CharacterPropsWithSize) {
   return (
     <div>
       <img

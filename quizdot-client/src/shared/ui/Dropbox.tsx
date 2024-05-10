@@ -11,10 +11,10 @@ export function Dropbox(props: DropboxProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [item, setItem] = useState(props.item);
 
-  const selectedItem = (e: React.MouseEvent<HTMLDivElement>) => {
+  const selectedItem = (index: number, item: string | number) => {
     setIsOpen(false);
-    setItem(e.currentTarget.innerText);
-    props.selectedItem(Number(e.currentTarget.id));
+    setItem(item);
+    props.selectedItem(index);
   };
 
   return (
@@ -36,8 +36,7 @@ export function Dropbox(props: DropboxProps) {
                 'white-space-nowrap cursor-pointer rounded-md p-5 hover:bg-gray-100'
               }
               key={item}
-              id={String(index)}
-              onClick={selectedItem}
+              onClick={() => selectedItem(index, item)}
             >
               {item}
             </div>

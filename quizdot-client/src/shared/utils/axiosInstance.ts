@@ -6,6 +6,7 @@ const axiosInstance = axios.create({
   timeout: 60000,
   headers: {
     accept: 'application/json;charset=UTF-8',
+    'Content-Type': 'application/json;charset=UTF-8',
   },
 });
 

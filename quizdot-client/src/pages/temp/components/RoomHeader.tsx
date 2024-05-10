@@ -1,12 +1,11 @@
-import { RoomInfoComponent } from './RoomInfoComponent';
-import { ExitButtonComponent } from './ExitButtonComponent';
+import { RoomInfo } from './RoomInfo';
+import { LeaveBtn } from './LeaveBtn';
 import { RoomInfoDto } from '@/pages/lobby/api/types';
 
-interface RoomHeaderProps {
+export function RoomHeader(props: {
   roomInfo: RoomInfoDto;
-}
-
-export function RoomHeader(props: RoomHeaderProps) {
+  channelId: string;
+}) {
   return (
     <div
       style={{
@@ -17,10 +16,10 @@ export function RoomHeader(props: RoomHeaderProps) {
       className={'flex w-full justify-between p-5'}
     >
       <div>
-        <RoomInfoComponent roomInfo={props.roomInfo}></RoomInfoComponent>
+        <RoomInfo roomInfo={props.roomInfo}></RoomInfo>
       </div>
       <div>
-        <ExitButtonComponent />
+        <LeaveBtn roomId={props.roomInfo.roomId} channelId={props.channelId} />
       </div>
     </div>
   );

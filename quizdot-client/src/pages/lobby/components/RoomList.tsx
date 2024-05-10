@@ -3,6 +3,8 @@ import { Room } from './Room';
 import { useOpenModal, useRouter } from '@/shared/hooks';
 import { RoomCreation } from './RoomCreation';
 import { RoomInfoDto } from '../api/types';
+import { RoomPwd } from './RoomPwd';
+import { useState } from 'react';
 
 interface RoomListProps {
   roomInfoDtos: RoomInfoDto[];
@@ -10,9 +12,30 @@ interface RoomListProps {
 }
 
 export function RoomList(props: RoomListProps) {
-  const { isOpenModal, clickModal, closeModal } = useOpenModal();
+  const {
+    isOpenModal: isOpenCreationModal,
+    clickModal: clickCreationModal,
+    closeModal: closeCreationModal,
+  } = useOpenModal();
+  const {
+    isOpenModal: isOpenPwdModal,
+    clickModal: clickPwdModal,
+    closeModal: closePwdModal,
+  } = useOpenModal();
 
   const router = useRouter();
+  const [clickedRoom, setClickedRoom] = useState<number>(-1);
+
+  const clickRoom = async (roomId: number, isPublic: boolean) => {
+    if (isPublic) {
+      router.routeTo(`/${props.channelId}/${roomId}/temp`);
+    } else {
+      setClickedRoom(roomId);
+      if (roomId == -1) return;
+      else clickPwdModal();
+    }
+  };
+
   return (
     <div>
       <div>
@@ -27,7 +50,7 @@ export function RoomList(props: RoomListProps) {
           <div
             key={room.roomId}
             onClick={() => {
-              router.routeTo(`/${props.channelId}/${room.roomId}/temp`);
+              clickRoom(room.roomId, room.public);
             }}
           >
             <Room roomInfoDto={room} />
@@ -37,11 +60,15 @@ export function RoomList(props: RoomListProps) {
       <div>
         <Button value="<" />
         <Button value=">" />
-        <Button value="방 생성" onClick={clickModal} />
+        <Button value="방 생성" onClick={clickCreationModal} />
       </div>
 
-      <Modal isOpen={isOpenModal} onClose={closeModal}>
+      <Modal isOpen={isOpenCreationModal} onClose={closeCreationModal}>
         <RoomCreation channelId={props.channelId} />
+      </Modal>
+
+      <Modal isOpen={isOpenPwdModal} onClose={closePwdModal}>
+        <RoomPwd channelId={props.channelId} roomId={clickedRoom} />
       </Modal>
     </div>
   );

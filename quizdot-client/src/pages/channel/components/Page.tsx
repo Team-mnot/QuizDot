@@ -17,7 +17,7 @@ export function ChannelPage() {
     document.body.style.backgroundSize = 'cover';
   }, []);
 
-  const clickChannel = (channelId: number) => {
+  const moveToChannel = (channelId: number) => {
     router.routeTo(`/${channelId}/lobby`);
   };
 
@@ -40,7 +40,7 @@ export function ChannelPage() {
             <Button
               value={`${item.channelId} 채널 (${item.activeUserCount}/${item.totalAvailable})`}
               className="w-[150px]"
-              onClick={() => clickChannel(item.channelId)}
+              onClick={() => moveToChannel(item.channelId)}
               disabled={
                 item.activeUserCount == item.totalAvailable ? true : false
               }

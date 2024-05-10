@@ -35,7 +35,7 @@ export function TempPage() {
       {!isTempLoading && !temp && <div>해당 게임의 정보가 없습니다.</div>}
       {!isTempLoading && temp && temp.roomInfo.roomId != -1 && (
         <div>
-          <RoomHeader roomInfo={temp.roomInfo} />
+          <RoomHeader channelId={channelId} roomInfo={temp.roomInfo} />
           <div>
             {channelId} 채널의 [{roomId}] 방
           </div>

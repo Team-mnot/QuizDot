@@ -1,11 +1,6 @@
 import { Button } from '@/shared/ui';
 
-interface PropsWithSize {
-  padding: string;
-  size: string;
-}
-
-export function OXButtonComponent(props: PropsWithSize) {
+export function OXTypeBtn(props: { padding: string; size: string }) {
   const handleClickTrue = () => {};
   const handleClickFalse = () => {};
   const handleClickPass = () => {};

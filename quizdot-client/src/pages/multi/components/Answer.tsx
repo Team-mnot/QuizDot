@@ -6,7 +6,7 @@ interface AnswerPropsWithSecNSize extends AnswerProps {
   sec: number;
 }
 
-export function AnswerComponent(props: AnswerPropsWithSecNSize) {
+export function Answer(props: AnswerPropsWithSecNSize) {
   return (
     <div className={`relative ${props.padding} ${props.size}`}>
       <div className={'absolute top-1/2 w-full text-center '}>

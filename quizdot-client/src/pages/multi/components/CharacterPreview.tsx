@@ -1,7 +1,7 @@
 import { Modal } from '@/shared/ui';
 import { useOpenModal } from '@/shared/hooks';
 import { useState } from 'react';
-import { CharacterComponent } from './CharacterComponent';
+import { Character } from './Character';
 
 export function CharacterPreview() {
   const dummyCharacters = [
@@ -79,7 +79,7 @@ export function CharacterPreview() {
                   clickModal();
                 }}
               >
-                <CharacterComponent
+                <Character
                   margin={'p-2'}
                   size={'h-20 w-20'}
                   imageUrl={character.imageUrl}
@@ -102,7 +102,7 @@ export function CharacterPreview() {
                     clickModal();
                   }}
                 >
-                  <CharacterComponent
+                  <Character
                     margin={'p-2'}
                     size={'h-20 w-20'}
                     imageUrl={character.imageUrl}

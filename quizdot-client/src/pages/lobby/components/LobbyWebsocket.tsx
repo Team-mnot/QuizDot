@@ -18,6 +18,7 @@ export function LobbyWebsocket(props: LobbyWebsocketProps) {
     isLoading: isLobbyLoading,
   } = useLobbyQuery(props.channelId);
 
+  console.log(lobby);
   return (
     <div>
       {isLobbyError && <div>해당 로비의 정보를 불러올 수 없습니다.</div>}
