@@ -6,11 +6,11 @@ const queryClient = new QueryClient();
 
 function App() {
   return (
-    <>
+    <div className="flex h-screen w-screen items-center justify-center">
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
       </QueryClientProvider>
-    </>
+    </div>
   );
 }
 

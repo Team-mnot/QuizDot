@@ -30,3 +30,35 @@ export async function SignUpApi(
   }
   return 'fail';
 }
+
+export async function IdCheckAPi(props: string): Promise<boolean> {
+  try {
+    const response: AxiosResponse<Response> = await axios.get(
+      `${baseApi}/member/check-id?id=${props}`,
+    );
+    if (response.data.status === 200) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error('Error Id Check', error);
+    return false;
+  }
+}
+
+export async function NicknameCheckAPi(props: string): Promise<boolean> {
+  try {
+    const response: AxiosResponse<Response> = await axios.get(
+      `${baseApi}/member/check-nickname?nickname=${props}`,
+    );
+    if (response.data.status === 200) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error('Error Id Check', error);
+    return false;
+  }
+}

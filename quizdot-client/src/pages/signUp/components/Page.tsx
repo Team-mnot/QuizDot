@@ -8,8 +8,8 @@ export function SignUpPage() {
   }, []);
 
   return (
-    <div className="flex h-screen w-screen flex-col items-center justify-center text-center">
-      <h1>회원가입</h1>
+    <div className="flex flex-col items-center justify-center rounded-md border bg-white bg-opacity-50 p-6">
+      <h1 className="mb-6">회원가입</h1>
       <SignUpForm />
     </div>
   );
