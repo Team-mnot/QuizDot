@@ -4,6 +4,8 @@ import { SocketStore } from '@/shared/stores/connectionStore/socket';
 
 import { ChattingBox } from '@/shared/ui/ChattingBox';
 
+import { useUserStore } from '@/shared/stores/userStore/userStore';
+
 interface MessageDto {
   sender: string;
   text: string;
@@ -21,9 +23,11 @@ export function LobbyChattingBox(props: LobbyChattingBoxProps) {
     { nickname: string; content: string }[]
   >([]);
 
+  const userStore = useUserStore();
+
   const onSend = (message: string) => {
     const chatMessage = {
-      sender: '익',
+      sender: userStore.nickname,
       text: message,
       type: null,
       data: null,
@@ -44,7 +48,7 @@ export function LobbyChattingBox(props: LobbyChattingBoxProps) {
   };
 
   useEffect(() => {
-    props.stompInstance.onConnect(`lobby/${props.channelId}`, onCallBack);
+    props.stompInstance.onConnect(`chat/lobby/${props.channelId}`, onCallBack);
   }, []);
 
   return (
