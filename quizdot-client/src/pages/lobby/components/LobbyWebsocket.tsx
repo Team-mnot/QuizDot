@@ -6,12 +6,10 @@ import { LobbyChattingBox } from './LobbyChattingBox';
 import { useLobbyQuery } from '../hooks/useLobbyQuery';
 import { SocketStore } from '@/shared/stores/connectionStore/socket';
 
-interface LobbyWebsocketProps {
+export function LobbyWebsocket(props: {
   channelId: number;
   stompInstance: SocketStore;
-}
-
-export function LobbyWebsocket(props: LobbyWebsocketProps) {
+}) {
   const {
     data: lobby,
     isError: isLobbyError,

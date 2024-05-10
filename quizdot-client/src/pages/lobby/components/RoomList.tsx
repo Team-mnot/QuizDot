@@ -6,12 +6,10 @@ import { RoomInfoDto } from '../api/types';
 import { RoomPwd } from './RoomPwd';
 import { useState } from 'react';
 
-interface RoomListProps {
+export function RoomList(props: {
   roomInfoDtos: RoomInfoDto[];
   channelId: number;
-}
-
-export function RoomList(props: RoomListProps) {
+}) {
   const {
     isOpenModal: isOpenCreationModal,
     clickModal: clickCreationModal,

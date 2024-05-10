@@ -1,9 +1,6 @@
 import { ActiveUserDto } from '../api/types';
 
-interface OnlineUserProps {
-  activeUserDto: ActiveUserDto;
-}
-export function OnlineUser(props: OnlineUserProps) {
+export function OnlineUser(props: { activeUserDto: ActiveUserDto }) {
   return (
     <div className={'p-1'}>
       <div

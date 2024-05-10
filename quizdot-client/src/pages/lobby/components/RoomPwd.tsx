@@ -4,15 +4,10 @@ import { Toast } from '@/shared/ui/Toast';
 import { useRouter } from '@/shared/hooks';
 import { checkRoomPwdApi } from '../api/api';
 
-interface RoomPwdProps {
-  roomId: number;
-  channelId: number;
-}
-
-export function RoomPwd(props: RoomPwdProps) {
+export function RoomPwd(props: { roomId: number; channelId: number }) {
   const [password, setPassword] = useState<string>('');
 
-  const [toastState, setToastState] = useState(false);
+  const [toastState, setToastState] = useState<boolean>(false);
 
   const router = useRouter();
 

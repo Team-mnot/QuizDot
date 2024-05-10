@@ -1,79 +1,89 @@
-import { Button, Dropbox, Input } from '@/shared/ui';
-import { useState } from 'react';
-import { CreatingRoomInfo } from '../../lobby/api/types';
-import { Toast } from '@/shared/ui/Toast';
-import { useRouter } from '@/shared/hooks';
+import { Button, Dropbox, Input, Toast } from '@/shared/ui';
+import { useEffect, useState } from 'react';
+import { RoomInfoDto } from '@/pages/lobby/api/types';
+import { ModifyRoomApi } from '../api/api';
 import {
-  categoryDBList,
   categoryList,
   maxPeopleList,
   maxQuestionList,
-  modeDBList,
   modeList,
-  statusDBList,
-  statusList,
-} from '../../lobby/constants';
-import { createRoomApi } from '../../lobby/api/api';
+  openList,
+} from '@/pages/lobby/constants';
+import { ModifyingRoomInfo } from '../api/types';
 
-export function RoomModification(props: { channelId: number }) {
-  const [title, setTitle] = useState<string>('덤벼라');
-  const [isPublic, setIsPublic] = useState<number>(0);
-  const [password, setPassword] = useState<string>('');
-  const [mode, setMode] = useState<number>(0);
-  const [maxPeople, setMaxPeople] = useState<number>(0);
-  const [category, setCategory] = useState<number>(0);
-  const [maxQuestion, setMaxQuestion] = useState<number>(0);
+export function RoomModification(props: {
+  channelId: number;
+  roomInfo: RoomInfoDto;
+}) {
+  const [title, setTitle] = useState<string>(props.roomInfo.title);
+  const [open, setOpen] = useState<number>(props.roomInfo.open ? 1 : 0);
+  const [password, setPassword] = useState<string>(props.roomInfo.password);
+  const [mode, setMode] = useState<string>(props.roomInfo.gameMode);
+  const [maxPeople, setMaxPeople] = useState<number>(props.roomInfo.maxPeople);
+  const [category, setCategory] = useState<string>(props.roomInfo.category);
+  const [maxQuestion, setMaxQuestion] = useState<number>(
+    props.roomInfo.maxQuestion,
+  );
 
-  const [toastState, setToastState] = useState(false);
+  const [toastState, setToastState] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string>('');
 
-  const router = useRouter();
+  useEffect(() => {
+    if (mode === 'SURVIVAL') {
+      setMaxPeople(18);
+    } else if (mode === 'ONETOONE') {
+      setMaxPeople(2);
+    } else if (mode === 'NORMAL') {
+      setMaxPeople(8);
+    }
+  }, [mode]);
 
   const changeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.currentTarget.value);
   };
 
-  const selectedIsPublic = (index: number) => {
-    setIsPublic(index);
+  const selectedOpen = (key: number) => {
+    setOpen(key);
   };
 
   const changePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.currentTarget.value);
   };
 
-  const selectedMode = (index: number) => {
-    setMode(index);
+  const selectedMode = (key: string) => {
+    setMode(key);
   };
 
-  const selectedMaxPeople = (index: number) => {
-    setMaxPeople(index);
+  const selectedMaxPeople = (key: number) => {
+    setMaxPeople(key);
   };
 
-  const selectedCategory = (index: number) => {
-    setCategory(index);
+  const selectedCategory = (key: string) => {
+    setCategory(key);
   };
 
-  const selectedMaxQuestion = (index: number) => {
-    setMaxQuestion(index);
+  const selectedMaxQuestion = (key: number) => {
+    setMaxQuestion(key);
   };
 
-  const createTheRoom = async () => {
-    const creatingRoomInfo: CreatingRoomInfo = {
+  const modifyRoom = async () => {
+    const modifyingRoomInfo: ModifyingRoomInfo = {
       title: title,
-      open: statusDBList[isPublic],
+      open: open ? true : false,
       password: password,
-      mode: modeDBList[mode],
-      category: categoryDBList[category],
-      maxPeople: maxPeopleList[maxPeople],
-      maxQuestion: maxQuestionList[maxQuestion],
+      mode: mode,
+      category: category,
+      maxPeople: maxPeople,
+      maxQuestion: maxQuestion,
     };
 
-    const response = await createRoomApi(props.channelId, creatingRoomInfo);
+    const response = await ModifyRoomApi(props.channelId, modifyingRoomInfo);
 
-    if (response.status == 201) {
-      // 대기실로 이동
-      console.log('뭐예요?');
-      router.routeTo(`/${props.channelId}/${response.data.roomId}/temp`);
+    if (response == 201) {
+      setToastMessage('방 정보를 변경했습니다.');
+      setToastState(true);
     } else {
+      setToastMessage('방 정보를 변경하지 못했습니다.');
       setToastState(true);
     }
   };
@@ -94,12 +104,12 @@ export function RoomModification(props: { channelId: number }) {
           <p className={'p-2'}>공개 여부</p>
           <Dropbox
             size="w-[150px]"
-            item={statusList[isPublic]}
-            options={statusList}
-            selectedItem={selectedIsPublic}
+            initial={open}
+            options={openList}
+            selectedKey={selectedOpen}
           />
         </div>
-        {!statusDBList[isPublic] ? (
+        {!open ? (
           <div>
             <p className={'p-2'}>비밀번호</p>
             <Input
@@ -118,19 +128,28 @@ export function RoomModification(props: { channelId: number }) {
           <p className={'p-2'}>게임 모드</p>
           <Dropbox
             size="w-[200px]"
-            item={modeList[mode]}
+            initial={mode}
             options={modeList}
-            selectedItem={selectedMode}
+            selectedKey={selectedMode}
           />
         </div>
         <div>
           <p className={'p-2'}>인원 수</p>
-          <Dropbox
-            size="w-[100px]"
-            item={maxPeopleList[maxPeople]}
-            options={maxPeopleList}
-            selectedItem={selectedMaxPeople}
-          />
+          {mode === 'NORMAL' ? (
+            <Dropbox
+              size="w-[100px]"
+              initial={maxPeople}
+              options={maxPeopleList}
+              selectedKey={selectedMaxPeople}
+            />
+          ) : (
+            <Input
+              type="text"
+              className="w-[100px]"
+              value={maxPeople}
+              readOnly
+            />
+          )}
         </div>
       </div>
       <div className={'flex justify-between px-20 py-2'}>
@@ -138,30 +157,30 @@ export function RoomModification(props: { channelId: number }) {
           <p className={'p-2'}>문제 카테고리</p>
           <Dropbox
             size="w-[200px]"
-            item={categoryList[category]}
+            initial={category}
             options={categoryList}
-            selectedItem={selectedCategory}
+            selectedKey={selectedCategory}
           />
         </div>
         <div>
           <p className={'px-5 py-2'}>문제 수</p>
           <Dropbox
             size="w-[100px]"
-            item={maxQuestionList[maxQuestion]}
+            initial={maxQuestion}
             options={maxQuestionList}
-            selectedItem={selectedMaxQuestion}
+            selectedKey={selectedMaxQuestion}
           />
         </div>
       </div>
       <div className={'px-20 py-10'}>
-        <Button className={'w-full'} value="방 생성" onClick={createTheRoom} />
-      </div>
-
-      {toastState === true ? (
-        <Toast
-          message={'방을 생성하지 못했습니다.'}
-          setToastState={setToastState}
+        <Button
+          className={'w-full'}
+          value="방 정보 변경"
+          onClick={modifyRoom}
         />
+      </div>
+      {toastState === true ? (
+        <Toast message={toastMessage} setToastState={setToastState} />
       ) : null}
     </div>
   );

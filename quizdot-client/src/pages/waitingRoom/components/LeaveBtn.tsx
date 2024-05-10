@@ -2,7 +2,7 @@ import { Button } from '@/shared/ui';
 import { LeaveRoomApi } from '../api/api';
 import { useRouter } from '@/shared/hooks';
 
-export function LeaveBtn(props: { roomId: number; channelId: string }) {
+export function LeaveBtn(props: { roomId: number; channelId: number }) {
   const router = useRouter();
 
   const leaveRoom = async () => {

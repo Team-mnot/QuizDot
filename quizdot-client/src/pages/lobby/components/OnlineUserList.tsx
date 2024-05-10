@@ -5,11 +5,7 @@ import { useState } from 'react';
 import { ActiveUserDto } from '../api/types';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
 
-interface OnlineUserListProps {
-  activeUserDtos: ActiveUserDto[];
-}
-
-export function OnlineUserList(props: OnlineUserListProps) {
+export function OnlineUserList(props: { activeUserDtos: ActiveUserDto[] }) {
   const userStore = useUserStore();
 
   const { isOpenModal, clickModal, closeModal } = useOpenModal();

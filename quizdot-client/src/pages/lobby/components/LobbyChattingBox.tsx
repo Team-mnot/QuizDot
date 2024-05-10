@@ -13,12 +13,10 @@ interface MessageDto {
   data: unknown;
 }
 
-interface LobbyChattingBoxProps {
+export function LobbyChattingBox(props: {
   channelId: number;
   stompInstance: SocketStore;
-}
-
-export function LobbyChattingBox(props: LobbyChattingBoxProps) {
+}) {
   const [messages, setMessages] = useState<
     { nickname: string; content: string }[]
   >([]);

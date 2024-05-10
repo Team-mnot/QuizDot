@@ -1,10 +1,6 @@
 import { RoomInfoDto } from '../api/types';
 
-interface RoomProps {
-  roomInfoDto: RoomInfoDto;
-}
-
-export function Room(props: RoomProps) {
+export function Room(props: { roomInfoDto: RoomInfoDto }) {
   return (
     <div>
       <div className={'w-[400px] rounded-lg border-2 bg-white p-5 shadow-md'}>

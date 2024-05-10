@@ -4,7 +4,7 @@ import { RoomInfoDto } from '@/pages/lobby/api/types';
 
 export function RoomHeader(props: {
   roomInfo: RoomInfoDto;
-  channelId: string;
+  channelId: number;
 }) {
   return (
     <div
@@ -16,7 +16,10 @@ export function RoomHeader(props: {
       className={'flex w-full justify-between p-5'}
     >
       <div>
-        <RoomInfo roomInfo={props.roomInfo}></RoomInfo>
+        <RoomInfo
+          roomInfo={props.roomInfo}
+          channelId={props.channelId}
+        ></RoomInfo>
       </div>
       <div>
         <LeaveBtn roomId={props.roomInfo.roomId} channelId={props.channelId} />

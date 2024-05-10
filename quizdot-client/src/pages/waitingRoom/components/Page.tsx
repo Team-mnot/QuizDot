@@ -36,7 +36,7 @@ export function WaitingRoomPage() {
       {!isTempLoading && !temp && <div>해당 게임의 정보가 없습니다.</div>}
       {!isTempLoading && temp && temp.roomInfo.roomId != -1 && (
         <div>
-          <RoomHeader channelId={channelId} roomInfo={temp.roomInfo} />
+          <RoomHeader channelId={Number(channelId)} roomInfo={temp.roomInfo} />
           <div>
             {channelId} 채널의 [{roomId}] 방
           </div>
