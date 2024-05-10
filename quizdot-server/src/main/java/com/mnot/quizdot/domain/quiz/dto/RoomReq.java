@@ -20,7 +20,7 @@ public class RoomReq {
 
     // 공개여부
     @NotNull
-    private boolean isPublic;
+    private boolean open;
 
     // 비밀번호
     private String password;
@@ -42,10 +42,10 @@ public class RoomReq {
     private int maxQuestion;
 
     @Builder
-    public RoomReq(String title, boolean isPublic, String password, ModeType mode,
+    public RoomReq(String title, boolean open, String password, ModeType mode,
         CategoryType category, int maxPeople, int maxQuestion) {
         this.title = title;
-        this.isPublic = isPublic;
+        this.open = open;
         this.password = password;
         this.mode = mode;
         this.category = category;

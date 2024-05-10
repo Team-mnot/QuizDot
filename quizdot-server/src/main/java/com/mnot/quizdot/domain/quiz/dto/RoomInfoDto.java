@@ -19,7 +19,7 @@ public class RoomInfoDto {
     private String title;
 
     // 공개 여부
-    private boolean isPublic;
+    private boolean open;
 
     // 비밀번호
     private String password;
@@ -46,12 +46,12 @@ public class RoomInfoDto {
     private String inviteLink;
 
     @Builder
-    public RoomInfoDto(int roomId, String title, boolean isPublic, String password,
+    public RoomInfoDto(int roomId, String title, boolean open, String password,
         String gameMode, int maxPeople, String category, int maxQuestion, int hostId,
         GameState state, String inviteLink) {
         this.roomId = roomId;
         this.title = title;
-        this.isPublic = isPublic;
+        this.open = open;
         this.password = password;
         this.gameMode = gameMode;
         this.maxPeople = maxPeople;
@@ -64,7 +64,7 @@ public class RoomInfoDto {
 
     public void modifyInfo(RoomReq roomReq) {
         this.title = roomReq.getTitle();
-        this.isPublic = roomReq.isPublic();
+        this.open = roomReq.isOpen();
         this.password = roomReq.getPassword();
         this.gameMode = String.valueOf(roomReq.getMode());
         this.category = String.valueOf(roomReq.getCategory());
