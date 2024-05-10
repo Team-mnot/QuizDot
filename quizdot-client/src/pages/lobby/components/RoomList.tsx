@@ -1,17 +1,18 @@
 import { Button, Modal } from '@/shared/ui';
 import { Room } from './Room';
-import { useOpenModal } from '@/shared/hooks';
+import { useOpenModal, useRouter } from '@/shared/hooks';
 import { RoomCreation } from './RoomCreation';
-import { RoomInfo } from '../api/types';
+import { RoomInfoDto } from '../api/types';
 
 interface RoomListProps {
-  roomsInfo: RoomInfo[];
+  roomInfoDtos: RoomInfoDto[];
   channelId: number;
 }
 
 export function RoomList(props: RoomListProps) {
   const { isOpenModal, clickModal, closeModal } = useOpenModal();
 
+  const router = useRouter();
   return (
     <div>
       <div>
@@ -22,9 +23,14 @@ export function RoomList(props: RoomListProps) {
         <Button value="이전" />
       </div>
       <div className={'rounded-lg bg-white bg-opacity-20 p-5 shadow-md'}>
-        {props.roomsInfo.map((room) => (
-          <div key={room.roomId}>
-            <Room roomInfo={room} />
+        {props.roomInfoDtos.map((room) => (
+          <div
+            key={room.roomId}
+            onClick={() => {
+              router.routeTo(`/${props.channelId}/${room.roomId}/temp`);
+            }}
+          >
+            <Room roomInfoDto={room} />
           </div>
         ))}
       </div>

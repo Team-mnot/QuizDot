@@ -1,13 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { getChannelsApi } from '../api/api';
-import { ChannelInfo } from '../api/types';
+import { ChannelInfos } from '../api/types';
 
 export function useChannelsQuery(): {
-  data: ChannelInfo[];
+  data: ChannelInfos;
   isError: boolean;
   isLoading: boolean;
 } {
-  const fallback: ChannelInfo[] = [];
+  const fallback: ChannelInfos = { channelnfos: [] };
 
   const {
     data = fallback,
@@ -16,6 +16,9 @@ export function useChannelsQuery(): {
   } = useQuery({
     queryKey: ['getChannels'],
     queryFn: () => getChannelsApi(),
+    staleTime: 3000,
+    gcTime: 3000,
+    placeholderData: keepPreviousData,
   });
 
   return { data, isError, isLoading };

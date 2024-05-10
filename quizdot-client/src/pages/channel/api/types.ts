@@ -4,10 +4,14 @@ interface ChannelResponse {
   data: ChannelInfo[];
 }
 
+interface ChannelInfos {
+  channelnfos: ChannelInfo[];
+}
+
 interface ChannelInfo {
   channelId: number;
   activeUserCount: number;
   totalAvailable: number;
 }
 
-export type { ChannelResponse, ChannelInfo };
+export type { ChannelResponse, ChannelInfos, ChannelInfo };

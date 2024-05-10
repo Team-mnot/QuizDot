@@ -1,7 +1,7 @@
-import { ActiveUserInfo } from '../api/types';
+import { ActiveUserDto } from '../api/types';
 
 interface OnlineUserProps {
-  activeUserInfo: ActiveUserInfo;
+  activeUserDto: ActiveUserDto;
 }
 export function OnlineUser(props: OnlineUserProps) {
   return (
@@ -11,7 +11,7 @@ export function OnlineUser(props: OnlineUserProps) {
           'w-[200px] rounded-lg border-2 bg-white p-2 text-center shadow-md'
         }
       >
-        <p>{props.activeUserInfo.id}</p>
+        <p>{props.activeUserDto.id}</p>
       </div>
     </div>
   );

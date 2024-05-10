@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { LobbyInfo } from '../api/types';
 import { enterLobbyApi } from '../api/api';
 
@@ -8,9 +8,9 @@ export function useLobbyQuery(channelId: number): {
   isLoading: boolean;
 } {
   const fallback: LobbyInfo = {
-    channelId: 8,
-    activeUsersInfo: [],
-    roomsInfo: [],
+    channelId: -1,
+    activeUserDtos: [],
+    roomInfoDtos: [],
   };
 
   const {
@@ -20,6 +20,9 @@ export function useLobbyQuery(channelId: number): {
   } = useQuery({
     queryKey: ['enterLobby'],
     queryFn: () => enterLobbyApi(channelId),
+    staleTime: 3000,
+    gcTime: 3000,
+    placeholderData: keepPreviousData,
   });
 
   return { data, isError, isLoading };

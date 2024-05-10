@@ -5,14 +5,14 @@ import { CreatingRoomInfo, LobbyInfo, LobbyResponse } from './types';
 
 const url = 'lobby';
 
-/*** 대기실 생성 ***/
-export async function createRoomApi(
+/*** 게임 대기실 생성 ***/
+async function createRoomApi(
   channelId: number,
-  request: CreatingRoomInfo,
+  creatingRoomInfo: CreatingRoomInfo,
 ): Promise<LobbyResponse> {
   const response = await jwtAxiosInstance.post(
     `${baseApi}/${url}/channel/${channelId}`,
-    request,
+    creatingRoomInfo,
   );
 
   console.log(`[${response.data.status}] ${response.data.message}`);
@@ -20,32 +20,33 @@ export async function createRoomApi(
 }
 
 /*** 채널 로비 입장 ***/
-export async function enterLobbyApi(channelId: number): Promise<LobbyInfo> {
+async function enterLobbyApi(channelId: number): Promise<LobbyInfo> {
   const response = await jwtAxiosInstance.get(
     `${baseApi}/${url}/channel/${channelId}`,
   );
 
   console.log(`[${response.data.status}] ${response.data.message}`);
-
-  if (response.data.status == 201) return response.data.data;
+  if (response.data.status == 200) return response.data.data;
   else
     return {
-      channelId: channelId,
-      activeUsersInfo: [],
-      roomsInfo: [],
+      channelId: -1,
+      activeUserDtos: [],
+      roomInfoDtos: [],
     };
 }
 
 /*** 비공개 방 비밀번호 확인 ***/
-export async function checkPasswordApi(
+async function checkRoomPwdApi(
   roomId: number,
   password: string,
-): Promise<LobbyResponse> {
+): Promise<number> {
   const response = await axiosInstance.post(
     `${baseApi}/${url}/channel/${roomId}/pwd-check`,
     password,
   );
 
   console.log(`[${response.data.status}] ${response.data.message}`);
-  return response.data;
+  return response.data.status;
 }
+
+export { createRoomApi, enterLobbyApi, checkRoomPwdApi };

@@ -1,22 +1,23 @@
 interface LobbyResponse {
   status: number;
   message: string;
-  data: LobbyInfo;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any;
 }
 
 interface LobbyInfo {
   channelId: number;
-  activeUsersInfo: ActiveUserInfo[];
-  roomsInfo: RoomInfo[];
+  activeUserDtos: ActiveUserDto[];
+  roomInfoDtos: RoomInfoDto[];
 }
 
-interface ActiveUserInfo {
+interface ActiveUserDto {
   id: number;
   level: number;
   nickname: string;
 }
 
-interface RoomInfo {
+interface RoomInfoDto {
   roomId: number;
   title: string;
   password: string;
@@ -41,20 +42,25 @@ interface CreatingRoomInfo {
 interface CreatedRoomInfo {
   channelId: number;
   hostId: number;
-  roomInfo: RoomInfo[];
+  roomInfo: RoomInfoDto[];
 }
 
-interface PrivateRoomInfo {
+interface CheckRoomPwdInfo {
   roomNum: number;
   password: string;
+}
+
+interface RoomIdInfo {
+  roomId: number;
 }
 
 export type {
   LobbyResponse,
   LobbyInfo,
-  ActiveUserInfo,
-  RoomInfo,
+  ActiveUserDto,
+  RoomInfoDto,
   CreatingRoomInfo,
   CreatedRoomInfo,
-  PrivateRoomInfo,
+  CheckRoomPwdInfo,
+  RoomIdInfo,
 };
