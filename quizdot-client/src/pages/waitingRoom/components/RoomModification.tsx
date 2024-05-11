@@ -22,7 +22,12 @@ export function RoomModification({
   const [open, setOpen] = useState<number>(roomInfo.open ? 1 : 0);
   const [password, setPassword] = useState<string>(roomInfo.password);
   const [mode, setMode] = useState<string>(roomInfo.gameMode);
-  const [maxPeople, setMaxPeople] = useState<number>(roomInfo.maxPeople);
+  const [maxPeople, setMaxPeople] = useState<number>(
+    roomInfo.gameMode == 'NORMAL' ? roomInfo.maxPeople : 8,
+  );
+  const [fixedMaxPeople, setFixedMaxPeople] = useState<number>(
+    roomInfo.gameMode == 'NORMAL' ? 0 : roomInfo.maxPeople,
+  );
   const [category, setCategory] = useState<string>(roomInfo.category);
   const [maxQuestion, setMaxQuestion] = useState<number>(roomInfo.maxQuestion);
 
@@ -31,13 +36,11 @@ export function RoomModification({
 
   useEffect(() => {
     if (mode === 'SURVIVAL') {
-      setMaxPeople(18);
+      setFixedMaxPeople(18);
     } else if (mode === 'ONETOONE') {
-      setMaxPeople(2);
-    } else if (mode === 'NORMAL') {
-      setMaxPeople(8);
+      setFixedMaxPeople(2);
     }
-  }, [mode]);
+  }, [mode, open]);
 
   const changeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.currentTarget.value);
@@ -71,10 +74,10 @@ export function RoomModification({
     const modifyingRoomInfo: ModifyingRoomType = {
       title: title,
       open: open ? true : false,
-      password: password,
+      password: open ? '' : password,
       mode: mode,
       category: category,
-      maxPeople: maxPeople,
+      maxPeople: mode == 'NORMAL' ? maxPeople : fixedMaxPeople,
       maxQuestion: maxQuestion,
     };
 
@@ -90,19 +93,19 @@ export function RoomModification({
   };
 
   return (
-    <div>
-      <div className={'px-20 py-2'}>
-        <p className={'p-2'}>방 제목</p>
+    <div className="h-[550px] w-[500px]">
+      <div className="px-[30px] py-[10px]">
+        <p className="p-[10px]">방 제목</p>
         <Input
           type="text"
-          className={'w-[350px]'}
+          className="w-full"
           value={title}
           onChange={changeTitle}
         />
       </div>
-      <div className={'flex justify-between px-20 py-2'}>
-        <div>
-          <p className={'p-2'}>공개 여부</p>
+      <div className="flex justify-between">
+        <div className="px-[30px] py-[10px]">
+          <p className="p-[10px]">공개 여부</p>
           <Dropbox
             size="w-[150px]"
             initial={open}
@@ -110,9 +113,9 @@ export function RoomModification({
             selectedKey={selectedOpen}
           />
         </div>
-        {!open ? (
-          <div>
-            <p className={'p-2'}>비밀번호</p>
+        {open == 0 ? (
+          <div className="px-[30px] py-[10px]">
+            <p className="p-[10px]">비밀번호</p>
             <Input
               type="password"
               className="w-[130px]"
@@ -124,9 +127,9 @@ export function RoomModification({
           <div></div>
         )}
       </div>
-      <div className={'flex justify-between px-20 py-2'}>
-        <div>
-          <p className={'p-2'}>게임 모드</p>
+      <div className="flex justify-between">
+        <div className="px-[30px] py-[10px]">
+          <p className="p-[10px]">게임 모드</p>
           <Dropbox
             size="w-[200px]"
             initial={mode}
@@ -134,8 +137,9 @@ export function RoomModification({
             selectedKey={selectedMode}
           />
         </div>
-        <div>
-          <p className={'p-2'}>인원 수</p>
+        <div className="px-[30px] py-[10px]">
+          <p className="p-[10px]">인원 수</p>
+
           {mode === 'NORMAL' ? (
             <Dropbox
               size="w-[100px]"
@@ -147,15 +151,15 @@ export function RoomModification({
             <Input
               type="text"
               className="w-[100px]"
-              value={maxPeople}
+              value={fixedMaxPeople}
               readOnly
             />
           )}
         </div>
       </div>
-      <div className={'flex justify-between px-20 py-2'}>
-        <div>
-          <p className={'p-2'}>문제 카테고리</p>
+      <div className="flex justify-between">
+        <div className="px-[30px] py-[10px]">
+          <p className="p-[10px]">문제 카테고리</p>
           <Dropbox
             size="w-[200px]"
             initial={category}
@@ -163,8 +167,8 @@ export function RoomModification({
             selectedKey={selectedCategory}
           />
         </div>
-        <div>
-          <p className={'px-5 py-2'}>문제 수</p>
+        <div className="px-[30px] py-[10px]">
+          <p className="p-[10px]">문제 수</p>
           <Dropbox
             size="w-[100px]"
             initial={maxQuestion}
@@ -173,13 +177,15 @@ export function RoomModification({
           />
         </div>
       </div>
-      <div className={'px-20 py-10'}>
+
+      <div className="p-[30px]">
         <Button
-          className={'w-full'}
+          className="w-full"
           value="방 정보 변경"
           onClick={handleModifyRoom}
         />
       </div>
+
       {toastState === true ? (
         <Toast message={toastMessage} setToastState={setToastState} />
       ) : null}
