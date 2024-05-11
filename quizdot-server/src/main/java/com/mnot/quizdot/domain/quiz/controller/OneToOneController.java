@@ -2,10 +2,12 @@ package com.mnot.quizdot.domain.quiz.controller;
 
 import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
 import com.mnot.quizdot.domain.quiz.dto.OneToOneAnswerDto;
+import com.mnot.quizdot.domain.quiz.dto.ResultDto;
 import com.mnot.quizdot.domain.quiz.service.OneToOneService;
 import com.mnot.quizdot.global.result.ResultResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -41,5 +43,15 @@ public class OneToOneController {
         oneToOneService.updateScores(roomId, memberDetail.getId(), answerDto.getResult());
         return ResponseEntity.ok(ResultResponse.of(200, "점수 업데이트에 성공하였습니다."));
     }
+
+    @PostMapping("/exit/{room_id}")
+    @Operation(summary = "일대일 결과 업데이트 API")
+    public ResponseEntity<ResultResponse> exitGame(
+        @AuthenticationPrincipal CustomMemberDetail memberDetail,
+        @PathVariable("room_id") int roomId) {
+        List<ResultDto> resultDtoList = oneToOneService.exitGame(roomId, memberDetail.getId());
+        return ResponseEntity.ok(ResultResponse.of(200, "리워드 지급 및 결과 계산을 성공하였습니다.", resultDtoList));
+    }
+
 
 }
