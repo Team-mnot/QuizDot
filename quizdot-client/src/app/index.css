@@ -29,9 +29,11 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
+  /* place-items: center; */
   min-width: 320px;
   min-height: 100vh;
+
+  font-family: 'DNFBitBitv2';
 }
 
 h1 {
@@ -70,3 +72,12 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+@font-face {
+  font-family: 'DNFBitBitv2';
+  font-style: normal;
+  font-weight: 400;
+  src: url('//cdn.df.nexon.com/img/common/font/DNFBitBitv2.otf')
+    format('opentype');
+}
+ 

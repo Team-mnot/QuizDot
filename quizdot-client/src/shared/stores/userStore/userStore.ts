@@ -1,39 +1,61 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { baseApi } from '@/shared/apis/';
-import axios from 'axios';
+import type { UserInfo } from '@/pages/logIn/api/types';
 
-interface UserState {}
+interface UserState {
+  id: number;
+  title: string;
+  nickname: string;
+  nicknameColor: string;
+  characterId: number;
+  level: number;
+  exp: number;
+  point: number;
+  isLogin: boolean;
+  getData: (props: UserInfo) => void;
+  resetData: () => void;
+}
 
 const useUserStore = create(
   persist<UserState>(
     (set) => ({
-      userId: 0,
+      id: 0,
+      title: '',
       nickname: '',
-      image: '',
+      nicknameColor: '',
+      characterId: 0,
       level: 0,
       exp: 0,
+      point: 0,
       isLogin: false,
-      getData: async () => {
-        try {
-          const response = await axios.get(`${baseApi}/users/info`, {
-            withCredentials: true,
-          });
-          const responseData = response.data.data;
-          set({
-            userId: responseData.id,
-            nickname: responseData.nickname,
-            image: responseData.image,
-            followingCount: responseData.followingCount,
-            followerCount: responseData.followerCount,
-            role: responseData.role,
-            isLogin: true,
-          });
-        } catch (error) {
-          console.error('Error get user info');
-        }
+      getData: (props: UserInfo) => {
+        const { id, title, nickname, nicknameColor, level, exp, point } = props;
+        set({
+          id,
+          title,
+          nickname,
+          nicknameColor,
+          level,
+          exp,
+          point,
+          isLogin: true,
+        });
+      },
+      resetData: () => {
+        set({
+          id: 0,
+          title: '',
+          nickname: '',
+          nicknameColor: '',
+          characterId: 0,
+          level: 0,
+          exp: 0,
+          point: 0,
+          isLogin: false,
+        });
       },
     }),
+
     {
       name: 'userStorage',
     },
