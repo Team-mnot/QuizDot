@@ -1,9 +1,14 @@
 package com.mnot.quizdot.domain.quiz.service;
 
+import com.mnot.quizdot.domain.member.entity.Member;
+import com.mnot.quizdot.domain.member.entity.ModeType;
+import com.mnot.quizdot.domain.member.entity.MultiRecord;
+import com.mnot.quizdot.domain.member.repository.MemberRepository;
 import com.mnot.quizdot.domain.member.repository.MultiRecordRepository;
 import com.mnot.quizdot.domain.quiz.dto.MessageDto;
 import com.mnot.quizdot.domain.quiz.dto.MessageType;
 import com.mnot.quizdot.domain.quiz.dto.QuizRes;
+import com.mnot.quizdot.domain.quiz.dto.ResultDto;
 import com.mnot.quizdot.domain.quiz.dto.ScoreDto;
 import com.mnot.quizdot.domain.quiz.dto.SubmitDto;
 import com.mnot.quizdot.domain.quiz.entity.Quiz;
@@ -12,12 +17,14 @@ import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import com.mnot.quizdot.global.util.RedisUtil;
 import com.mnot.quizdot.global.util.TitleUtil;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,11 +37,14 @@ public class OneToOneServiceImpl implements OneToOneService {
 
     private static final String SERVER_SENDER = "SYSTEM";
     private static final String GAME_DESTINATION = "/sub/info/game/";
+    private static final String TITLE_DESTINATION = "/sub/title/";
+    private static final int EXP = 300;
     private final RedisUtil redisUtil;
     private final RedisTemplate redisTemplate;
     private final SimpMessagingTemplate messagingTemplate;
     private final QuizRepository quizRepository;
     private final MultiRecordRepository multiRecordRepository;
+    private final MemberRepository memberRepository;
     private final TitleUtil titleUtil;
 
     @Override
@@ -135,5 +145,68 @@ public class OneToOneServiceImpl implements OneToOneService {
             messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
                 MessageDto.of(SERVER_SENDER, "플레이어중 한명의 체력이 0이 되었습니다", MessageType.EXIT));
         }
+    }
+
+    @Override
+    public List<ResultDto> exitGame(int roomId, int memberId) {
+        String boardKey = redisUtil.getBoardKey(roomId);
+        redisUtil.checkHost(roomId, memberId);
+
+        Set<TypedTuple<Integer>> scores = redisTemplate.opsForZSet()
+            .reverseRangeWithScores(boardKey, 0, -1);
+
+        List<ResultDto> resultDtoList = new ArrayList<>();
+
+        if (scores != null) {
+            int rank = 1;
+            double curScore = -1;
+            for (TypedTuple<Integer> score : scores) {
+                int id = score.getValue();
+                Member member = memberRepository.findById(id)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
+                MultiRecord multiRecord = multiRecordRepository.findByMemberIdAndMode(id,
+                        ModeType.ILGITO)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_RECORD));
+                curScore = score.getScore();
+
+                int curLevel = 0;
+                int point = -1;
+                multiRecord.updateRecord(rank == 1 ? 1 : 0, 1);
+                if (rank == 1) {
+                    curLevel = member.updateReward(EXP, EXP);
+                    point = EXP;
+                } else {
+                    if (member.getPoint() - EXP < 0) {
+                        curLevel = member.updateReward(0, EXP);
+                    } else {
+                        curLevel = member.updateReward(-EXP, EXP);
+                    }
+                    point = -EXP;
+                }
+
+                //칭호 확인
+                List<String> unlockList = titleUtil.checkRequirment(id, ModeType.ILGITO);
+                if (!unlockList.isEmpty()) {
+                    messagingTemplate.convertAndSend(TITLE_DESTINATION + id,
+                        MessageDto.of(SERVER_SENDER, "칭호가 해금되었습니다", MessageType.TILE, unlockList));
+                }
+                ResultDto resultDto = ResultDto.builder()
+                    .id(id)
+                    .level(member.getLevel())
+                    .curLevel(curLevel)
+                    .nickname(member.getNickname())
+                    .rank(rank)
+                    .score((int) curScore)
+                    .point(point)
+                    .curExp(member.getExp())
+                    .build();
+                resultDtoList.add(resultDto);
+                rank++;
+            }
+        }
+        messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
+            MessageDto.of(SERVER_SENDER, "리워드 지급 및 결과 계산이 완료되었습니다.", MessageType.EXIT,
+                resultDtoList));
+        return resultDtoList;
     }
 }
