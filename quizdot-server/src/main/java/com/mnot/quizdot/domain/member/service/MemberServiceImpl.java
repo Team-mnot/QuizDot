@@ -85,6 +85,11 @@ public class MemberServiceImpl implements MemberService {
             .mode(ModeType.SURVIVAL)
             .build();
         multiRecordRepository.save(survivalRecord);
+        MultiRecord ilgitoRecord = MultiRecord.builder()
+            .member(member)
+            .mode(ModeType.ILGITO)
+            .build();
+        multiRecordRepository.save(ilgitoRecord);
 
         //칭호는 해금방식이기 때문에 처음에 생성될 때 중계테이블에 모든 칭호를 담아주고 1번 칭호만 true를 설정해주고 나머지 칭호는 모두 false인 상태로 값을 추가해놓아야함.
         List<Title> titleList = titleRepository.findAll();
@@ -297,7 +302,7 @@ public class MemberServiceImpl implements MemberService {
     public String gachaColor(CustomMemberDetail customMemberDetail) {
         Member member = memberRepository.findById(customMemberDetail.getId())
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
-        
+
         if (member.getPoint() < claimPoint) {
             throw new BusinessException(ErrorCode.REJECT_ACCOUNT_POINT);
         }
