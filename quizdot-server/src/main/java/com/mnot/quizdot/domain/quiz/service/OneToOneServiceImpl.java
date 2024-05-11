@@ -4,6 +4,7 @@ import com.mnot.quizdot.domain.member.repository.MultiRecordRepository;
 import com.mnot.quizdot.domain.quiz.dto.MessageDto;
 import com.mnot.quizdot.domain.quiz.dto.MessageType;
 import com.mnot.quizdot.domain.quiz.dto.QuizRes;
+import com.mnot.quizdot.domain.quiz.dto.ScoreDto;
 import com.mnot.quizdot.domain.quiz.dto.SubmitDto;
 import com.mnot.quizdot.domain.quiz.entity.Quiz;
 import com.mnot.quizdot.domain.quiz.repository.QuizRepository;
@@ -28,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class OneToOneServiceImpl implements OneToOneService {
 
     private static final String SERVER_SENDER = "SYSTEM";
+    private static final String GAME_DESTINATION = "/sub/info/game/";
     private final RedisUtil redisUtil;
     private final RedisTemplate redisTemplate;
     private final SimpMessagingTemplate messagingTemplate;
@@ -92,6 +94,46 @@ public class OneToOneServiceImpl implements OneToOneService {
             }
             //sumbit 삭제하기
             redisTemplate.delete(submitKey);
+        }
+    }
+
+    @Override
+    public void updateScores(int roomId, int memberId, int isCorrect) {
+
+        String memberKey = redisUtil.getPlayersKey(roomId);
+        String boardKey = redisUtil.getBoardKey(roomId);
+        List<Integer> players = redisUtil.getPlayers(memberKey);
+
+        if (!players.contains(memberId)) {
+            throw new BusinessException(ErrorCode.NOT_EXISTS_IN_ROOM);
+        }
+
+        int enemyPlayerId = 0;
+        for (int i : players) {
+            if (i != memberId) {
+                enemyPlayerId = i;
+            }
+        }
+        if (enemyPlayerId == 0) {
+            throw new BusinessException(ErrorCode.NOT_EXISTS_IN_ROOM);
+        }
+
+        Double curScore = (isCorrect == 1) ? redisTemplate.opsForZSet()
+            .incrementScore(boardKey, enemyPlayerId, -1)
+            : redisTemplate.opsForZSet().score(boardKey, enemyPlayerId);
+
+        if (curScore == null) {
+            throw new BusinessException(ErrorCode.NOT_EXSITS_BOARD);
+        }
+
+        // 실시간 점수 업데이트 메시지 보내기
+        ScoreDto updatedScore = new ScoreDto(enemyPlayerId, curScore.longValue());
+        messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
+            MessageDto.of(SERVER_SENDER, MessageType.UPDATE, updatedScore));
+
+        if (curScore <= 0) {
+            messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
+                MessageDto.of(SERVER_SENDER, "플레이어중 한명의 체력이 0이 되었습니다", MessageType.EXIT));
         }
     }
 }
