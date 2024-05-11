@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 
 import { SocketStore } from '@/shared/stores/connectionStore/socket';
-
 import { ChattingBox } from '@/shared/ui/ChattingBox';
-
 import { useUserStore } from '@/shared/stores/userStore/userStore';
+import { IMessage } from '@stomp/stompjs';
 
 interface MessageDto {
   sender: string;
@@ -13,7 +12,10 @@ interface MessageDto {
   data: unknown;
 }
 
-export function LobbyChattingBox(props: {
+export function LobbyChattingBox({
+  channelId,
+  stompInstance,
+}: {
   channelId: number;
   stompInstance: SocketStore;
 }) {
@@ -24,18 +26,17 @@ export function LobbyChattingBox(props: {
   const userStore = useUserStore();
 
   const onSend = (message: string) => {
-    const chatMessage = {
+    const chattingMessage = {
       sender: userStore.nickname,
       text: message,
       type: null,
       data: null,
     };
 
-    props.stompInstance.onSend(`lobby/${props.channelId}`, chatMessage);
+    stompInstance.onSend(`lobby/${channelId}`, chattingMessage);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onCallBack = async (message: any) => {
+  const onCallBack = async (message: IMessage) => {
     const msg: MessageDto = JSON.parse(message.body) as MessageDto;
     console.error('[콜백 성공] server -> client ', msg);
 
@@ -46,12 +47,8 @@ export function LobbyChattingBox(props: {
   };
 
   useEffect(() => {
-    props.stompInstance.onConnect(`chat/lobby/${props.channelId}`, onCallBack);
+    stompInstance.onConnect(`chat/lobby/${channelId}`, onCallBack);
   }, []);
 
-  return (
-    <div>
-      <ChattingBox onSend={onSend} messages={messages} />
-    </div>
-  );
+  return <ChattingBox onSend={onSend} messages={messages} />;
 }

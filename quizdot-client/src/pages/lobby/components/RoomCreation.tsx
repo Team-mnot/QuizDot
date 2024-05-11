@@ -1,6 +1,6 @@
 import { Button, Dropbox, Input, Toast } from '@/shared/ui';
 import { useEffect, useState } from 'react';
-import { CreatingRoomInfo } from '../api/types';
+import { CreatingRoomType } from '../api/types';
 import { useRouter } from '@/shared/hooks';
 import {
   categoryList,
@@ -11,12 +11,13 @@ import {
 } from '../constants';
 import { createRoomApi } from '../api/api';
 
-export function RoomCreation(props: { channelId: number }) {
-  const [title, setTitle] = useState<string>('지는 사람이 개가 되는 걸로');
+export function RoomCreation({ channelId }: { channelId: number }) {
+  const [title, setTitle] = useState<string>('지는 사람은 개가 되는 걸로');
   const [open, setOpen] = useState<number>(1);
   const [password, setPassword] = useState<string>('');
   const [mode, setMode] = useState<string>('NORMAL');
   const [maxPeople, setMaxPeople] = useState<number>(8);
+  const [fixedMaxPeople, setFixedMaxPeople] = useState<number>(0);
   const [category, setCategory] = useState<string>('RANDOM');
   const [maxQuestion, setMaxQuestion] = useState<number>(10);
 
@@ -26,13 +27,11 @@ export function RoomCreation(props: { channelId: number }) {
 
   useEffect(() => {
     if (mode === 'SURVIVAL') {
-      setMaxPeople(18);
+      setFixedMaxPeople(18);
     } else if (mode === 'ONETOONE') {
-      setMaxPeople(2);
-    } else if (mode === 'NORMAL') {
-      setMaxPeople(8);
+      setFixedMaxPeople(2);
     }
-  }, [mode]);
+  }, [mode, open]);
 
   const changeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.currentTarget.value);
@@ -62,40 +61,40 @@ export function RoomCreation(props: { channelId: number }) {
     setMaxQuestion(key);
   };
 
-  const createRoom = async () => {
-    const creatingRoomInfo: CreatingRoomInfo = {
+  const handleCreateRoom = async () => {
+    const creatingRoom: CreatingRoomType = {
       title: title,
       open: open ? true : false,
-      password: password,
+      password: open ? '' : password,
       mode: mode,
       category: category,
-      maxPeople: maxPeople,
+      maxPeople: mode == 'NORMAL' ? maxPeople : fixedMaxPeople,
       maxQuestion: maxQuestion,
     };
 
-    const response = await createRoomApi(props.channelId, creatingRoomInfo);
+    const response = await createRoomApi(channelId, creatingRoom);
 
     if (response.status == 201) {
-      router.routeTo(`/${props.channelId}/${response.data.roomId}/waiting`);
+      router.routeTo(`/${channelId}/${response.data.roomId}/waiting`);
     } else {
       setToastState(true);
     }
   };
 
   return (
-    <div>
-      <div className={'px-20 py-2'}>
-        <p className={'p-2'}>방 제목</p>
+    <div className="h-[550px] w-[500px]">
+      <div className="px-[30px] py-[10px]">
+        <p className="p-[10px]">방 제목</p>
         <Input
           type="text"
-          className={'w-[350px]'}
+          className="w-full"
           value={title}
           onChange={changeTitle}
         />
       </div>
-      <div className={'flex justify-between px-20 py-2'}>
-        <div>
-          <p className={'p-2'}>공개 여부</p>
+      <div className="flex justify-between">
+        <div className="px-[30px] py-[10px]">
+          <p className="p-[10px]">공개 여부</p>
           <Dropbox
             size="w-[150px]"
             initial={open}
@@ -103,9 +102,9 @@ export function RoomCreation(props: { channelId: number }) {
             selectedKey={selectedOpen}
           />
         </div>
-        {!open ? (
-          <div>
-            <p className={'p-2'}>비밀번호</p>
+        {open == 0 ? (
+          <div className="px-[30px] py-[10px]">
+            <p className="p-[10px]">비밀번호</p>
             <Input
               type="password"
               className="w-[130px]"
@@ -117,9 +116,9 @@ export function RoomCreation(props: { channelId: number }) {
           <div></div>
         )}
       </div>
-      <div className={'flex justify-between px-20 py-2'}>
-        <div>
-          <p className={'p-2'}>게임 모드</p>
+      <div className="flex justify-between">
+        <div className="px-[30px] py-[10px]">
+          <p className="p-[10px]">게임 모드</p>
           <Dropbox
             size="w-[200px]"
             initial={mode}
@@ -127,8 +126,8 @@ export function RoomCreation(props: { channelId: number }) {
             selectedKey={selectedMode}
           />
         </div>
-        <div>
-          <p className={'p-2'}>인원 수</p>
+        <div className="px-[30px] py-[10px]">
+          <p className="p-[10px]">인원 수</p>
 
           {mode === 'NORMAL' ? (
             <Dropbox
@@ -141,15 +140,15 @@ export function RoomCreation(props: { channelId: number }) {
             <Input
               type="text"
               className="w-[100px]"
-              value={maxPeople}
+              value={fixedMaxPeople}
               readOnly
             />
           )}
         </div>
       </div>
-      <div className={'flex justify-between px-20 py-2'}>
-        <div>
-          <p className={'p-2'}>문제 카테고리</p>
+      <div className="flex justify-between">
+        <div className="px-[30px] py-[10px]">
+          <p className="p-[10px]">문제 카테고리</p>
           <Dropbox
             size="w-[200px]"
             initial={category}
@@ -157,8 +156,8 @@ export function RoomCreation(props: { channelId: number }) {
             selectedKey={selectedCategory}
           />
         </div>
-        <div>
-          <p className={'px-5 py-2'}>문제 수</p>
+        <div className="px-[30px] py-[10px]">
+          <p className="p-[10px]">문제 수</p>
           <Dropbox
             size="w-[100px]"
             initial={maxQuestion}
@@ -167,9 +166,11 @@ export function RoomCreation(props: { channelId: number }) {
           />
         </div>
       </div>
-      <div className={'px-20 py-10'}>
-        <Button className={'w-full'} value="방 생성" onClick={createRoom} />
+
+      <div className="p-[30px]">
+        <Button className="w-full" value="방 생성" onClick={handleCreateRoom} />
       </div>
+
       {toastState === true ? (
         <Toast
           message={'방을 생성하지 못했습니다.'}

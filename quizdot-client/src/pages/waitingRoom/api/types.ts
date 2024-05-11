@@ -1,5 +1,6 @@
-import { CreatingRoomInfo, RoomInfoDto } from '@/pages/lobby/api/types';
+import { CreatingRoomType, RoomInfoType } from '@/pages/lobby/api/types';
 
+/*** 게임 대기실 API 반환 타입 ***/
 interface WaitingRoomResponse {
   status: number;
   message: string;
@@ -7,18 +8,22 @@ interface WaitingRoomResponse {
   data: any;
 }
 
-interface ModifyingRoomInfo extends CreatingRoomInfo {}
+/*** 수정할 방 정보 타입 ***/
+interface ModifyingRoomType extends CreatingRoomType {}
 
-interface EnteringRoomInfo {
-  players: Players;
-  roomInfo: RoomInfoDto;
+/*** 입장할 방 정보 타입 ***/
+interface EnteringRoomType {
+  players: PlayersType;
+  roomInfo: RoomInfoType;
 }
 
-interface Players {
-  [key: string]: Player;
+/*** 플레이어 정보 해시 타입 ***/
+interface PlayersType {
+  [key: string]: PlayerType;
 }
 
-interface Player {
+/*** 플레이어 정보 타입 ***/
+interface PlayerType {
   characterId: number;
   level: number;
   nickname: string;
@@ -28,7 +33,7 @@ interface Player {
 
 export type {
   WaitingRoomResponse,
-  ModifyingRoomInfo,
-  EnteringRoomInfo,
-  Player,
+  ModifyingRoomType,
+  EnteringRoomType,
+  PlayerType,
 };

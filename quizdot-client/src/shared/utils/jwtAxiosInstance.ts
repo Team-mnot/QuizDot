@@ -15,7 +15,7 @@ jwtAxiosInstance.interceptors.request.use(
   function (config) {
     //    const token = localStorage.getItem('accessToken');
     const token =
-      'eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MjEsImNhdGVnb3J5IjoiYWNjZXNzIiwibWVtYmVySWQiOiIzN2pzYmVhbiIsInJvbGUiOiJST0xFX1VTRVIiLCJuaWNrbmFtZSI6InN1YmluIiwiaWF0IjoxNzE1MzU0MTY2LCJleHAiOjE3MTUzNjQ5NjZ9.UQBcryryX6MIat9P1t3G0RDGjUGSg9bSQj0_XpIX-cM';
+      'eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MjEsImNhdGVnb3J5IjoiYWNjZXNzIiwibWVtYmVySWQiOiIzN2pzYmVhbiIsInJvbGUiOiJST0xFX1VTRVIiLCJuaWNrbmFtZSI6InN1YmluIiwiaWF0IjoxNzE1NDM3ODA2LCJleHAiOjE3MTU0NDg2MDZ9.qIsNnOu3bd6dTCeLaOT_SbsyDCEteR2GFe_rFD_1-IU';
     config.headers.access = `${token}`;
     return config;
   },

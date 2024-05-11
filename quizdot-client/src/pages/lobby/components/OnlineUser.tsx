@@ -1,14 +1,21 @@
-import { ActiveUserDto } from '../api/types';
+import { ActiveUserType } from '../api/types';
 
-export function OnlineUser(props: { activeUserDto: ActiveUserDto }) {
+export function OnlineUser({
+  activeUser,
+  handleClickUser,
+}: {
+  activeUser: ActiveUserType;
+  handleClickUser: (userId: number) => void;
+}) {
   return (
-    <div className={'p-1'}>
+    <div className={'px-[20px] py-[10px]'}>
       <div
-        className={
-          'w-[200px] rounded-lg border-2 bg-white p-2 text-center shadow-md'
-        }
+        className={'w-[200px] rounded-lg border-2 bg-white p-[10px] shadow-md'}
+        onClick={() => handleClickUser(activeUser.id)}
       >
-        <p>{props.activeUserDto.id}</p>
+        <p>
+          Lv.{activeUser.level}&nbsp;&nbsp;{activeUser.nickname}
+        </p>
       </div>
     </div>
   );

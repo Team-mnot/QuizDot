@@ -1,4 +1,4 @@
-import { RoomInfoDto } from '@/pages/lobby/api/types';
+import { RoomInfoType } from '@/pages/lobby/api/types';
 import { InviteRoomWithLinkApi } from '../api/api';
 import { Button, Modal, Toast } from '@/shared/ui';
 import { useEffect, useState } from 'react';
@@ -6,12 +6,19 @@ import { useOpenModal } from '@/shared/hooks';
 import { RoomModification } from './RoomModification';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
 
-export function RoomInfo(props: { roomInfo: RoomInfoDto; channelId: number }) {
+export function RoomInfo({
+  channelId,
+  roomInfo,
+}: {
+  channelId: number;
+  roomInfo: RoomInfoType;
+}) {
   const [toastState, setToastState] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>('');
   const [inviteLink, setInviteLink] = useState<string | null>(
-    props.roomInfo.inviteLink,
+    roomInfo.inviteLink,
   );
+
   const userStore = useUserStore();
 
   const {
@@ -24,7 +31,7 @@ export function RoomInfo(props: { roomInfo: RoomInfoDto; channelId: number }) {
 
   /*** 초대 링크 생성 ***/
   const inviteRoomWithLink = async () => {
-    const response = await InviteRoomWithLinkApi(props.roomInfo.roomId);
+    const response = await InviteRoomWithLinkApi(roomInfo.roomId);
     if (response.status == 200) {
       setInviteLink(response.data);
     } else {
@@ -55,22 +62,24 @@ export function RoomInfo(props: { roomInfo: RoomInfoDto; channelId: number }) {
 
   return (
     <div>
-      <div className="flex">
-        <p>[{props.roomInfo.title}]&nbsp;</p>
-        <p>{props.roomInfo.open ? '공개' : '비공개'}&nbsp;|&nbsp;</p>
-        <p>{props.roomInfo.gameMode}&nbsp;|&nbsp;</p>
-        <p>{props.roomInfo.maxPeople}&nbsp;인&nbsp;|&nbsp;</p>
-        <p>{props.roomInfo.category}&nbsp;|&nbsp;</p>
-        <p>{props.roomInfo.maxQuestion}&nbsp;문제</p>
-        {props.roomInfo.hostId == userStore.id && (
+      <div className="flex w-[700px]">
+        <p>[{roomInfo.title}]&nbsp;</p>
+        <p>{roomInfo.open ? '공개' : '비공개'}&nbsp;|&nbsp;</p>
+        <p>{roomInfo.gameMode}&nbsp;|&nbsp;</p>
+        <p>{roomInfo.maxPeople}&nbsp;인&nbsp;|&nbsp;</p>
+        <p>{roomInfo.category}&nbsp;|&nbsp;</p>
+        <p>{roomInfo.maxQuestion}&nbsp;문제</p>
+
+        {roomInfo.hostId == userStore.id && (
           <Button
-            className="text-xs"
+            className="text-[10px]"
             value="변경"
             onClick={clickModificationModal}
           />
         )}
       </div>
-      <div className="flex">
+
+      <div className="flex w-[700px]">
         <p>초대 코드&nbsp;:&nbsp;</p>
         {inviteLink ? (
           <div className="flex">
@@ -78,15 +87,19 @@ export function RoomInfo(props: { roomInfo: RoomInfoDto; channelId: number }) {
               {inviteLink.substr(39, 6)}
               &nbsp;.&nbsp;.&nbsp;.
             </p>
-            <Button className="text-xs" value="복사" onClick={copyClipBoard} />
+            <Button
+              className="w-[70px] text-[10px]"
+              value="복사"
+              onClick={copyClipBoard}
+            />
           </div>
         ) : (
           <div className="flex">
             <p>&nbsp;---&nbsp;</p>
-            {props.roomInfo.hostId == userStore.id && (
+            {roomInfo.hostId == userStore.id && (
               <Button
                 value="초대 링크 생성"
-                className="text-red-700"
+                className="w-[110px] text-[10px] text-red-700"
                 onClick={inviteRoomWithLink}
               />
             )}
@@ -94,10 +107,7 @@ export function RoomInfo(props: { roomInfo: RoomInfoDto; channelId: number }) {
         )}
       </div>
       <Modal isOpen={isOpenModificationModal} onClose={closeModificationModal}>
-        <RoomModification
-          roomInfo={props.roomInfo}
-          channelId={props.channelId}
-        />
+        <RoomModification roomInfo={roomInfo} channelId={channelId} />
       </Modal>
 
       {toastState === true ? (

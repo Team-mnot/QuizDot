@@ -1,6 +1,6 @@
 import { Button, Dropbox, Input, Toast } from '@/shared/ui';
 import { useEffect, useState } from 'react';
-import { RoomInfoDto } from '@/pages/lobby/api/types';
+import { RoomInfoType } from '@/pages/lobby/api/types';
 import { ModifyRoomApi } from '../api/api';
 import {
   categoryList,
@@ -9,21 +9,22 @@ import {
   modeList,
   openList,
 } from '@/pages/lobby/constants';
-import { ModifyingRoomInfo } from '../api/types';
+import { ModifyingRoomType } from '../api/types';
 
-export function RoomModification(props: {
+export function RoomModification({
+  channelId,
+  roomInfo,
+}: {
   channelId: number;
-  roomInfo: RoomInfoDto;
+  roomInfo: RoomInfoType;
 }) {
-  const [title, setTitle] = useState<string>(props.roomInfo.title);
-  const [open, setOpen] = useState<number>(props.roomInfo.open ? 1 : 0);
-  const [password, setPassword] = useState<string>(props.roomInfo.password);
-  const [mode, setMode] = useState<string>(props.roomInfo.gameMode);
-  const [maxPeople, setMaxPeople] = useState<number>(props.roomInfo.maxPeople);
-  const [category, setCategory] = useState<string>(props.roomInfo.category);
-  const [maxQuestion, setMaxQuestion] = useState<number>(
-    props.roomInfo.maxQuestion,
-  );
+  const [title, setTitle] = useState<string>(roomInfo.title);
+  const [open, setOpen] = useState<number>(roomInfo.open ? 1 : 0);
+  const [password, setPassword] = useState<string>(roomInfo.password);
+  const [mode, setMode] = useState<string>(roomInfo.gameMode);
+  const [maxPeople, setMaxPeople] = useState<number>(roomInfo.maxPeople);
+  const [category, setCategory] = useState<string>(roomInfo.category);
+  const [maxQuestion, setMaxQuestion] = useState<number>(roomInfo.maxQuestion);
 
   const [toastState, setToastState] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>('');
@@ -66,8 +67,8 @@ export function RoomModification(props: {
     setMaxQuestion(key);
   };
 
-  const modifyRoom = async () => {
-    const modifyingRoomInfo: ModifyingRoomInfo = {
+  const handleModifyRoom = async () => {
+    const modifyingRoomInfo: ModifyingRoomType = {
       title: title,
       open: open ? true : false,
       password: password,
@@ -77,7 +78,7 @@ export function RoomModification(props: {
       maxQuestion: maxQuestion,
     };
 
-    const response = await ModifyRoomApi(props.channelId, modifyingRoomInfo);
+    const response = await ModifyRoomApi(channelId, modifyingRoomInfo);
 
     if (response == 201) {
       setToastMessage('방 정보를 변경했습니다.');
@@ -176,7 +177,7 @@ export function RoomModification(props: {
         <Button
           className={'w-full'}
           value="방 정보 변경"
-          onClick={modifyRoom}
+          onClick={handleModifyRoom}
         />
       </div>
       {toastState === true ? (

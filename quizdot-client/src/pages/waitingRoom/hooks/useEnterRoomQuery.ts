@@ -1,13 +1,13 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { EnterRoomApi } from '../api/api';
-import { EnteringRoomInfo } from '../api/types';
+import { EnteringRoomType } from '../api/types';
 
 export function useEnterRoomQuery(roomId: number): {
-  data: EnteringRoomInfo;
+  data: EnteringRoomType;
   isError: boolean;
   isLoading: boolean;
 } {
-  const fallback: EnteringRoomInfo = {
+  const fallback: EnteringRoomType = {
     players: {},
     roomInfo: {
       roomId: -1,

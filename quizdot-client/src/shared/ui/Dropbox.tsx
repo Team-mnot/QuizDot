@@ -25,9 +25,9 @@ export function Dropbox(props: DropboxProps) {
   };
 
   return (
-    <div className={'relative inline-block'}>
+    <div className="relative inline-block">
       <div
-        className={`flex h-auto ${props.size} justify-between rounded-md border-2 bg-white p-5 shadow-md hover:bg-gray-100`}
+        className={`flex h-auto ${props.size} justify-between rounded-md border-2 bg-white px-[20px] py-[10px] shadow-md hover:bg-gray-100`}
         onClick={() => setIsOpen(!isOpen)}
       >
         <p>{selectedValue}</p>
@@ -39,9 +39,7 @@ export function Dropbox(props: DropboxProps) {
         >
           {Object.entries(props.options).map(([key, value]) => (
             <div
-              className={
-                'white-space-nowrap cursor-pointer rounded-md p-5 hover:bg-gray-100'
-              }
+              className="white-space-nowrap cursor-pointer rounded-md px-[20px] py-[10px] hover:bg-gray-100"
               key={key}
               onClick={() => selectedItem(key, value)}
             >

@@ -1,28 +1,21 @@
 import { RoomInfo } from './RoomInfo';
 import { LeaveBtn } from './LeaveBtn';
-import { RoomInfoDto } from '@/pages/lobby/api/types';
+import { RoomInfoType } from '@/pages/lobby/api/types';
 
-export function RoomHeader(props: {
-  roomInfo: RoomInfoDto;
+export function RoomHeader({
+  channelId,
+  roomInfo,
+}: {
   channelId: number;
+  roomInfo: RoomInfoType;
 }) {
   return (
-    <div
-      style={{
-        position: 'absolute',
-        top: '0px',
-        left: '0px',
-      }}
-      className={'flex w-full justify-between p-5'}
-    >
+    <div className="absolute left-[0px] top-[0px] flex w-full justify-between px-[50px] py-[20px]">
       <div>
-        <RoomInfo
-          roomInfo={props.roomInfo}
-          channelId={props.channelId}
-        ></RoomInfo>
+        <RoomInfo roomInfo={roomInfo} channelId={channelId} />
       </div>
       <div>
-        <LeaveBtn roomId={props.roomInfo.roomId} channelId={props.channelId} />
+        <LeaveBtn roomId={roomInfo.roomId} channelId={channelId} />
       </div>
     </div>
   );
