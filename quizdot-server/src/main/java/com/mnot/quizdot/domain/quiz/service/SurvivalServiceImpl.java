@@ -1,6 +1,5 @@
 package com.mnot.quizdot.domain.quiz.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnot.quizdot.domain.member.entity.Member;
 import com.mnot.quizdot.domain.member.entity.ModeType;
 import com.mnot.quizdot.domain.member.entity.MultiRecord;
@@ -43,14 +42,11 @@ public class SurvivalServiceImpl implements SurvivalService {
     private static final String GAME_DEFAULT_ID = "0520";
     private static final String MATCH_KEY = "match:";
 
-
-    private static final String GAME_DESTINATION = "/sub/info/game/";
     private static final String TITLE_DESTINATION = "/sub/title/";
     private final RedisTemplate redisTemplate;
     private final RedisUtil redisUtil;
     private final SimpMessagingTemplate messagingTemplate;
     private final MemberRepository memberRepository;
-    private final ObjectMapper objectMapper;
     private final MultiRecordRepository multiRecordRepository;
     private final TitleUtil titleUtil;
 
