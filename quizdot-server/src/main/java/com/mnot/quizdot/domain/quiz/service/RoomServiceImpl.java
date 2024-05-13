@@ -139,7 +139,13 @@ public class RoomServiceImpl implements RoomService {
 
             // 모든 사람이 퇴장했으면, 대기실 데이터 삭제
             if (newHostId == null) {
+                // 대기실 데이터 관리
                 deleteRoom(roomId);
+
+                // ID POOL 관리
+                int channelId = roomId / 1000;
+                int roomNum = roomId % 100;
+                lobbyService.modifyRoomNumList(channelId, roomNum, false);
                 return;
             }
 
@@ -157,19 +163,13 @@ public class RoomServiceImpl implements RoomService {
     /**
      * 대기실 관련 모든 데이터 삭제
      */
-    private void deleteRoom(int roomId) {
+    public void deleteRoom(int roomId) {
         // REDIS
         String pattern = String.format("rooms:%d:*", roomId);
         Cursor<String> keys = redisTemplate.scan(ScanOptions.scanOptions().match(pattern).build());
         keys.forEachRemaining((key) -> {
             redisTemplate.delete(key);
         });
-
-        // ID POOL 관리
-        int channelId = roomId / 1000;
-        int roomNum = roomId % 100;
-        lobbyService.modifyRoomNumList(channelId, roomNum, false);
-        log.info("[deleteRoom] channelId : {}, roomId : {}", channelId, roomNum);
     }
 
     /**

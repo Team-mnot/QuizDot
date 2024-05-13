@@ -5,6 +5,7 @@ import com.mnot.quizdot.domain.member.entity.ModeType;
 import com.mnot.quizdot.domain.member.entity.MultiRecord;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
 import com.mnot.quizdot.domain.member.repository.MultiRecordRepository;
+import com.mnot.quizdot.domain.quiz.dto.GameState;
 import com.mnot.quizdot.domain.quiz.dto.MessageDto;
 import com.mnot.quizdot.domain.quiz.dto.MessageType;
 import com.mnot.quizdot.domain.quiz.dto.ResultDto;
@@ -148,6 +149,10 @@ public class MultiServiceImpl implements MultiService {
         messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
             MessageDto.of(SERVER_SENDER, "리워드 지급 및 결과 계산이 완료되었습니다.", MessageType.REWARD,
                 resultDtoList));
+
+        // 대기실 상태 변경 (INPROGRESS -> WAITING)
+        String roomKey = redisUtil.getRoomInfoKey(roomId);
+        redisUtil.modifyRoomState(roomKey, GameState.WAITING);
         return resultDtoList;
     }
 
