@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -91,8 +92,25 @@ public class SurvivalServiceImpl implements SurvivalService {
         String boardKey = redisUtil.getBoardKey(roomId);
         redisUtil.checkHost(roomId, memberId);
 
-        Set<TypedTuple<String>> scores = redisTemplate.opsForZSet()
+        Set<TypedTuple<Integer>> scores = redisTemplate.opsForZSet()
             .reverseRangeWithScores(boardKey, 0, -1);
+
+        //board에 있는 멤버들의 pk 저장 및 pk로 Member 객체 가져오기
+        List<Integer> memberIdList = scores.stream().map(score -> score.getValue())
+            .collect(Collectors.toList());
+
+        List<Member> memberList = memberRepository.findAllById(memberIdList);
+        Map<Integer, Member> memberMap = memberList.stream()
+            .collect(Collectors.toMap(Member::getId, member -> member));
+        log.info("memberIdList : {}", memberIdList);
+
+        List<MultiRecord> multiRecordList = multiRecordRepository.findAllByMember_IdAndMode(
+            memberIdList,
+            ModeType.SURVIVAL);
+
+        Map<Integer, MultiRecord> multiRecordMap = multiRecordList.stream()
+            .collect(Collectors.toMap(multiRecord -> multiRecord.getMember().getId(),
+                multiRecord -> multiRecord));
 
         List<ResultDto> resultDtoList = new ArrayList<>();
         if (scores != null) {
@@ -100,14 +118,10 @@ public class SurvivalServiceImpl implements SurvivalService {
             int exp;
             boolean isFirst = true;
             int rank = 1;
-            for (TypedTuple<String> score : scores) {
-                int id = Integer.parseInt(score.getValue());
-                Member member = memberRepository.findById(id)
-                    .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
-                MultiRecord multiRecord = multiRecordRepository.findByMemberIdAndMode(
-                    id,
-                    ModeType.SURVIVAL).orElseThrow(() -> new BusinessException(
-                    ErrorCode.NOT_FOUND_RECORD));
+            for (TypedTuple<Integer> score : scores) {
+                int id = score.getValue();
+                Member member = memberMap.get(id);
+                MultiRecord multiRecord = multiRecordMap.get(id);
                 double memberScore = score.getScore();
                 if (isFirst) {
                     exp = ((totalPlayer) + 1) * 200;
