@@ -13,4 +13,26 @@ interface MessageDto {
   data: any;
 }
 
-export type { Response, MessageDto };
+interface RoomInfoType {
+  roomId: number;
+  title: string | null;
+  open: boolean;
+  password: string | null;
+  gameMode: string | null;
+  maxPeople: number;
+  category: string;
+  maxQuestion: number;
+  hostId: number;
+  state: string | null;
+  inviteLink: string | null;
+}
+
+interface PlayerType {
+  level: number;
+  nickname: string;
+  nicknameColor: string;
+  title: string;
+  characterId: number;
+}
+
+export type { Response, MessageDto, RoomInfoType, PlayerType };

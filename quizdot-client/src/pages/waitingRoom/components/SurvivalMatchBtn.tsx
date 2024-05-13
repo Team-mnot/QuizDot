@@ -1,14 +1,71 @@
 import { Button } from '@/shared/ui';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useContext } from 'react';
+import axios from 'axios';
+import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
+import { baseApi } from '@/shared/apis';
+import { useNavigate } from 'react-router-dom';
 
-export function SurvivalMatchBtn() {
-  const handleMatchGame = async () => {};
+interface Props {
+  roomId: number;
+}
 
-  const handleCancelGame = async () => {};
-
-  // 0 : 매칭 전, 1 : 매칭 중, 2 : 매칭 완료
-  const matchStatus = useRef<number>(0);
+export function SurvivalMatchBtn({ roomId }: Props) {
+  // const matchStatus = useRef<number>(0);
+  // const [matchCount, setMatchCount] = useState<number>(0);
+  const { isReady, callbackMsg } = useContext(WebSocketContext);
+  const [matchStatus, setMatchStatus] = useState<number>(0); // 0: 매칭 전, 1: 매칭 중, 2: 매칭 완료
   const [matchCount, setMatchCount] = useState<number>(0);
+  const matchTimer = useRef<NodeJS.Timeout | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (callbackMsg?.type === 'START') {
+      matchTimer.current = null;
+      setMatchStatus(2);
+      const channelId = Math.floor(roomId / 1000);
+      navigate(`/${channelId}/${roomId}/survival`, { state: callbackMsg.data });
+    }
+  }, [callbackMsg]);
+
+  const handleMatchGame = async () => {
+    if (!isReady) return;
+    try {
+      const response = await axios.post(
+        `${baseApi}/survival/${roomId}/enter?category=ECONOMY`,
+      );
+      if (response.status === 200) {
+        setMatchStatus(1);
+        console.log(response.data.message);
+        matchTimer.current = setInterval(() => {
+          setMatchCount((prev) => {
+            if (prev / 60 >= 5) {
+              handleCancelGame();
+            }
+            return prev + 1;
+          });
+        }, 1000);
+      }
+    } catch (error) {
+      console.error('Error starting match:', error);
+    }
+  };
+
+  const handleCancelGame = async () => {
+    if (matchTimer.current) clearInterval(matchTimer.current);
+    matchTimer.current = null;
+    try {
+      const response = await axios.post(
+        `${baseApi}/survival/${roomId}/cancel?category=ECONOMY`,
+      );
+      if (response.status === 200) {
+        console.log(response.data.message);
+      }
+    } catch (error) {
+      console.error('Error cancelling match:', error);
+    }
+    setMatchStatus(0);
+    setMatchCount(0);
+  };
 
   useEffect(() => {
     // 5 분 이상이 되면 자동 매칭 취소
@@ -18,14 +75,14 @@ export function SurvivalMatchBtn() {
 
   return (
     <div>
-      {matchStatus.current == 0 && (
+      {matchStatus == 0 && (
         <Button
           className="w-[300px] text-5xl"
           value="매칭 시작"
           onClick={handleMatchGame}
         />
       )}
-      {matchStatus.current == 1 && (
+      {matchStatus == 1 && (
         <div>
           <Button
             className="w-[300px] text-5xl"
@@ -38,7 +95,7 @@ export function SurvivalMatchBtn() {
           </p>
         </div>
       )}
-      {matchStatus.current == 2 && (
+      {matchStatus == 2 && (
         <div>
           <Button
             className="w-[300px] text-5xl"

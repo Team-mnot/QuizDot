@@ -3,7 +3,7 @@
 import { useEffect, useState, useContext } from 'react';
 import useQuizStore from '../store';
 
-import { CharacterPreview } from './CharacterPreview';
+import { PlayerPreview } from './PlayerPreview';
 // import { ChattingBox } from '@/shared/ui/ChattingBox';
 import { ChattingBox } from '@/shared/ui/ChattingBox';
 import { ChattingBoxBlind } from '@/shared/ui/ChattingBoxBlind';
@@ -12,7 +12,7 @@ import { QuizResultComponent } from './QuizResultComponent';
 import { CountDown } from './CountDown';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 
 export function SurvivalPage() {
   const { roomId } = useParams() as {
@@ -20,10 +20,19 @@ export function SurvivalPage() {
     roomId: string;
   };
 
+  const location = useLocation();
+
+  // const roomInfo = location.state.roomInfo; // state를 RoomInfoType으로 타입 캐스팅
+  // const players = location.state.players;
+  // 한방에 받아오기 ( 코드 있어보이게 )
+  const { players, roomInfo } = location.state || { players: [], roomInfo: {} };
+
   const {
     showChatBox,
     showResult,
     setShowResult,
+    setShowChatBox,
+    setShowHint,
     setShowCountDown,
     showCountDown,
     setQuizzes,
@@ -53,13 +62,11 @@ export function SurvivalPage() {
       ]);
     } else if (callbackMsg && callbackMsg.type == 'PASS') {
       setShowResult(true);
+      setShowChatBox(true);
+      setShowHint(false);
     } else if (callbackMsg && callbackMsg.type === 'QUIZ') {
       setQuizzes(callbackMsg.data.quizResList);
     }
-
-    // 생각해보니까 이건 대기실 API잖아 ..
-    // stompInstance.current.onSubscribe(`info/game/${roomId}`, onCallBack);
-    // stompInstance.current.onSubscribe(`players/game/${roomId}`, onCallBack);
   }, [callbackMsg]);
 
   const handleSubmitMessage = (message: string) => {
@@ -77,11 +84,11 @@ export function SurvivalPage() {
       {showCountDown ? (
         <CountDown />
       ) : showResult ? (
-        <QuizResultComponent />
+        <QuizResultComponent roomInfo={roomInfo} />
       ) : (
         <QuizComponent roomId={Number(roomId)} />
       )}
-      <CharacterPreview />
+      <PlayerPreview players={players} />
       <ChattingBox onSend={handleSubmitMessage} messages={messages} />
       {!showChatBox ? <ChattingBoxBlind /> : null}
     </div>

@@ -5,8 +5,13 @@ import useQuizStore from '../store';
 import { useQuiz2 } from '../hooks/useQuiz2';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
 import { Button } from '@/shared/ui';
+import { RoomInfoType } from '@/shared/apis/types';
 
-export function QuizResultComponent({ roomId }: { roomId: number }) {
+interface QuizResultComponentProps {
+  roomInfo: RoomInfoType;
+}
+
+export function QuizResultComponent({ roomInfo }: QuizResultComponentProps) {
   const { resultMessage, setShowResult, setShowCountDown } = useQuizStore();
   const { handleNextQuiz } = useQuiz2();
   const userStore = useUserStore();
