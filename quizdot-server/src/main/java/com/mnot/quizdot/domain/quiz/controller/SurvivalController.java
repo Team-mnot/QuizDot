@@ -78,4 +78,14 @@ public class SurvivalController {
         }
         return ResponseEntity.ok(ResultResponse.of(200, "매칭에 성공하여 서바이벌 게임을 시작합니다."));
     }
+
+    @PostMapping("/match/{room_id}/cancel")
+    @Operation(summary = "서바이벌 게임 매칭 취소 API")
+    public ResponseEntity<ResultResponse> cancelMatchmaking(
+        @AuthenticationPrincipal CustomMemberDetail memberDetail,
+        @PathVariable("room_id") int roomId,
+        @RequestParam String category) {
+        survivalService.cancelMatchmaking(roomId, category);
+        return ResponseEntity.ok(ResultResponse.of(200, "매칭 취소에 성공하였습니다."));
+    }
 }
