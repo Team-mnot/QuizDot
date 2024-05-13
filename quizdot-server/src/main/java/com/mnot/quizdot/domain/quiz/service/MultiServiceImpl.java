@@ -5,6 +5,7 @@ import com.mnot.quizdot.domain.member.entity.ModeType;
 import com.mnot.quizdot.domain.member.entity.MultiRecord;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
 import com.mnot.quizdot.domain.member.repository.MultiRecordRepository;
+import com.mnot.quizdot.domain.quiz.dto.GameState;
 import com.mnot.quizdot.domain.quiz.dto.MessageDto;
 import com.mnot.quizdot.domain.quiz.dto.MessageType;
 import com.mnot.quizdot.domain.quiz.dto.ResultDto;
@@ -78,7 +79,7 @@ public class MultiServiceImpl implements MultiService {
     public List<ResultDto> exitGame(int roomId, int memberId) {
         String boardKey = redisUtil.getBoardKey(roomId);
         redisUtil.checkHost(roomId, memberId);
-        Set<TypedTuple<String>> scores = redisTemplate.opsForZSet()
+        Set<TypedTuple<Integer>> scores = redisTemplate.opsForZSet()
             .reverseRangeWithScores(boardKey, 0, -1);
 
         List<ResultDto> resultDtoList = new ArrayList<>();
@@ -90,8 +91,8 @@ public class MultiServiceImpl implements MultiService {
             int totalPlayer = scores.size();
             double curScore = -1;
             int exp;
-            for (ZSetOperations.TypedTuple<String> score : scores) {
-                int id = Integer.parseInt(score.getValue());
+            for (ZSetOperations.TypedTuple<Integer> score : scores) {
+                int id = score.getValue();
                 Member member = memberRepository.findById(id)
                     .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
                 MultiRecord multiRecord = multiRecordRepository.findByMemberIdAndMode(id,
@@ -135,6 +136,10 @@ public class MultiServiceImpl implements MultiService {
         messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
             MessageDto.of(SERVER_SENDER, "리워드 지급 및 결과 계산이 완료되었습니다.", MessageType.REWARD,
                 resultDtoList));
+
+        // 대기실 상태 변경 (INPROGRESS -> WAITING)
+        String roomKey = redisUtil.getRoomInfoKey(roomId);
+        redisUtil.modifyRoomState(roomKey, GameState.WAITING);
         return resultDtoList;
     }
 

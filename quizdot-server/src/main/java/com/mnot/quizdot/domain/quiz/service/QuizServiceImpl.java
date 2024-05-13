@@ -1,6 +1,7 @@
 package com.mnot.quizdot.domain.quiz.service;
 
 import com.mnot.quizdot.domain.member.entity.ModeType;
+import com.mnot.quizdot.domain.quiz.dto.GameState;
 import com.mnot.quizdot.domain.quiz.dto.MessageDto;
 import com.mnot.quizdot.domain.quiz.dto.MessageType;
 import com.mnot.quizdot.domain.quiz.dto.QuizParam;
@@ -122,8 +123,12 @@ public class QuizServiceImpl implements QuizService {
         // 방장 권한 체크
         redisUtil.checkHost(roomId, memberId);
 
-        // 게임 초기화
+        // 게임 데이터 초기화
         initGame(roomId, memberId, mode);
+
+        // 대기실 상태 변경 (WAITING -> INPROGRESS)
+        String roomKey = redisUtil.getRoomInfoKey(roomId);
+        redisUtil.modifyRoomState(roomKey, GameState.INPROGRESS);
 
         // 모든 플레이어에게 게임 시작을 알린다
         messagingTemplate.convertAndSend("/sub/info/room/" + roomId,
