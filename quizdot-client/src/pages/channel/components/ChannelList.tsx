@@ -10,31 +10,14 @@ export function ChannelList({ channel }: { channel: ChannelInfosType }) {
   };
 
   return (
-    <div className="flex justify-center text-center">
-      <div className="px-[20px]">
-        {channel.channelInfos.map(
-          (item, index) =>
-            index % 2 === 0 && (
-              <Channel
-                key={item.channelId}
-                channelInfo={item}
-                handleClickChannel={handleClickChannel}
-              />
-            ),
-        )}
-      </div>
-      <div className="px-[20px]">
-        {channel.channelInfos.map(
-          (item, index) =>
-            index % 2 === 1 && (
-              <Channel
-                key={item.channelId}
-                channelInfo={item}
-                handleClickChannel={handleClickChannel}
-              />
-            ),
-        )}
-      </div>
+    <div className="flex w-[500px] flex-wrap justify-center text-center">
+      {channel.channelInfos.map((item) => (
+        <Channel
+          key={item.channelId}
+          channelInfo={item}
+          handleClickChannel={handleClickChannel}
+        />
+      ))}
     </div>
   );
 }

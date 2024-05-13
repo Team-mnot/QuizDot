@@ -1,11 +1,3 @@
-/*** 채널 API 반환 타입 ***/
-interface ChannelResponse {
-  status: number;
-  message: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any;
-}
-
 /*** 채널 정보 배열 타입 ***/
 interface ChannelInfosType {
   channelInfos: ChannelInfoType[];
@@ -18,4 +10,4 @@ interface ChannelInfoType {
   totalAvailable: number;
 }
 
-export type { ChannelResponse, ChannelInfosType, ChannelInfoType };
+export type { ChannelInfosType, ChannelInfoType };

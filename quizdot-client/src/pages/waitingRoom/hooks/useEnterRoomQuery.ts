@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { EnterRoomApi } from '../api/api';
+import { enterRoomApi } from '../api/api';
 import { EnteringRoomType } from '../api/types';
 
 export function useEnterRoomQuery(roomId: number): {
@@ -30,9 +30,9 @@ export function useEnterRoomQuery(roomId: number): {
     isLoading,
   } = useQuery({
     queryKey: ['enterRoom'],
-    queryFn: () => EnterRoomApi(roomId),
-    staleTime: 3000,
-    gcTime: 3000,
+    queryFn: () => enterRoomApi(roomId),
+    staleTime: 30000,
+    gcTime: 30000,
     placeholderData: keepPreviousData,
   });
 

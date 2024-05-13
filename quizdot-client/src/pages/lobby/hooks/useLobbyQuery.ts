@@ -21,8 +21,8 @@ export function useLobbyQuery(channelId: number): {
   } = useQuery({
     queryKey: ['enterLobby'],
     queryFn: () => enterLobbyApi(channelId),
-    staleTime: 3000,
-    gcTime: 3000,
+    staleTime: 10000,
+    gcTime: 10000,
     placeholderData: keepPreviousData,
   });
 

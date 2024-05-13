@@ -1,6 +1,7 @@
 import jwtAxiosInstance from '@/shared/utils/jwtAxiosInstance';
 import { baseApi } from '@/shared/apis';
-import { CreatingRoomType, LobbyInfoType, LobbyResponse } from './types';
+import { CreatingRoomType, LobbyInfoType } from './types';
+import { Response } from '@/shared/apis/types';
 
 const url = 'lobby';
 
@@ -8,7 +9,7 @@ const url = 'lobby';
 async function createRoomApi(
   channelId: number,
   creatingRoomInfo: CreatingRoomType,
-): Promise<LobbyResponse> {
+): Promise<Response> {
   const response = await jwtAxiosInstance.post(
     `${baseApi}/${url}/channel/${channelId}`,
     creatingRoomInfo,

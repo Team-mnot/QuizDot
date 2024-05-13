@@ -1,8 +1,9 @@
 import axios from 'axios';
 import qs from 'qs';
+import { baseApi } from '../apis';
 
 const jwtAxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: baseApi,
   timeout: 60000,
   withCredentials: true,
   headers: {
@@ -13,9 +14,7 @@ const jwtAxiosInstance = axios.create({
 
 jwtAxiosInstance.interceptors.request.use(
   function (config) {
-    //    const token = localStorage.getItem('accessToken');
-    const token =
-      'eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MjEsImNhdGVnb3J5IjoiYWNjZXNzIiwibWVtYmVySWQiOiIzN2pzYmVhbiIsInJvbGUiOiJST0xFX1VTRVIiLCJuaWNrbmFtZSI6InN1YmluIiwiaWF0IjoxNzE1NDM3ODA2LCJleHAiOjE3MTU0NDg2MDZ9.qIsNnOu3bd6dTCeLaOT_SbsyDCEteR2GFe_rFD_1-IU';
+    const token = localStorage.getItem('accessToken');
     config.headers.access = `${token}`;
     return config;
   },

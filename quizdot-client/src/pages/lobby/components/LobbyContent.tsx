@@ -1,19 +1,21 @@
-import { SocketStore } from '@/shared/stores/connectionStore/socket';
 import { useLobbyQuery } from '../hooks/useLobbyQuery';
 import { LobbyChattingBox, MyProfile, OnlineUserList, RoomList } from '.';
+import { useContext, useEffect } from 'react';
+import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 
-export function LobbyContent({
-  channelId,
-  stompInstance,
-}: {
-  channelId: number;
-  stompInstance: SocketStore;
-}) {
+export function LobbyContent({ channelId }: { channelId: number }) {
   const {
     data: lobby,
     isError: isLobbyError,
     isLoading: isLobbyLoading,
   } = useLobbyQuery(Number(channelId));
+
+  // 로딩 때문에 깜빡거리는 문제 해결하기
+  const { isReady, onSubscribe } = useContext(WebSocketContext);
+
+  useEffect(() => {
+    onSubscribe(`chat/lobby/${channelId}`);
+  }, [isReady]);
 
   return (
     <div className={'absolute left-[0px] top-[70px] flex w-full p-[20px]'}>
@@ -34,10 +36,7 @@ export function LobbyContent({
           </div>
           <div className={'flex'}>
             <MyProfile />
-            <LobbyChattingBox
-              stompInstance={stompInstance}
-              channelId={lobby.channelId}
-            />
+            <LobbyChattingBox channelId={lobby.channelId} />
           </div>
         </div>
       )}

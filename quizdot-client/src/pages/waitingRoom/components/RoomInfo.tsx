@@ -1,5 +1,5 @@
 import { RoomInfoType } from '@/pages/lobby/api/types';
-import { InviteRoomWithLinkApi } from '../api/api';
+import { inviteRoomWithLinkApi } from '../api/api';
 import { Button, Modal, Toast } from '@/shared/ui';
 import { useEffect, useState } from 'react';
 import { useOpenModal } from '@/shared/hooks';
@@ -31,7 +31,7 @@ export function RoomInfo({
 
   /*** 초대 링크 생성 ***/
   const inviteRoomWithLink = async () => {
-    const response = await InviteRoomWithLinkApi(roomInfo.roomId);
+    const response = await inviteRoomWithLinkApi(roomInfo.roomId);
     if (response.status == 200) {
       setInviteLink(response.data);
     } else {

@@ -1,7 +1,7 @@
 import { Button, Dropbox, Input, Toast } from '@/shared/ui';
 import { useEffect, useState } from 'react';
 import { RoomInfoType } from '@/pages/lobby/api/types';
-import { ModifyRoomApi } from '../api/api';
+import { modifyRoomApi } from '../api/api';
 import {
   categoryList,
   maxPeopleList,
@@ -81,7 +81,7 @@ export function RoomModification({
       maxQuestion: maxQuestion,
     };
 
-    const response = await ModifyRoomApi(channelId, modifyingRoomInfo);
+    const response = await modifyRoomApi(channelId, modifyingRoomInfo);
 
     if (response == 201) {
       setToastMessage('방 정보를 변경했습니다.');

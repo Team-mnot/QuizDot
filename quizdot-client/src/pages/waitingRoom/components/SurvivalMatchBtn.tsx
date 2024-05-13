@@ -1,7 +1,7 @@
 import { Button } from '@/shared/ui';
 import { useEffect, useRef, useState } from 'react';
 
-export function GameMatchBtn() {
+export function SurvivalMatchBtn() {
   const handleMatchGame = async () => {};
 
   const handleCancelGame = async () => {};

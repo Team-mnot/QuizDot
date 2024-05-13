@@ -1,11 +1,3 @@
-/*** 로비 API 반환 타입 ***/
-interface LobbyResponse {
-  status: number;
-  message: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any;
-}
-
 /*** 로비 정보 타입 ***/
 interface LobbyInfoType {
   channelId: number;
@@ -60,7 +52,6 @@ interface RoomPwdType {
 }
 
 export type {
-  LobbyResponse,
   LobbyInfoType,
   ActiveUserType,
   RoomInfoType,

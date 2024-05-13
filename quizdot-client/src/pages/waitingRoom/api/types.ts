@@ -1,13 +1,5 @@
 import { CreatingRoomType, RoomInfoType } from '@/pages/lobby/api/types';
 
-/*** 게임 대기실 API 반환 타입 ***/
-interface WaitingRoomResponse {
-  status: number;
-  message: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any;
-}
-
 /*** 수정할 방 정보 타입 ***/
 interface ModifyingRoomType extends CreatingRoomType {}
 
@@ -31,9 +23,4 @@ interface PlayerType {
   title: string;
 }
 
-export type {
-  WaitingRoomResponse,
-  ModifyingRoomType,
-  EnteringRoomType,
-  PlayerType,
-};
+export type { ModifyingRoomType, EnteringRoomType, PlayerType, PlayersType };

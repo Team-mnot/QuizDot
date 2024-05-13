@@ -1,55 +1,35 @@
-import { useEffect, useState } from 'react';
-import { Character } from '@/shared/ui/Character';
-import { GameMatchBtn, GameStartBtn } from '.';
+import { useContext, useEffect, useState } from 'react';
+import { PlayerList, RoomChattingBox } from '.';
 
-import { useUserStore } from '@/shared/stores/userStore/userStore';
 import { EnteringRoomType } from '../api/types';
+import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 
 export function RoomContent({
-  channelId,
   waitingRoom,
 }: {
-  channelId: number;
   waitingRoom: EnteringRoomType;
 }) {
   // const playerKeys = Object.keys(temp.players);
+  // const userStore = useUserStore();
 
-  const userStore = useUserStore();
+  useState<EnteringRoomType>(waitingRoom);
 
-  const [currentPeople, setCurrentPeople] = useState<number>(
-    Object.keys(waitingRoom.players).length,
-  );
-
-  console.log(channelId);
+  // 로딩 때문에 깜빡거리는 문제 해결하기
+  const { isReady, onSubscribe } = useContext(WebSocketContext);
 
   useEffect(() => {
-    setCurrentPeople;
-    Object.keys(waitingRoom.players).length;
-  }, []);
+    onSubscribe(`chat/room/${waitingRoom.roomInfo.roomId}`);
+    onSubscribe(`info/room/${waitingRoom.roomInfo.roomId}`);
+    onSubscribe(`players/room/${waitingRoom.roomInfo.roomId}`);
+  }, [isReady]);
 
   return (
     <div className={'absolute left-[0px] top-[70px] w-full p-[30px]'}>
-      <div className={'text-center'}>
-        {userStore.id == waitingRoom.roomInfo.hostId &&
-        currentPeople < waitingRoom.roomInfo.maxPeople ? (
-          <GameMatchBtn />
-        ) : (
-          <GameStartBtn />
-        )}
-      </div>
-
       <div>
-        {waitingRoom.players &&
-          Object.entries(waitingRoom.players).map(([key, player]) => (
-            <Character
-              key={key}
-              title={player.title}
-              nickname={player.nickname}
-              nicknameColor={player.nicknameColor}
-              level={player.level}
-              characterId={player.characterId}
-            />
-          ))}
+        <PlayerList players={waitingRoom.players} />
+      </div>
+      <div>
+        <RoomChattingBox roomId={waitingRoom.roomInfo.roomId} />
       </div>
     </div>
   );

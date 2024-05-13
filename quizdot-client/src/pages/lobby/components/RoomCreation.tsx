@@ -1,5 +1,5 @@
 import { Button, Dropbox, Input, Toast } from '@/shared/ui';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { CreatingRoomType } from '../api/types';
 import { useRouter } from '@/shared/hooks';
 import {
@@ -10,6 +10,7 @@ import {
   openList,
 } from '../constants';
 import { createRoomApi } from '../api/api';
+import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 
 export function RoomCreation({ channelId }: { channelId: number }) {
   const [title, setTitle] = useState<string>('지는 사람은 개가 되는 걸로');
@@ -23,6 +24,7 @@ export function RoomCreation({ channelId }: { channelId: number }) {
 
   const [toastState, setToastState] = useState<boolean>(false);
 
+  const { onUnsubscribe } = useContext(WebSocketContext);
   const router = useRouter();
 
   useEffect(() => {
@@ -75,6 +77,7 @@ export function RoomCreation({ channelId }: { channelId: number }) {
     const response = await createRoomApi(channelId, creatingRoom);
 
     if (response.status == 201) {
+      onUnsubscribe(`chat/lobby/${channelId}`);
       router.routeTo(`/${channelId}/${response.data.roomId}/waiting`);
     } else {
       setToastState(true);
