@@ -10,11 +10,7 @@ const schema = z.object({
 });
 
 export function FindPwdForm() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
+  const { register, handleSubmit } = useForm({
     resolver: zodResolver(schema),
   });
 
@@ -33,12 +29,10 @@ export function FindPwdForm() {
       <div>
         <label>아이디</label>
         <input type="text" {...register('memberId')} />
-        {errors.memberId && <span>잘못된 아이디 형식입니다</span>}
       </div>
       <div>
         <label>비밀번호 힌트</label>
         <input type="text" {...register('hint')} />
-        {errors.hint && <span>힌트는 당신의 생년월일 6자리입니다</span>}
       </div>
       <button type="submit">비밀번호 찾기</button>
     </form>

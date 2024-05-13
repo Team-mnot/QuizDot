@@ -8,7 +8,11 @@ export function FindPwdPage() {
   }, []);
 
   return (
-    <div className="flex h-screen w-screen flex-col items-center justify-center text-center">
+    <div
+      className={
+        'flex flex-col items-center justify-center rounded-md border bg-white bg-opacity-50 p-6'
+      }
+    >
       <FindPwdForm />
     </div>
   );
