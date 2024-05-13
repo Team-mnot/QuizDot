@@ -1,10 +1,9 @@
 package com.mnot.quizdot.domain.quiz.controller;
 
 import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
-import com.mnot.quizdot.domain.member.entity.ModeType;
 import com.mnot.quizdot.domain.quiz.dto.ResultDto;
 import com.mnot.quizdot.domain.quiz.dto.SurvivalAnswerDto;
-import com.mnot.quizdot.domain.quiz.service.QuizService;
+import com.mnot.quizdot.domain.quiz.service.RoomService;
 import com.mnot.quizdot.domain.quiz.service.SurvivalService;
 import com.mnot.quizdot.global.result.ResultResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,7 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class SurvivalController {
 
     private final SurvivalService survivalService;
-    private final QuizService quizService;
+
+    private final RoomService roomService;
 
     @PostMapping("/score/{room_id}")
     @Operation(summary = "서바이벌 점수 업데이트 API")
@@ -50,8 +50,10 @@ public class SurvivalController {
         @AuthenticationPrincipal CustomMemberDetail memberDetail,
         @PathVariable("room_id") int roomId) {
         List<ResultDto> resultDtoList = survivalService.exitGame(roomId, memberDetail.getId());
-        return ResponseEntity.ok(ResultResponse.of(200, "리워드 지급 및 결과 계산을 성공하였습니다.", resultDtoList));
 
+        // 임시 대기실 정보 삭제
+        roomService.deleteRoom(roomId);
+        return ResponseEntity.ok(ResultResponse.of(200, "리워드 지급 및 결과 계산을 성공하였습니다.", resultDtoList));
     }
 
     @GetMapping("/score/{room_id}")
@@ -74,9 +76,6 @@ public class SurvivalController {
         if (gameId == null) {
             return ResponseEntity.ok(ResultResponse.of(200, "서바이벌 게임 매칭을 기다리고 있습니다."));
         }
-
-        log.info("gameId : {}", gameId);
-        quizService.initGame(Integer.parseInt(gameId), memberDetail.getId(), ModeType.SURVIVAL);
         return ResponseEntity.ok(ResultResponse.of(200, "매칭에 성공하여 서바이벌 게임을 시작합니다."));
     }
 }
