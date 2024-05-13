@@ -1,13 +1,11 @@
 import jwtAxiosInstance from '@/shared/utils/jwtAxiosInstance';
 import { baseApi } from '@/shared/apis';
-import { InvitingLinkResponse } from './types';
+import { Response } from '@/shared/apis/types';
 
 const url = 'room';
 
 /*** 초대 링크로 게임 대기실 입장 ***/
-async function EnterRoomWithLinkApi(
-  invitingLink: string,
-): Promise<InvitingLinkResponse> {
+async function enterRoomWithLinkApi(invitingLink: string): Promise<Response> {
   const response = await jwtAxiosInstance.get(
     `${baseApi}/${url}/invite/data=${invitingLink}`,
   );
@@ -16,4 +14,4 @@ async function EnterRoomWithLinkApi(
   return response.data;
 }
 
-export { EnterRoomWithLinkApi };
+export { enterRoomWithLinkApi };

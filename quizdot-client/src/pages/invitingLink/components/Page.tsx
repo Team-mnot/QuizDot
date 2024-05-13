@@ -2,7 +2,7 @@ import { useRouter } from '@/shared/hooks';
 import { Button } from '@/shared/ui';
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { EnterRoomWithLinkApi } from '../api/api';
+import { enterRoomWithLinkApi } from '../api/api';
 
 export function InvitingLinkPage() {
   const [searchParams] = useSearchParams();
@@ -13,10 +13,10 @@ export function InvitingLinkPage() {
 
   const enterRoomWithLink = async () => {
     if (localStorage.getItem('accessToken')) {
-      const response = await EnterRoomWithLinkApi(invitingLink);
+      const response = await enterRoomWithLinkApi(invitingLink);
 
       if (response.status == 200) {
-        router.routeToWithData(`/${roomId}/${mode}`, response.data);
+        // router.routeToWithData(`/${roomId}/${mode}`, response.data);
       } else {
         router.routeTo('/login');
       }
