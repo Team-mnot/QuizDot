@@ -94,7 +94,6 @@ public class LobbyServiceImpl implements LobbyService {
             .build();
     }
 
-    // ID POOL 상태 변경
     public void modifyRoomNumList(int channelId, int roomNum, boolean state) {
         roomNumList.get(channelId)[roomNum] = state;
     }
@@ -103,7 +102,6 @@ public class LobbyServiceImpl implements LobbyService {
      * 동시 접속자 목록 조회
      */
     public List<ActiveUserDto> getActiveUserList(int channelId, int memberId) {
-        // TODO : 동시 접속자 REDIS Set에서 접속하지않는 유저 확인하고 삭제해줘야함(웹소켓 필요 예상)
         Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
 

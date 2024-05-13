@@ -14,4 +14,6 @@ public interface RoomService {
     String inviteRoom(int roomId, int memberId);
 
     RoomEnterRes enterInvitedRoom(String encodedParam, int memberId);
+
+    void deleteRoom(int roomId);
 }
