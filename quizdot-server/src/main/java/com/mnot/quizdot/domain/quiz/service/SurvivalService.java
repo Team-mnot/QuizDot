@@ -14,4 +14,6 @@ public interface SurvivalService {
     Set<TypedTuple<String>> getStageResult(int roomId, int memberId);
 
     String registMatchmaking(int roomId, String category);
+
+    void cancelMatchmaking(int roomId, String category);
 }
