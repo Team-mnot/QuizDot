@@ -116,7 +116,7 @@ public class MultiServiceImpl implements MultiService {
                 //칭호 확인
                 List<String> unlockList = titleUtil.checkRequirment(id, ModeType.NORMAL);
                 if (!unlockList.isEmpty()) {
-                    messagingTemplate.convertAndSend(TITLE_DESTINATION + id,
+                    messagingTemplate.convertAndSend(getGameDestination(roomId) + "/title/" + id,
                         MessageDto.of(SERVER_SENDER, "칭호가 해금되었습니다", MessageType.TILE, unlockList));
                 }
                 ResultDto resultDto = ResultDto.builder()
@@ -134,12 +134,16 @@ public class MultiServiceImpl implements MultiService {
         }
         log.info("resultDtoList 확인 : {}", resultDtoList);
         messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
-            MessageDto.of(SERVER_SENDER, "리워드 지급 및 결과 계산이 완료되었습니다.", MessageType.EXIT,
+            MessageDto.of(SERVER_SENDER, "리워드 지급 및 결과 계산이 완료되었습니다.", MessageType.REWARD,
                 resultDtoList));
 
         // 대기실 상태 변경 (INPROGRESS -> WAITING)
         String roomKey = redisUtil.getRoomInfoKey(roomId);
         redisUtil.modifyRoomState(roomKey, GameState.WAITING);
         return resultDtoList;
+    }
+
+    private String getGameDestination(int roomId) {
+        return String.format("/sub/info/game/%d", roomId);
     }
 }

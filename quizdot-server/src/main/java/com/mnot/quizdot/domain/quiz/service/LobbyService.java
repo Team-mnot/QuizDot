@@ -1,7 +1,7 @@
 package com.mnot.quizdot.domain.quiz.service;
 
 import com.mnot.quizdot.domain.quiz.dto.ActiveUserDto;
-import com.mnot.quizdot.domain.quiz.dto.Channelnfo;
+import com.mnot.quizdot.domain.quiz.dto.ChannelInfo;
 import com.mnot.quizdot.domain.quiz.dto.RoomInfoDto;
 import com.mnot.quizdot.domain.quiz.dto.RoomReq;
 import com.mnot.quizdot.domain.quiz.dto.RoomRes;
@@ -17,7 +17,7 @@ public interface LobbyService {
 
     List<RoomInfoDto> getRoomList(int channelId);
 
-    List<Channelnfo> getChannelList();
+    List<ChannelInfo> getChannelList();
 
     void checkAvailable(int channelId);
 

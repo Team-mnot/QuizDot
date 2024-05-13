@@ -89,6 +89,17 @@ public class RedisUtil {
         return true;
     }
 
+    public String getSubmitKey(int roomId) {
+        return String.format("rooms:%d:submit", roomId);
+    }
+
+    /**
+     * 문제 제출 유저 수 확인
+     */
+    public Long checkSubmit(String sumbitId) {
+        return redisTemplate.opsForSet().size(sumbitId);
+    }
+
     /**
      * 채널 내 동시 접속 유저 정보 KEY 생성
      */
