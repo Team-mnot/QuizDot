@@ -9,6 +9,7 @@ import { LobbyPage } from '@/pages/lobby';
 import { MultiPage } from '@/pages/multi';
 import { SurvivalPage } from '@/pages/survival';
 import { WaitingRoomPage } from '@/pages/waitingRoom';
+import { InvitingLinkPage } from '@/pages/invitingLink';
 
 export const router = createBrowserRouter([
   {
@@ -40,11 +41,15 @@ export const router = createBrowserRouter([
     element: <WaitingRoomPage />,
   },
   {
-    path: '/:channelId/multi',
+    path: '/:channelId/:roomId/multi',
     element: <MultiPage />,
   },
   {
-    path: '/:roomId/survival',
+    path: '/:channel/:roomId/survival',
     element: <SurvivalPage />,
+  },
+  {
+    path: '/invite',
+    element: <InvitingLinkPage />,
   },
 ]);

@@ -1,23 +1,19 @@
-interface LobbyResponse {
-  status: number;
-  message: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any;
-}
-
-interface LobbyInfo {
+/*** 로비 정보 타입 ***/
+interface LobbyInfoType {
   channelId: number;
-  activeUserDtos: ActiveUserDto[];
-  roomInfoDtos: RoomInfoDto[];
+  activeUsers: ActiveUserType[];
+  roomInfos: RoomInfoType[];
 }
 
-interface ActiveUserDto {
+/*** 접속한 유저 정보 타입 ***/
+interface ActiveUserType {
   id: number;
   level: number;
   nickname: string;
 }
 
-interface RoomInfoDto {
+/*** 방 정보 타입 ***/
+interface RoomInfoType {
   roomId: number;
   title: string;
   password: string;
@@ -31,7 +27,8 @@ interface RoomInfoDto {
   state: string;
 }
 
-interface CreatingRoomInfo {
+/*** 생성할 방 정보 타입 ***/
+interface CreatingRoomType {
   title: string;
   open: boolean;
   password: string;
@@ -41,28 +38,24 @@ interface CreatingRoomInfo {
   maxQuestion: number;
 }
 
-interface CreatedRoomInfo {
+/*** 생성된 방 정보 타입 ***/
+interface CreatedRoomType {
   channelId: number;
   hostId: number;
-  roomInfo: RoomInfoDto[];
+  roomInfo: RoomInfoType[];
 }
 
-interface CheckRoomPwdInfo {
+/*** 비공개 방 비밀번호 확인 시 타입 ***/
+interface RoomPwdType {
   roomNum: number;
   password: string;
 }
 
-interface RoomIdInfo {
-  roomId: number;
-}
-
 export type {
-  LobbyResponse,
-  LobbyInfo,
-  ActiveUserDto,
-  RoomInfoDto,
-  CreatingRoomInfo,
-  CreatedRoomInfo,
-  CheckRoomPwdInfo,
-  RoomIdInfo,
+  LobbyInfoType,
+  ActiveUserType,
+  RoomInfoType,
+  CreatingRoomType,
+  CreatedRoomType,
+  RoomPwdType,
 };

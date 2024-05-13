@@ -1,6 +1,6 @@
 // src/pages/survival/components/Page.tsx
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { fetchQuizData } from '../api/api';
 import useQuizStore from '../store';
 
@@ -11,15 +11,7 @@ import { ChattingBoxBlind } from '@/shared/ui/ChattingBoxBlind';
 import { QuizComponent } from './QuizComponent';
 import { QuizResultComponent } from './QuizResultComponent';
 import { CountDown } from './CountDown';
-import { SocketStore } from '@/shared/stores/connectionStore/socket';
-import { IMessage } from '@stomp/stompjs';
-
-interface MessageDto {
-  sender: string;
-  text: string;
-  type: string;
-  data: unknown;
-}
+import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 
 export function SurvivalPage() {
   const {
@@ -33,7 +25,7 @@ export function SurvivalPage() {
     setRoomId,
   } = useQuizStore();
 
-  const stompInstance = useRef(new SocketStore());
+  const { onSend, onSubscribe, callbackMsg } = useContext(WebSocketContext);
   const [messages, setMessages] = useState<
     { nickname: string; content: string }[]
   >([]);
@@ -59,43 +51,25 @@ export function SurvivalPage() {
       }
     };
 
-    const onCallBack = async (message: IMessage) => {
-      const msg: MessageDto = JSON.parse(message.body) as MessageDto;
-      console.error('[콜백 성공] server -> client ', msg);
+    if (callbackMsg && callbackMsg.type == 'CHAT') {
+      setMessages((messages) => [
+        ...messages,
+        { nickname: callbackMsg.sender, content: callbackMsg.text },
+      ]);
+    } else if (callbackMsg && callbackMsg.type == 'PASS') {
+      setShowResult(true);
+    }
 
-      switch (msg.type) {
-        case 'CHAT':
-          setMessages((messages) => [
-            ...messages,
-            { nickname: msg.sender, content: msg.text },
-          ]);
-          break;
-
-        // 모두 제출 했다면? 다음문제로 가야하는데 ?
-        case 'PASS':
-          setShowResult(true);
-          break;
-
-        default:
-          // 기본적인 처리
-          break;
-      }
-    };
-    stompInstance.current.onConnect(`chat/game/${roomId}`, onCallBack);
+    onSubscribe(`chat/game/${roomId}`);
 
     // 생각해보니까 이건 대기실 API잖아 ..
     // stompInstance.current.onSubscribe(`info/game/${roomId}`, onCallBack);
     // stompInstance.current.onSubscribe(`players/game/${roomId}`, onCallBack);
 
     loadData();
+  }, [callbackMsg]);
 
-    // 언마운트 될 때 ~ ?
-    return () => {
-      stompInstance.current.onDisconnect();
-    };
-  }, []);
-
-  const onSend = (message: string) => {
+  const handleSubmitMessage = (message: string) => {
     const chatMessage = {
       sender: '익',
       text: message,
@@ -103,7 +77,7 @@ export function SurvivalPage() {
       data: null,
     };
 
-    stompInstance.current.onSend(`game/${roomId}`, chatMessage);
+    onSend(`game/${roomId}`, chatMessage);
   };
 
   return (
@@ -116,7 +90,7 @@ export function SurvivalPage() {
         <QuizComponent roomId={roomId} />
       )}
       <CharacterPreview />
-      <ChattingBox onSend={onSend} messages={messages} />
+      <ChattingBox onSend={handleSubmitMessage} messages={messages} />
       {!showChatBox ? <ChattingBoxBlind /> : null}
     </div>
   );

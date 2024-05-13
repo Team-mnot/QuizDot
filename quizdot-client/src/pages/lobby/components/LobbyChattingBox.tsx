@@ -1,59 +1,35 @@
-import { useEffect, useState } from 'react';
-
-import { SocketStore } from '@/shared/stores/connectionStore/socket';
-
+import { useContext, useEffect, useState } from 'react';
 import { ChattingBox } from '@/shared/ui/ChattingBox';
-
 import { useUserStore } from '@/shared/stores/userStore/userStore';
+import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 
-interface MessageDto {
-  sender: string;
-  text: string;
-  type: string;
-  data: unknown;
-}
-
-interface LobbyChattingBoxProps {
-  channelId: number;
-  stompInstance: SocketStore;
-}
-
-export function LobbyChattingBox(props: LobbyChattingBoxProps) {
+export function LobbyChattingBox({ channelId }: { channelId: number }) {
   const [messages, setMessages] = useState<
     { nickname: string; content: string }[]
   >([]);
 
   const userStore = useUserStore();
+  const { callbackMsg, onSend } = useContext(WebSocketContext);
 
-  const onSend = (message: string) => {
-    const chatMessage = {
+  const handleSubmitMessage = (message: string) => {
+    const chattingMessage = {
       sender: userStore.nickname,
       text: message,
-      type: null,
+      type: 'CHAT',
       data: null,
     };
 
-    props.stompInstance.onSend(`lobby/${props.channelId}`, chatMessage);
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onCallBack = async (message: any) => {
-    const msg: MessageDto = JSON.parse(message.body) as MessageDto;
-    console.error('[콜백 성공] server -> client ', msg);
-
-    setMessages((messages) => [
-      ...messages,
-      { nickname: msg.sender, content: msg.text },
-    ]);
+    onSend(`lobby/${channelId}`, chattingMessage);
   };
 
   useEffect(() => {
-    props.stompInstance.onConnect(`chat/lobby/${props.channelId}`, onCallBack);
-  }, []);
+    if (callbackMsg && callbackMsg.type == 'CHAT') {
+      setMessages((messages) => [
+        ...messages,
+        { nickname: callbackMsg.sender, content: callbackMsg.text },
+      ]);
+    }
+  }, [callbackMsg]);
 
-  return (
-    <div>
-      <ChattingBox onSend={onSend} messages={messages} />
-    </div>
-  );
+  return <ChattingBox onSend={handleSubmitMessage} messages={messages} />;
 }
