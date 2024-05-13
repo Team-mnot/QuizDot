@@ -19,6 +19,7 @@ import com.mnot.quizdot.global.util.RedisUtil;
 import com.mnot.quizdot.global.util.TitleUtil;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -158,6 +159,22 @@ public class OneToOneServiceImpl implements OneToOneService {
         Set<TypedTuple<Integer>> scores = redisTemplate.opsForZSet()
             .reverseRangeWithScores(boardKey, 0, -1);
 
+        //board에 있는 멤버들의 pk 저장 및 pk로 Member 객체 가져오기
+        List<Integer> memberIdList = scores.stream().map(score -> score.getValue())
+            .collect(Collectors.toList());
+
+        List<Member> memberList = memberRepository.findAllById(memberIdList);
+        Map<Integer, Member> memberMap = memberList.stream()
+            .collect(Collectors.toMap(Member::getId, member -> member));
+
+        List<MultiRecord> multiRecordList = multiRecordRepository.findAllByMember_IdAndMode(
+            memberIdList,
+            ModeType.NORMAL);
+
+        Map<Integer, MultiRecord> multiRecordMap = multiRecordList.stream()
+            .collect(Collectors.toMap(multiRecord -> multiRecord.getMember().getId(),
+                multiRecord -> multiRecord));
+
         List<ResultDto> resultDtoList = new ArrayList<>();
 
         if (scores != null) {
@@ -165,11 +182,8 @@ public class OneToOneServiceImpl implements OneToOneService {
             double curScore = -1;
             for (TypedTuple<Integer> score : scores) {
                 int id = score.getValue();
-                Member member = memberRepository.findById(id)
-                    .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
-                MultiRecord multiRecord = multiRecordRepository.findByMemberIdAndMode(id,
-                        ModeType.ILGITO)
-                    .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_RECORD));
+                Member member = memberMap.get(id);
+                MultiRecord multiRecord = multiRecordMap.get(id);
                 curScore = score.getScore();
 
                 int curLevel = 0;
