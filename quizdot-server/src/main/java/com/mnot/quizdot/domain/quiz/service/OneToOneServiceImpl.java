@@ -36,7 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class OneToOneServiceImpl implements OneToOneService {
 
     private static final String SERVER_SENDER = "SYSTEM";
-    private static final String GAME_DESTINATION = "/sub/info/game/";
     private static final String TITLE_DESTINATION = "/sub/title/";
     private static final int EXP = 300;
     private final RedisUtil redisUtil;
@@ -100,7 +99,7 @@ public class OneToOneServiceImpl implements OneToOneService {
                         log.info("memberId : {}", sender.getMemberId());
                         // 상대방의 문제 정보 조회
                         messagingTemplate.convertAndSend(
-                            "/sub/select/" + roomId + "/" + receiver.getMemberId(),
+                            getGameDestination(roomId) + "/select/" + receiver.getMemberId(),
                             MessageDto.of(SERVER_SENDER,
                                 MessageType.SUBMIT, quizRes));
                     }
@@ -142,11 +141,11 @@ public class OneToOneServiceImpl implements OneToOneService {
 
         // 실시간 점수 업데이트 메시지 보내기
         ScoreDto updatedScore = new ScoreDto(enemyPlayerId, curScore.longValue());
-        messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
+        messagingTemplate.convertAndSend(getGameDestination(roomId),
             MessageDto.of(SERVER_SENDER, MessageType.UPDATE, updatedScore));
 
         if (curScore <= 0) {
-            messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
+            messagingTemplate.convertAndSend(getGameDestination(roomId),
                 MessageDto.of(SERVER_SENDER, "플레이어중 한명의 체력이 0이 되었습니다", MessageType.EXIT));
         }
     }
@@ -191,7 +190,7 @@ public class OneToOneServiceImpl implements OneToOneService {
                 //칭호 확인
                 List<String> unlockList = titleUtil.checkRequirment(id, ModeType.ILGITO);
                 if (!unlockList.isEmpty()) {
-                    messagingTemplate.convertAndSend(TITLE_DESTINATION + id,
+                    messagingTemplate.convertAndSend(getGameDestination(roomId) + "/title/" + id,
                         MessageDto.of(SERVER_SENDER, "칭호가 해금되었습니다", MessageType.TILE, unlockList));
                 }
                 ResultDto resultDto = ResultDto.builder()
@@ -208,9 +207,13 @@ public class OneToOneServiceImpl implements OneToOneService {
                 rank++;
             }
         }
-        messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
-            MessageDto.of(SERVER_SENDER, "리워드 지급 및 결과 계산이 완료되었습니다.", MessageType.EXIT,
+        messagingTemplate.convertAndSend(getGameDestination(roomId),
+            MessageDto.of(SERVER_SENDER, "리워드 지급 및 결과 계산이 완료되었습니다.", MessageType.REWARD,
                 resultDtoList));
         return resultDtoList;
+    }
+
+    private String getGameDestination(int roomId) {
+        return String.format("/sub/info/game/%d", roomId);
     }
 }
