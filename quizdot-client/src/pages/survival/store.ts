@@ -12,7 +12,6 @@ interface QuizStore {
   isQuizOver: boolean; // 퀴즈 종료 여부 상태 추가
   showCountDown: boolean;
   isCorrect: boolean;
-  roomId: number;
 
   setQuizzes: (quizzes: iQuiz[]) => void;
   setCurrentQuiz: (quiz: iQuiz) => void;
@@ -23,7 +22,6 @@ interface QuizStore {
   setIsQuizOver: (value: boolean) => void;
   setShowCountDown: (value: boolean) => void;
   setIsCorrect: (isCorrect: boolean) => void;
-  setRoomId: (roomId: number) => void;
 }
 
 const useQuizStore = create<QuizStore>((set) => ({
@@ -36,7 +34,6 @@ const useQuizStore = create<QuizStore>((set) => ({
   showCountDown: false,
   isQuizOver: false,
   isCorrect: false,
-  roomId: 0,
 
   setQuizzes: (quizzes: iQuiz[]) => set({ quizzes }),
   setCurrentQuiz: (quiz: iQuiz) => set({ currentQuiz: quiz }),
@@ -47,7 +44,6 @@ const useQuizStore = create<QuizStore>((set) => ({
   setShowCountDown: (show: boolean) => set({ showCountDown: show }),
   setIsQuizOver: (value: boolean) => set({ isQuizOver: value }),
   setIsCorrect: (value: boolean) => set({ isCorrect: value }),
-  setRoomId: (id: number) => set({ roomId: id }),
 }));
 
 export default useQuizStore;

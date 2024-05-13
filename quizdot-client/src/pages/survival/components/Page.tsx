@@ -1,7 +1,6 @@
 // src/pages/survival/components/Page.tsx
 
 import { useEffect, useState, useContext } from 'react';
-import { fetchQuizData } from '../api/api';
 import useQuizStore from '../store';
 
 import { CharacterPreview } from './CharacterPreview';
@@ -12,8 +11,15 @@ import { QuizComponent } from './QuizComponent';
 import { QuizResultComponent } from './QuizResultComponent';
 import { CountDown } from './CountDown';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
+import { useUserStore } from '@/shared/stores/userStore/userStore';
+import { useParams } from 'react-router-dom';
 
 export function SurvivalPage() {
+  const { roomId } = useParams() as {
+    channelId: string;
+    roomId: string;
+  };
+
   const {
     showChatBox,
     showResult,
@@ -21,35 +27,24 @@ export function SurvivalPage() {
     setShowCountDown,
     showCountDown,
     setQuizzes,
-    roomId,
-    setRoomId,
   } = useQuizStore();
 
   const { onSend, onSubscribe, callbackMsg } = useContext(WebSocketContext);
   const [messages, setMessages] = useState<
     { nickname: string; content: string }[]
   >([]);
-
-  // 여기서 설정..하는건 아니겠지만~?
-  // const roomId = 8001;
-  const category = 'RANDOM';
-  const count = 2;
+  const userStore = useUserStore();
 
   useEffect(() => {
     // 페이지가 로드될 때 body의 스타일을 설정합니다.
     document.body.style.backgroundImage = 'url(/images/SurvivalBackground.png)';
     document.body.style.backgroundSize = 'cover';
 
-    setRoomId(8001);
+    // TODO : 나중에 Props로 넘기던가 어쩌구로 설정 바까라
+
+    onSubscribe(`chat/game/${roomId}`);
+    onSubscribe(`quiz/game/${roomId}`); // 퀴즈 받을 구독 주소 임니다
     setShowCountDown(true);
-    const loadData = async () => {
-      try {
-        const data = await fetchQuizData(roomId, category, count);
-        setQuizzes(data.data.quizResList);
-      } catch (error) {
-        console.log('에러발생', error);
-      }
-    };
 
     if (callbackMsg && callbackMsg.type == 'CHAT') {
       setMessages((messages) => [
@@ -58,25 +53,22 @@ export function SurvivalPage() {
       ]);
     } else if (callbackMsg && callbackMsg.type == 'PASS') {
       setShowResult(true);
+    } else if (callbackMsg && callbackMsg.type === 'QUIZ') {
+      setQuizzes(callbackMsg.data.quizResList);
     }
-
-    onSubscribe(`chat/game/${roomId}`);
 
     // 생각해보니까 이건 대기실 API잖아 ..
     // stompInstance.current.onSubscribe(`info/game/${roomId}`, onCallBack);
     // stompInstance.current.onSubscribe(`players/game/${roomId}`, onCallBack);
-
-    loadData();
   }, [callbackMsg]);
 
   const handleSubmitMessage = (message: string) => {
     const chatMessage = {
-      sender: '익',
+      sender: userStore.nickname,
       text: message,
       type: 'CHAT',
       data: null,
     };
-
     onSend(`game/${roomId}`, chatMessage);
   };
 
@@ -87,7 +79,7 @@ export function SurvivalPage() {
       ) : showResult ? (
         <QuizResultComponent />
       ) : (
-        <QuizComponent roomId={roomId} />
+        <QuizComponent roomId={Number(roomId)} />
       )}
       <CharacterPreview />
       <ChattingBox onSend={handleSubmitMessage} messages={messages} />

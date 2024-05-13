@@ -3,6 +3,7 @@
 import { PlayerInSurvivalMode, iQuizList } from './types';
 import { dummyCharacters } from './dummyCharacters';
 import axios from 'axios';
+import { baseApi } from '@/shared/apis';
 
 export function getPlayerData(): PlayerInSurvivalMode[] {
   return dummyCharacters as PlayerInSurvivalMode[];
@@ -15,7 +16,7 @@ export async function fetchQuizData(
   category: string,
   count: number,
 ): Promise<iQuizList> {
-  const apiUrl = `http://k10d102.p.ssafy.io/api/game/quiz/${roomId}?category=${category}&count=${count}`;
+  const apiUrl = `${baseApi}/game/quiz/${roomId}?category=${category}&count=${count}`;
 
   try {
     const response = await axios.get(apiUrl);
@@ -35,7 +36,7 @@ export async function postQuizResult(
   isCorrect: boolean,
 ): Promise<void> {
   const result = isCorrect ? 1 : -1;
-  const apiUrl = `http://k10d102.p.ssafy.io/api/survival/score/${roomId}`;
+  const apiUrl = `${baseApi}/survival/score/${roomId}`;
   try {
     const response = await fetch(apiUrl, {
       method: 'POST',
