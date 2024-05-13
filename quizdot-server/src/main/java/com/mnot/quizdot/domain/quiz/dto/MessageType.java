@@ -7,7 +7,6 @@ public enum MessageType {
     LEAVE, // 게임 대기실 퇴장
     START, // 게임 시작
     QUIZ, //퀴즈 리스트 조회 결과
-    MATCH_INPROGRESS, // 매칭 진행 중
     PASS, // 문제 패스
     STAGE_RESULT, // 스테이지 결과
     RESURRECT, // 탈락자 부활

@@ -41,6 +41,7 @@ public class SurvivalServiceImpl implements SurvivalService {
     private static final String SERVER_SENDER = "SYSTEM";
     private static final String GAME_DEFAULT_ID = "0520";
     private static final String MATCH_KEY = "match:";
+    private static final String ROOM_CHAT_DESTINATION = "/sub/chat/room/";
 
     private static final String TITLE_DESTINATION = "/sub/title/";
     private final RedisTemplate redisTemplate;
@@ -265,8 +266,9 @@ public class SurvivalServiceImpl implements SurvivalService {
 
             // 매칭 대기자가 10명 미만이면 기다린다
             if (totalPlayer < 10) {
-                messagingTemplate.convertAndSend(getGameDestination(roomId),
-                    MessageDto.of(SERVER_SENDER, MessageType.MATCH_INPROGRESS));
+                messagingTemplate.convertAndSend(ROOM_CHAT_DESTINATION + roomId,
+                    MessageDto.of(SERVER_SENDER, "최소 인원 수가 부족해 서바이벌 게임 매칭을 시작합니다.",
+                        MessageType.CHAT));
                 // 대기실 상태 변경 (WAITING -> MATHING)
                 redisUtil.modifyRoomState(roomKey, GameState.MATCHING);
                 return null;
@@ -312,13 +314,33 @@ public class SurvivalServiceImpl implements SurvivalService {
 
             // 임시 게임 대기실 ID, 게임 플레이어 정보를 메세지로 전송
             messagingTemplate.convertAndSend(
-                getGameDestination(intRoomId),
-                MessageDto.of(SERVER_SENDER, MessageType.START,
+                ROOM_CHAT_DESTINATION + roomId,
+                MessageDto.of(SERVER_SENDER, "매칭을 완료했습니다. 게임을 시작합니다 ♪(´▽｀)", MessageType.START,
                     new RoomEnterRes(matchPlayers, gameRoomInfoDto)));
         });
 
         return strGameId;
     }
+
+
+    /**
+     * 서바이벌 게임 매칭 취소
+     */
+    @Override
+    public void cancelMatchmaking(int roomId, String category) {
+        // 매칭 큐에서 삭제
+        String matchKey = MATCH_KEY + category;
+        String strRoomId = String.valueOf(roomId);
+        redisTemplate.opsForHash().delete(matchKey, strRoomId);
+
+        // 대기실 상태 변경 (MATCHING -> WAITING)
+        redisUtil.modifyRoomState(redisUtil.getRoomInfoKey(roomId), GameState.WAITING);
+
+        // 매칭 취소 메세지 전송
+        messagingTemplate.convertAndSend(ROOM_CHAT_DESTINATION + roomId,
+            MessageDto.of(SERVER_SENDER, "매칭이 취소되었습니다.", MessageType.CHAT));
+    }
+
 
     private String getSurviveKey(int roomId) {
         return String.format("rooms:%d:survivors", roomId);
