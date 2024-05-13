@@ -19,6 +19,7 @@ import com.mnot.quizdot.global.util.RedisUtil;
 import com.mnot.quizdot.global.util.TitleUtil;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class OneToOneServiceImpl implements OneToOneService {
 
     private static final String SERVER_SENDER = "SYSTEM";
-    private static final String GAME_DESTINATION = "/sub/info/game/";
     private static final String TITLE_DESTINATION = "/sub/title/";
     private static final int EXP = 300;
     private final RedisUtil redisUtil;
@@ -53,12 +53,15 @@ public class OneToOneServiceImpl implements OneToOneService {
         String strRoomId = String.valueOf(roomId);
         //제출 테이블키(submit+방번호)
         String submitKey = redisUtil.getSubmitKey(roomId);
+        //퀴즈리스트 키
+        String quizKey = String.format("rooms:%s:quiz", strRoomId);
 
         //퀴즈가 존재하는지 체크
         if (!quizRepository.existsById(questionId)) {
             throw new BusinessException(ErrorCode.NOT_FOUND_QUIZ);
         }
-        Set<Integer> quizList = redisTemplate.opsForSet().members(strRoomId);
+        Set<Integer> quizList = redisTemplate.opsForSet().members(quizKey);
+        log.info("Quiz List {}: {}", strRoomId, quizList);
         if (!quizList.contains(questionId)) {
             throw new BusinessException(ErrorCode.NOT_EXSITS_LIST);
         }
@@ -80,6 +83,7 @@ public class OneToOneServiceImpl implements OneToOneService {
             for (SubmitDto sender : submitDtoSet) {
                 for (SubmitDto receiver : submitDtoSet) {
                     if (sender.getMemberId() != receiver.getMemberId()) {
+                        log.info("퀴즈ID값 체크 : {}", receiver.getQuestionId());
                         Quiz quiz = quizRepository.findById(receiver.getQuestionId())
                             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_QUIZ));
                         QuizRes quizRes = new QuizRes();
@@ -96,7 +100,7 @@ public class OneToOneServiceImpl implements OneToOneService {
                         log.info("memberId : {}", sender.getMemberId());
                         // 상대방의 문제 정보 조회
                         messagingTemplate.convertAndSend(
-                            "/sub/select/" + roomId + "/" + receiver.getMemberId(),
+                            getGameDestination(roomId) + "/select/" + receiver.getMemberId(),
                             MessageDto.of(SERVER_SENDER,
                                 MessageType.SUBMIT, quizRes));
                     }
@@ -138,11 +142,11 @@ public class OneToOneServiceImpl implements OneToOneService {
 
         // 실시간 점수 업데이트 메시지 보내기
         ScoreDto updatedScore = new ScoreDto(enemyPlayerId, curScore.longValue());
-        messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
+        messagingTemplate.convertAndSend(getGameDestination(roomId),
             MessageDto.of(SERVER_SENDER, MessageType.UPDATE, updatedScore));
 
         if (curScore <= 0) {
-            messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
+            messagingTemplate.convertAndSend(getGameDestination(roomId),
                 MessageDto.of(SERVER_SENDER, "플레이어중 한명의 체력이 0이 되었습니다", MessageType.EXIT));
         }
     }
@@ -155,6 +159,22 @@ public class OneToOneServiceImpl implements OneToOneService {
         Set<TypedTuple<Integer>> scores = redisTemplate.opsForZSet()
             .reverseRangeWithScores(boardKey, 0, -1);
 
+        //board에 있는 멤버들의 pk 저장 및 pk로 Member 객체 가져오기
+        List<Integer> memberIdList = scores.stream().map(score -> score.getValue())
+            .collect(Collectors.toList());
+
+        List<Member> memberList = memberRepository.findAllById(memberIdList);
+        Map<Integer, Member> memberMap = memberList.stream()
+            .collect(Collectors.toMap(Member::getId, member -> member));
+
+        List<MultiRecord> multiRecordList = multiRecordRepository.findAllByMember_IdAndMode(
+            memberIdList,
+            ModeType.NORMAL);
+
+        Map<Integer, MultiRecord> multiRecordMap = multiRecordList.stream()
+            .collect(Collectors.toMap(multiRecord -> multiRecord.getMember().getId(),
+                multiRecord -> multiRecord));
+
         List<ResultDto> resultDtoList = new ArrayList<>();
 
         if (scores != null) {
@@ -162,11 +182,8 @@ public class OneToOneServiceImpl implements OneToOneService {
             double curScore = -1;
             for (TypedTuple<Integer> score : scores) {
                 int id = score.getValue();
-                Member member = memberRepository.findById(id)
-                    .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
-                MultiRecord multiRecord = multiRecordRepository.findByMemberIdAndMode(id,
-                        ModeType.ILGITO)
-                    .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_RECORD));
+                Member member = memberMap.get(id);
+                MultiRecord multiRecord = multiRecordMap.get(id);
                 curScore = score.getScore();
 
                 int curLevel = 0;
@@ -187,7 +204,7 @@ public class OneToOneServiceImpl implements OneToOneService {
                 //칭호 확인
                 List<String> unlockList = titleUtil.checkRequirment(id, ModeType.ILGITO);
                 if (!unlockList.isEmpty()) {
-                    messagingTemplate.convertAndSend(TITLE_DESTINATION + id,
+                    messagingTemplate.convertAndSend(getGameDestination(roomId) + "/title/" + id,
                         MessageDto.of(SERVER_SENDER, "칭호가 해금되었습니다", MessageType.TILE, unlockList));
                 }
                 ResultDto resultDto = ResultDto.builder()
@@ -204,9 +221,13 @@ public class OneToOneServiceImpl implements OneToOneService {
                 rank++;
             }
         }
-        messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
-            MessageDto.of(SERVER_SENDER, "리워드 지급 및 결과 계산이 완료되었습니다.", MessageType.EXIT,
+        messagingTemplate.convertAndSend(getGameDestination(roomId),
+            MessageDto.of(SERVER_SENDER, "리워드 지급 및 결과 계산이 완료되었습니다.", MessageType.REWARD,
                 resultDtoList));
         return resultDtoList;
+    }
+
+    private String getGameDestination(int roomId) {
+        return String.format("/sub/info/game/%d", roomId);
     }
 }

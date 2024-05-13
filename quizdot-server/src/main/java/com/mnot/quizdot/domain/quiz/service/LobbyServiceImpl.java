@@ -94,7 +94,6 @@ public class LobbyServiceImpl implements LobbyService {
             .build();
     }
 
-    // ID POOL 상태 변경
     public void modifyRoomNumList(int channelId, int roomNum, boolean state) {
         roomNumList.get(channelId)[roomNum] = state;
     }

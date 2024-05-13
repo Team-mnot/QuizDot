@@ -6,8 +6,7 @@ public enum MessageType {
     ENTER, // 게임 대기실 입장
     LEAVE, // 게임 대기실 퇴장
     START, // 게임 시작
-
-    MATCH_INPROGRESS, // 매칭 진행 중
+    QUIZ, //퀴즈 리스트 조회 결과
     PASS, // 문제 패스
     STAGE_RESULT, // 스테이지 결과
     RESURRECT, // 탈락자 부활

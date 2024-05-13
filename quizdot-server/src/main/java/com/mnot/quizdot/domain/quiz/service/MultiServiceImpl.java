@@ -5,6 +5,7 @@ import com.mnot.quizdot.domain.member.entity.ModeType;
 import com.mnot.quizdot.domain.member.entity.MultiRecord;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
 import com.mnot.quizdot.domain.member.repository.MultiRecordRepository;
+import com.mnot.quizdot.domain.quiz.dto.GameState;
 import com.mnot.quizdot.domain.quiz.dto.MessageDto;
 import com.mnot.quizdot.domain.quiz.dto.MessageType;
 import com.mnot.quizdot.domain.quiz.dto.ResultDto;
@@ -15,7 +16,9 @@ import com.mnot.quizdot.global.util.RedisUtil;
 import com.mnot.quizdot.global.util.TitleUtil;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -78,9 +81,23 @@ public class MultiServiceImpl implements MultiService {
     public List<ResultDto> exitGame(int roomId, int memberId) {
         String boardKey = redisUtil.getBoardKey(roomId);
         redisUtil.checkHost(roomId, memberId);
-        Set<TypedTuple<String>> scores = redisTemplate.opsForZSet()
+        Set<TypedTuple<Integer>> scores = redisTemplate.opsForZSet()
             .reverseRangeWithScores(boardKey, 0, -1);
+        //board에 있는 멤버들의 pk 저장 및 pk로 Member 객체 가져오기
+        List<Integer> memberIdList = scores.stream().map(score -> score.getValue())
+            .collect(Collectors.toList());
 
+        List<Member> memberList = memberRepository.findAllById(memberIdList);
+        Map<Integer, Member> memberMap = memberList.stream()
+            .collect(Collectors.toMap(Member::getId, member -> member));
+
+        List<MultiRecord> multiRecordList = multiRecordRepository.findAllByMember_IdAndMode(
+            memberIdList,
+            ModeType.NORMAL);
+
+        Map<Integer, MultiRecord> multiRecordMap = multiRecordList.stream()
+            .collect(Collectors.toMap(multiRecord -> multiRecord.getMember().getId(),
+                multiRecord -> multiRecord));
         List<ResultDto> resultDtoList = new ArrayList<>();
         int rank = 1;
         int sameScoreCount = 1;
@@ -90,13 +107,10 @@ public class MultiServiceImpl implements MultiService {
             int totalPlayer = scores.size();
             double curScore = -1;
             int exp;
-            for (ZSetOperations.TypedTuple<String> score : scores) {
-                int id = Integer.parseInt(score.getValue());
-                Member member = memberRepository.findById(id)
-                    .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
-                MultiRecord multiRecord = multiRecordRepository.findByMemberIdAndMode(id,
-                        ModeType.NORMAL)
-                    .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_RECORD));
+            for (ZSetOperations.TypedTuple<Integer> score : scores) {
+                int id = score.getValue();
+                Member member = memberMap.get(id);
+                MultiRecord multiRecord = multiRecordMap.get(id);
                 double memberScore = score.getScore();
 
                 if (curScore != -1 && curScore != memberScore) {
@@ -115,7 +129,7 @@ public class MultiServiceImpl implements MultiService {
                 //칭호 확인
                 List<String> unlockList = titleUtil.checkRequirment(id, ModeType.NORMAL);
                 if (!unlockList.isEmpty()) {
-                    messagingTemplate.convertAndSend(TITLE_DESTINATION + id,
+                    messagingTemplate.convertAndSend(getGameDestination(roomId) + "/title/" + id,
                         MessageDto.of(SERVER_SENDER, "칭호가 해금되었습니다", MessageType.TILE, unlockList));
                 }
                 ResultDto resultDto = ResultDto.builder()
@@ -133,8 +147,16 @@ public class MultiServiceImpl implements MultiService {
         }
         log.info("resultDtoList 확인 : {}", resultDtoList);
         messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
-            MessageDto.of(SERVER_SENDER, "리워드 지급 및 결과 계산이 완료되었습니다.", MessageType.EXIT,
+            MessageDto.of(SERVER_SENDER, "리워드 지급 및 결과 계산이 완료되었습니다.", MessageType.REWARD,
                 resultDtoList));
+
+        // 대기실 상태 변경 (INPROGRESS -> WAITING)
+        String roomKey = redisUtil.getRoomInfoKey(roomId);
+        redisUtil.modifyRoomState(roomKey, GameState.WAITING);
         return resultDtoList;
+    }
+
+    private String getGameDestination(int roomId) {
+        return String.format("/sub/info/game/%d", roomId);
     }
 }

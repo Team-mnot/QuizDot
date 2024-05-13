@@ -1,9 +1,9 @@
 package com.mnot.quizdot.domain.quiz.service;
 
 import com.mnot.quizdot.domain.member.entity.ModeType;
+import com.mnot.quizdot.domain.quiz.dto.GameState;
 import com.mnot.quizdot.domain.quiz.dto.MessageDto;
 import com.mnot.quizdot.domain.quiz.dto.MessageType;
-import com.mnot.quizdot.domain.quiz.dto.QuizListRes;
 import com.mnot.quizdot.domain.quiz.dto.QuizParam;
 import com.mnot.quizdot.domain.quiz.dto.QuizRes;
 import com.mnot.quizdot.domain.quiz.entity.CategoryType;
@@ -41,8 +41,7 @@ public class QuizServiceImpl implements QuizService {
      * 문제 리스트 조회 (중복 출제를 방지하기 위해 퀴즈 목록을 REDIS에서 관리)
      */
     @Override
-    public QuizListRes getQuizzes(int roomId, QuizParam quizParam) {
-        // 이미 출제된 퀴즈 리스트 조회
+    public void getQuizzes(int roomId, QuizParam quizParam) {
         String key = String.format("rooms:%d:quiz", roomId);
         Set<Integer> quizSet = redisTemplate.opsForSet().members(key);
         List<Integer> quizList = new ArrayList<>(quizSet);
@@ -50,20 +49,37 @@ public class QuizServiceImpl implements QuizService {
         if (quizList.isEmpty()) {
             quizList.add(-1);
         }
-
         String category = (CategoryType.RANDOM.equals(quizParam.getCategory())) ? null
             : String.valueOf(quizParam.getCategory());
-
         // 문제 리스트 조회
         List<Integer> quizIdList = quizRepository.getRandomQuizIdsByQuizParam(
             category, quizParam.getCount(), quizList);
-
         List<QuizRes> quizListRes = quizRepository.getQuizzesByIds(quizIdList);
         // 중복 출제 방지를 위해 조회한 문제 PK를 REDIS에 저장
         quizListRes
             .forEach(
                 (quizRes -> redisTemplate.opsForSet().add(key, quizRes.getId())));
-        return new QuizListRes(quizListRes);
+        switch (quizParam.getModeType()) {
+            case NORMAL:
+            case SURVIVAL:
+                messagingTemplate.convertAndSend("/sub/game/quiz" + roomId,
+                    MessageDto.of(SERVER_SENDER, "조회된 퀴즈 리스트 입니다.", MessageType.QUIZ, quizList));
+                break;
+            case ILGITO:
+                String memberKey = redisUtil.getPlayersKey(roomId);
+                List<Integer> players = redisUtil.getPlayers(memberKey);
+                List<QuizRes> player1 = new ArrayList<>(
+                    quizListRes.subList(quizListRes.size() - 3, quizListRes.size()));
+                List<QuizRes> player2 = new ArrayList<>(
+                    quizListRes.subList(quizListRes.size() - 6, quizListRes.size() - 3));
+                messagingTemplate.convertAndSend("/sub/game/quiz/" + roomId + "/" + players.get(0),
+                    MessageDto.of(SERVER_SENDER, "조회된 퀴즈 리스트 입니다.", MessageType.QUIZ, player1));
+                messagingTemplate.convertAndSend("/sub/game/quiz/" + roomId + "/" + players.get(1),
+                    MessageDto.of(SERVER_SENDER, "조회된 퀴즈 리스트 입니다.", MessageType.QUIZ, player2));
+                break;
+            default:
+                throw new BusinessException(ErrorCode.NOT_EXSITS_MODE);
+        }
     }
 
     /**
@@ -107,8 +123,12 @@ public class QuizServiceImpl implements QuizService {
         // 방장 권한 체크
         redisUtil.checkHost(roomId, memberId);
 
-        // 게임 초기화
+        // 게임 데이터 초기화
         initGame(roomId, memberId, mode);
+
+        // 대기실 상태 변경 (WAITING -> INPROGRESS)
+        String roomKey = redisUtil.getRoomInfoKey(roomId);
+        redisUtil.modifyRoomState(roomKey, GameState.INPROGRESS);
 
         // 모든 플레이어에게 게임 시작을 알린다
         messagingTemplate.convertAndSend("/sub/info/room/" + roomId,

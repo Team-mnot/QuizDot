@@ -2,6 +2,7 @@ package com.mnot.quizdot.global.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnot.quizdot.domain.quiz.dto.ActiveUserDto;
+import com.mnot.quizdot.domain.quiz.dto.GameState;
 import com.mnot.quizdot.domain.quiz.dto.PlayerInfoDto;
 import com.mnot.quizdot.domain.quiz.dto.RoomInfoDto;
 import com.mnot.quizdot.global.result.error.ErrorCode;
@@ -31,7 +32,6 @@ public class RedisUtil {
     private final ObjectMapper objectMapper;
     private final RedisTemplate redisTemplate;
     private final SimpMessagingTemplate messagingTemplate;
-
 
     /**
      * 게임 스코어 보드 KEY 생성
@@ -63,8 +63,6 @@ public class RedisUtil {
         if (roomInfoDto == null) {
             throw new BusinessException(ErrorCode.ROOM_NOT_FOUND);
         }
-
-        log.info("[getRoomInfo] roomInfoDto : {}", roomInfoDto);
         return roomInfoDto;
     }
 
@@ -121,6 +119,15 @@ public class RedisUtil {
     public List<ActiveUserDto> getActivePlayers(String key) {
         // 레디스에서 해당 채널의 동시 접속 유저 목록 추출
         return new ArrayList<>(redisTemplate.opsForSet().members(key));
+    }
+
+    /**
+     * 대기실 상태 변경
+     */
+    public void modifyRoomState(String key, GameState state) {
+        RoomInfoDto roomInfoDto = getRoomInfo(key);
+        roomInfoDto.modifyState(state);
+        redisTemplate.opsForValue().set(key, roomInfoDto);
     }
 
     /**
@@ -250,22 +257,22 @@ public class RedisUtil {
     }
 
     public void deleteInactiveUser(String memberId, int roomId) {
-        if(roomId==0) {
+        if (roomId == 0) {
             // 유저가 로비에 있다가 연결을 끊은 경우
             Map<Integer, Set<ActiveUserDto>> allActivePlayers = getAllActivePlayers();
-            for(int channel=1; channel<=8; channel++) {
-                 Set<ActiveUserDto> channelPlayers = allActivePlayers.get(channel);
-                 for(ActiveUserDto target : channelPlayers) {
-                     if(String.valueOf(target.getId()).equals(memberId)) {
-                         // 유저가 있던 채널의 동시 접속자 목록에서 삭제
-                         redisTemplate.opsForSet().remove(getActivePlayerKey(channel), target);
-                     }
-                 }
+            for (int channel = 1; channel <= 8; channel++) {
+                Set<ActiveUserDto> channelPlayers = allActivePlayers.get(channel);
+                for (ActiveUserDto target : channelPlayers) {
+                    if (String.valueOf(target.getId()).equals(memberId)) {
+                        // 유저가 있던 채널의 동시 접속자 목록에서 삭제
+                        redisTemplate.opsForSet().remove(getActivePlayerKey(channel), target);
+                    }
+                }
             }
-            return ;
+            return;
         }
         // 유저가 방에 있다 연결을 끊은 경우
-        int channelId = roomId/1000;
+        int channelId = roomId / 1000;
         String activeUserKey = getActivePlayerKey(channelId);
         List<ActiveUserDto> activeUsers = getActivePlayers(activeUserKey);
 
@@ -276,8 +283,7 @@ public class RedisUtil {
 
         if (targetUser != null) {
             redisTemplate.opsForSet().remove(activeUserKey, targetUser);
-        }
-        else {
+        } else {
             log.info("접속중인 유저가 아닙니다.");
         }
     }
