@@ -1,107 +1,121 @@
-import { Button, Dropbox, Input } from '@/shared/ui';
-import { useState } from 'react';
-import { CreatingRoomInfo } from '../../lobby/api/types';
-import { Toast } from '@/shared/ui/Toast';
-import { useRouter } from '@/shared/hooks';
+import { Button, Dropbox, Input, Toast } from '@/shared/ui';
+import { useEffect, useState } from 'react';
+import { RoomInfoType } from '@/pages/lobby/api/types';
+import { modifyRoomApi } from '../api/api';
 import {
-  categoryDBList,
   categoryList,
   maxPeopleList,
   maxQuestionList,
-  modeDBList,
   modeList,
-  statusDBList,
-  statusList,
-} from '../../lobby/constants';
-import { createRoomApi } from '../../lobby/api/api';
+  openList,
+} from '@/pages/lobby/constants';
+import { ModifyingRoomType } from '../api/types';
 
-export function RoomModification(props: { channelId: number }) {
-  const [title, setTitle] = useState<string>('덤벼라');
-  const [isPublic, setIsPublic] = useState<number>(0);
-  const [password, setPassword] = useState<string>('');
-  const [mode, setMode] = useState<number>(0);
-  const [maxPeople, setMaxPeople] = useState<number>(0);
-  const [category, setCategory] = useState<number>(0);
-  const [maxQuestion, setMaxQuestion] = useState<number>(0);
+export function RoomModification({
+  channelId,
+  roomInfo,
+}: {
+  channelId: number;
+  roomInfo: RoomInfoType;
+}) {
+  const [title, setTitle] = useState<string>(roomInfo.title);
+  const [open, setOpen] = useState<number>(roomInfo.open ? 1 : 0);
+  const [password, setPassword] = useState<string>(roomInfo.password);
+  const [mode, setMode] = useState<string>(roomInfo.gameMode);
+  const [maxPeople, setMaxPeople] = useState<number>(
+    roomInfo.gameMode == 'NORMAL' ? roomInfo.maxPeople : 8,
+  );
+  const [fixedMaxPeople, setFixedMaxPeople] = useState<number>(
+    roomInfo.gameMode == 'NORMAL' ? 0 : roomInfo.maxPeople,
+  );
+  const [category, setCategory] = useState<string>(roomInfo.category);
+  const [maxQuestion, setMaxQuestion] = useState<number>(roomInfo.maxQuestion);
 
-  const [toastState, setToastState] = useState(false);
+  const [toastState, setToastState] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string>('');
 
-  const router = useRouter();
+  useEffect(() => {
+    if (mode === 'SURVIVAL') {
+      setFixedMaxPeople(18);
+    } else if (mode === 'ONETOONE') {
+      setFixedMaxPeople(2);
+    }
+  }, [mode, open]);
 
   const changeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.currentTarget.value);
   };
 
-  const selectedIsPublic = (index: number) => {
-    setIsPublic(index);
+  const selectedOpen = (key: number) => {
+    setOpen(key);
   };
 
   const changePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.currentTarget.value);
   };
 
-  const selectedMode = (index: number) => {
-    setMode(index);
+  const selectedMode = (key: string) => {
+    setMode(key);
   };
 
-  const selectedMaxPeople = (index: number) => {
-    setMaxPeople(index);
+  const selectedMaxPeople = (key: number) => {
+    setMaxPeople(key);
   };
 
-  const selectedCategory = (index: number) => {
-    setCategory(index);
+  const selectedCategory = (key: string) => {
+    setCategory(key);
   };
 
-  const selectedMaxQuestion = (index: number) => {
-    setMaxQuestion(index);
+  const selectedMaxQuestion = (key: number) => {
+    setMaxQuestion(key);
   };
 
-  const createTheRoom = async () => {
-    const creatingRoomInfo: CreatingRoomInfo = {
+  const handleModifyRoom = async () => {
+    const modifyingRoomInfo: ModifyingRoomType = {
       title: title,
-      open: statusDBList[isPublic],
-      password: password,
-      mode: modeDBList[mode],
-      category: categoryDBList[category],
-      maxPeople: maxPeopleList[maxPeople],
-      maxQuestion: maxQuestionList[maxQuestion],
+      open: open ? true : false,
+      password: open ? '' : password,
+      mode: mode,
+      category: category,
+      maxPeople: mode == 'NORMAL' ? maxPeople : fixedMaxPeople,
+      maxQuestion: maxQuestion,
     };
 
-    const response = await createRoomApi(props.channelId, creatingRoomInfo);
+    const response = await modifyRoomApi(channelId, modifyingRoomInfo);
 
-    if (response.status == 201) {
-      // 대기실로 이동
-      console.log('뭐예요?');
-      router.routeTo(`/${props.channelId}/${response.data.roomId}/temp`);
+    if (response == 201) {
+      setToastMessage('방 정보를 변경했습니다.');
+      setToastState(true);
     } else {
+      setToastMessage('방 정보를 변경하지 못했습니다.');
       setToastState(true);
     }
   };
 
   return (
-    <div>
-      <div className={'px-20 py-2'}>
-        <p className={'p-2'}>방 제목</p>
+    <div className="h-[550px] w-[500px]">
+      <div className="px-[30px] py-[10px]">
+        <p className="p-[10px]">방 제목</p>
         <Input
           type="text"
-          className={'w-[350px]'}
+          className="w-full"
           value={title}
           onChange={changeTitle}
         />
       </div>
-      <div className={'flex justify-between px-20 py-2'}>
-        <div>
-          <p className={'p-2'}>공개 여부</p>
+      <div className="flex justify-between">
+        <div className="px-[30px] py-[10px]">
+          <p className="p-[10px]">공개 여부</p>
           <Dropbox
             size="w-[150px]"
-            item={statusList[isPublic]}
-            options={statusList}
-            selectedItem={selectedIsPublic}
+            initial={open}
+            options={openList}
+            selectedKey={selectedOpen}
           />
         </div>
-        {!statusDBList[isPublic] ? (
-          <div>
-            <p className={'p-2'}>비밀번호</p>
+        {open == 0 ? (
+          <div className="px-[30px] py-[10px]">
+            <p className="p-[10px]">비밀번호</p>
             <Input
               type="password"
               className="w-[130px]"
@@ -113,55 +127,67 @@ export function RoomModification(props: { channelId: number }) {
           <div></div>
         )}
       </div>
-      <div className={'flex justify-between px-20 py-2'}>
-        <div>
-          <p className={'p-2'}>게임 모드</p>
+      <div className="flex justify-between">
+        <div className="px-[30px] py-[10px]">
+          <p className="p-[10px]">게임 모드</p>
           <Dropbox
             size="w-[200px]"
-            item={modeList[mode]}
+            initial={mode}
             options={modeList}
-            selectedItem={selectedMode}
+            selectedKey={selectedMode}
           />
         </div>
-        <div>
-          <p className={'p-2'}>인원 수</p>
-          <Dropbox
-            size="w-[100px]"
-            item={maxPeopleList[maxPeople]}
-            options={maxPeopleList}
-            selectedItem={selectedMaxPeople}
-          />
+        <div className="px-[30px] py-[10px]">
+          <p className="p-[10px]">인원 수</p>
+
+          {mode === 'NORMAL' ? (
+            <Dropbox
+              size="w-[100px]"
+              initial={maxPeople}
+              options={maxPeopleList}
+              selectedKey={selectedMaxPeople}
+            />
+          ) : (
+            <Input
+              type="text"
+              className="w-[100px]"
+              value={fixedMaxPeople}
+              readOnly
+            />
+          )}
         </div>
       </div>
-      <div className={'flex justify-between px-20 py-2'}>
-        <div>
-          <p className={'p-2'}>문제 카테고리</p>
+      <div className="flex justify-between">
+        <div className="px-[30px] py-[10px]">
+          <p className="p-[10px]">문제 카테고리</p>
           <Dropbox
             size="w-[200px]"
-            item={categoryList[category]}
+            initial={category}
             options={categoryList}
-            selectedItem={selectedCategory}
+            selectedKey={selectedCategory}
           />
         </div>
-        <div>
-          <p className={'px-5 py-2'}>문제 수</p>
+        <div className="px-[30px] py-[10px]">
+          <p className="p-[10px]">문제 수</p>
           <Dropbox
             size="w-[100px]"
-            item={maxQuestionList[maxQuestion]}
+            initial={maxQuestion}
             options={maxQuestionList}
-            selectedItem={selectedMaxQuestion}
+            selectedKey={selectedMaxQuestion}
           />
         </div>
       </div>
-      <div className={'px-20 py-10'}>
-        <Button className={'w-full'} value="방 생성" onClick={createTheRoom} />
+
+      <div className="p-[30px]">
+        <Button
+          className="w-full"
+          value="방 정보 변경"
+          onClick={handleModifyRoom}
+        />
       </div>
 
       {toastState === true ? (
-        <Toast
-          message={'방을 생성하지 못했습니다.'}
-          setToastState={setToastState}
-        />
+        <Toast message={toastMessage} setToastState={setToastState} />
       ) : null}
     </div>
   );

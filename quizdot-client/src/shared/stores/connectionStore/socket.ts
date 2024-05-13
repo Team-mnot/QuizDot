@@ -2,33 +2,33 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import SockJS from 'sockjs-client/dist/sockjs';
-import { Stomp, CompatClient } from '@stomp/stompjs';
+import { Stomp, CompatClient, IMessage } from '@stomp/stompjs';
 import { useRef } from 'react';
 import { baseApi } from '@/shared/apis';
 
-// store 추가 예정
+/*** socket 1 : subscribe N ***/
 class SocketStore {
   private stompInstance = useRef<CompatClient | null>(null);
   private wsUrl = `${baseApi}/ws/chat`;
 
-  public async onConnect(address: string, callback: (message: any) => void) {
+  public async onConnect() {
     this.stompInstance.current?.onWebSocketClose;
 
     this.stompInstance.current = Stomp.over(() => new SockJS(this.wsUrl));
     this.stompInstance.current?.connect(
       {},
-      () => {
-        console.log(
-          '[소켓 연결 성공] socket is connected : ',
-          this.stompInstance.current?.connected,
-        );
-        this.onSubscribe(address, callback);
-      },
+      console.log(
+        '[소켓 연결 성공] socket is connected : ',
+        this.stompInstance.current?.connected,
+      ),
       this.onError,
     );
   }
 
-  public async onSubscribe(address: string, callback: (message: any) => void) {
+  public async onSubscribe(
+    address: string,
+    callback: (message: IMessage) => void,
+  ) {
     if (
       !this.stompInstance.current ||
       !this.stompInstance.current.active ||
@@ -54,7 +54,7 @@ class SocketStore {
     //   }, 3000); // 3초 후 재시도
   }
 
-  public async onSend(address: string, data: any) {
+  public async onSend(address: string, data: IMessage) {
     if (
       !this.stompInstance.current ||
       !this.stompInstance.current.active ||

@@ -1,38 +1,56 @@
-import { Modal } from '@/shared/ui';
-import { OnlineUser } from './OnlineUser';
+import { Button, Modal } from '@/shared/ui';
 import { useOpenModal } from '@/shared/hooks';
 import { useState } from 'react';
-import { ActiveUserDto } from '../api/types';
+import { ActiveUserType } from '../api/types';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
+import { OnlineUser } from '.';
 
-interface OnlineUserListProps {
-  activeUserDtos: ActiveUserDto[];
-}
-
-export function OnlineUserList(props: OnlineUserListProps) {
+export function OnlineUserList({
+  activeUsers,
+}: {
+  activeUsers: ActiveUserType[];
+}) {
   const userStore = useUserStore();
 
-  const { isOpenModal, clickModal, closeModal } = useOpenModal();
-  const [selectedId, setSelectedId] = useState(userStore.id);
+  const {
+    isOpenModal: useOpenUserModal,
+    clickModal: clickUserModal,
+    closeModal: closeUserModal,
+  } = useOpenModal();
+  const [clickedUserId, setClickedUserId] = useState(userStore.id);
+
+  const handleClickUser = (userId: number) => {
+    setClickedUserId(userId);
+    clickUserModal();
+  };
 
   return (
-    <div>
-      <div className={'rounded-lg bg-white bg-opacity-20 p-5 shadow-md'}>
-        {props.activeUserDtos.map((user) => (
-          <div
-            key={user.id}
-            onClick={() => {
-              setSelectedId(user.id);
-              clickModal();
-            }}
-          >
-            <OnlineUser activeUserDto={user} />
-          </div>
-        ))}
+    <div className="px-[30px] py-[10px]">
+      <div
+        className={
+          'h-[360px] w-auto rounded-lg bg-white bg-opacity-20 shadow-md'
+        }
+      >
+        <div className="p-[20px] text-center">
+          <Button value="접속 유저 리스트" />
+        </div>
+        <div className="scrollbar-hide h-[260px] max-h-[260px] overflow-y-scroll">
+          {activeUsers.map((user) => (
+            <OnlineUser
+              key={user.id}
+              activeUser={user}
+              handleClickUser={handleClickUser}
+            />
+          ))}
+        </div>
       </div>
 
-      <Modal isOpen={isOpenModal} onClose={closeModal}>
-        {userStore.id == selectedId ? <div>마이페이지</div> : <div>타인</div>}
+      <Modal isOpen={useOpenUserModal} onClose={closeUserModal}>
+        {userStore.id == clickedUserId ? (
+          <div>마이페이지</div>
+        ) : (
+          <div>타인</div>
+        )}
       </Modal>
     </div>
   );

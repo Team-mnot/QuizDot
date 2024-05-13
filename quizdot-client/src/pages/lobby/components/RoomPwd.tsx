@@ -1,30 +1,33 @@
 import { Button, Input } from '@/shared/ui';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Toast } from '@/shared/ui/Toast';
 import { useRouter } from '@/shared/hooks';
 import { checkRoomPwdApi } from '../api/api';
+import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 
-interface RoomPwdProps {
+export function RoomPwd({
+  roomId,
+  channelId,
+}: {
   roomId: number;
   channelId: number;
-}
-
-export function RoomPwd(props: RoomPwdProps) {
+}) {
   const [password, setPassword] = useState<string>('');
+  const [toastState, setToastState] = useState<boolean>(false);
 
-  const [toastState, setToastState] = useState(false);
-
+  const { onUnsubscribe } = useContext(WebSocketContext);
   const router = useRouter();
 
   const changePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.currentTarget.value);
   };
 
-  const checkRoomPwd = async () => {
-    const response = await checkRoomPwdApi(props.roomId, password);
+  const handleCheckRoomPwd = async () => {
+    const response = await checkRoomPwdApi(roomId, password);
 
     if (response == 200) {
-      router.routeTo(`/${props.channelId}/${props.roomId}/waiting`);
+      onUnsubscribe(`chat/lobby/${channelId}`);
+      router.routeTo(`/${channelId}/${roomId}/waiting`);
     } else {
       setToastState(true);
     }
@@ -32,20 +35,20 @@ export function RoomPwd(props: RoomPwdProps) {
 
   return (
     <div>
-      <div>
-        <p className={'p-2'}>비밀번호</p>
+      <div className="px-[30px] py-[10px]">
+        <p className="p-[10px]">비밀번호</p>
         <Input
           type="password"
-          className="w-[200px]"
+          className="w-[130px]"
           value={password}
           onChange={changePassword}
         />
       </div>
-      <div className={'px-10 py-10'}>
+      <div className="p-[30px]">
         <Button
-          className={'w-full'}
+          className="w-full"
           value="비밀번호 입력"
-          onClick={checkRoomPwd}
+          onClick={handleCheckRoomPwd}
         />
       </div>
 

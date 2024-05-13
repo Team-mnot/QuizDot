@@ -1,13 +1,14 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { getChannelsApi } from '../api/api';
-import { ChannelInfos } from '../api/types';
+import { ChannelInfosType } from '../api/types';
 
+/*** 채널 목록 조회 Hook ***/
 export function useChannelsQuery(): {
-  data: ChannelInfos;
+  data: ChannelInfosType;
   isError: boolean;
   isLoading: boolean;
 } {
-  const fallback: ChannelInfos = { channelInfos: [] };
+  const fallback: ChannelInfosType = { channelInfos: [] };
 
   const {
     data = fallback,

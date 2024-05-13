@@ -1,17 +1,13 @@
-interface ChannelResponse {
-  status: number;
-  message: string;
-  data: ChannelInfo[];
+/*** 채널 정보 배열 타입 ***/
+interface ChannelInfosType {
+  channelInfos: ChannelInfoType[];
 }
 
-interface ChannelInfos {
-  channelInfos: ChannelInfo[];
-}
-
-interface ChannelInfo {
+/*** 채널 정보 타입 ***/
+interface ChannelInfoType {
   channelId: number;
   activeUserCount: number;
   totalAvailable: number;
 }
 
-export type { ChannelResponse, ChannelInfos, ChannelInfo };
+export type { ChannelInfosType, ChannelInfoType };

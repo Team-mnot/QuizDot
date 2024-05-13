@@ -1,15 +1,12 @@
 import jwtAxiosInstance from '@/shared/utils/jwtAxiosInstance';
 import { baseApi } from '@/shared/apis';
-import {
-  EnteringRoomInfo,
-  ModifyingRoomInfo,
-  WaitingRoomResponse,
-} from './types';
+import { EnteringRoomType, ModifyingRoomType } from './types';
+import { Response } from '@/shared/apis/types';
 
 const url = 'room';
 
 /*** 게임 대기실 입장 ***/
-async function EnterRoomApi(roomId: number): Promise<EnteringRoomInfo> {
+async function enterRoomApi(roomId: number): Promise<EnteringRoomType> {
   const response = await jwtAxiosInstance.get(`${baseApi}/${url}/${roomId}`);
 
   console.log(`[${response.data.status}] ${response.data.message}`);
@@ -34,7 +31,7 @@ async function EnterRoomApi(roomId: number): Promise<EnteringRoomInfo> {
 }
 
 /*** 게임 대기실 퇴장 ***/
-async function LeaveRoomApi(roomId: number): Promise<number> {
+async function leaveRoomApi(roomId: number): Promise<number> {
   const response = await jwtAxiosInstance.delete(`${baseApi}/${url}/${roomId}`);
 
   console.log(`[${response.data.status}] ${response.data.message}`);
@@ -42,13 +39,13 @@ async function LeaveRoomApi(roomId: number): Promise<number> {
 }
 
 /*** 게임 대기실 정보 변경 ***/
-async function ModifyRoomApi(
+async function modifyRoomApi(
   roomId: number,
-  modifyingRoomInfo: ModifyingRoomInfo,
+  modifyingRoom: ModifyingRoomType,
 ): Promise<number> {
   const response = await jwtAxiosInstance.post(
     `${baseApi}/${url}/${roomId}`,
-    modifyingRoomInfo,
+    modifyingRoom,
   );
 
   console.log(`[${response.data.status}] ${response.data.message}`);
@@ -56,9 +53,7 @@ async function ModifyRoomApi(
 }
 
 /*** 초대 링크 생성 ***/
-async function InviteRoomWithLinkApi(
-  roomId: number,
-): Promise<WaitingRoomResponse> {
+async function inviteRoomWithLinkApi(roomId: number): Promise<Response> {
   const response = await jwtAxiosInstance.get(
     `${baseApi}/${url}/${roomId}/invite`,
   );
@@ -67,22 +62,4 @@ async function InviteRoomWithLinkApi(
   return response.data;
 }
 
-/*** 초대 링크로 게임 대기실 입장 ***/
-async function EnterRoomWithLinkApi(
-  tempData: string,
-): Promise<WaitingRoomResponse> {
-  const response = await jwtAxiosInstance.get(
-    `${baseApi}/${url}/invite/data=${tempData}`,
-  );
-
-  console.log(`[${response.data.status}] ${response.data.message}`);
-  return response.data;
-}
-
-export {
-  EnterRoomApi,
-  LeaveRoomApi,
-  ModifyRoomApi,
-  InviteRoomWithLinkApi,
-  EnterRoomWithLinkApi,
-};
+export { enterRoomApi, leaveRoomApi, modifyRoomApi, inviteRoomWithLinkApi };

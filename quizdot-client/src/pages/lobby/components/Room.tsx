@@ -1,25 +1,41 @@
-import { RoomInfoDto } from '../api/types';
+import { RoomInfoType } from '../api/types';
 
-interface RoomProps {
-  roomInfoDto: RoomInfoDto;
-}
-
-export function Room(props: RoomProps) {
+export function Room({
+  roomInfo,
+  handleEnterRoom,
+}: {
+  roomInfo: RoomInfoType;
+  handleEnterRoom: (roomId: number, isPublic: boolean) => void;
+}) {
   return (
-    <div>
-      <div className={'w-[400px] rounded-lg border-2 bg-white p-5 shadow-md'}>
-        <div className="flex justify-between">
-          <p>{props.roomInfoDto.roomId}</p>
-          <p>
-            ({props.roomInfoDto.open ? '공개' : '비공개'})
-            {props.roomInfoDto.title}
-          </p>
-          <p>{props.roomInfoDto.gameMode}</p>
-        </div>
-        <div className="flex justify-between">
-          <p>{props.roomInfoDto.category}</p>
-          <p>{props.roomInfoDto.maxQuestion}</p>
-          <p>{props.roomInfoDto.maxPeople}</p>
+    <div className="px-[20px] py-[10px]">
+      <div
+        className="h-[110px] w-[450px] rounded-lg border-2 bg-white p-[20px] shadow-md"
+        onClick={() => handleEnterRoom(roomInfo.roomId, roomInfo.open)}
+      >
+        <div className="flex h-full">
+          <div className="flex w-[100px] flex-col pr-[10px] text-left">
+            <p className="flex-grow">{roomInfo.roomId}</p>
+            <p className="flex-none">{roomInfo.category}</p>
+          </div>
+          <div className="flex w-[300px] flex-col pr-[10px] text-left">
+            {roomInfo.title.length > 11 ? (
+              <p className="flex-grow">
+                {roomInfo.open ? '🎶' : '🔒'}&nbsp;
+                {roomInfo.title.substr(0, 11)}&nbsp;.&nbsp;.&nbsp;.
+              </p>
+            ) : (
+              <p className="flex-grow">
+                {roomInfo.open ? '🎶' : '🔒'}&nbsp;
+                {roomInfo.title}
+              </p>
+            )}
+            <p className="flex-none">{roomInfo.maxQuestion}&nbsp;문제</p>
+          </div>
+          <div className="flex flex-col text-right">
+            <p className="flex-grow">{roomInfo.gameMode}</p>
+            <p className="flex-none">{roomInfo.maxPeople}&nbsp;인</p>
+          </div>
         </div>
       </div>
     </div>

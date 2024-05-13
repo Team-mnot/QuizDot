@@ -1,14 +1,15 @@
 import jwtAxiosInstance from '@/shared/utils/jwtAxiosInstance';
 import { baseApi } from '@/shared/apis';
-import { CreatingRoomInfo, LobbyInfo, LobbyResponse } from './types';
+import { CreatingRoomType, LobbyInfoType } from './types';
+import { Response } from '@/shared/apis/types';
 
 const url = 'lobby';
 
 /*** 게임 대기실 생성 ***/
 async function createRoomApi(
   channelId: number,
-  creatingRoomInfo: CreatingRoomInfo,
-): Promise<LobbyResponse> {
+  creatingRoomInfo: CreatingRoomType,
+): Promise<Response> {
   const response = await jwtAxiosInstance.post(
     `${baseApi}/${url}/channel/${channelId}`,
     creatingRoomInfo,
@@ -19,18 +20,23 @@ async function createRoomApi(
 }
 
 /*** 채널 로비 입장 ***/
-async function enterLobbyApi(channelId: number): Promise<LobbyInfo> {
+async function enterLobbyApi(channelId: number): Promise<LobbyInfoType> {
   const response = await jwtAxiosInstance.get(
     `${baseApi}/${url}/channel/${channelId}`,
   );
 
   console.log(`[${response.data.status}] ${response.data.message}`);
-  if (response.data.status == 200) return response.data.data;
+  if (response.data.status == 200)
+    return {
+      channelId: response.data.data.channelId,
+      activeUsers: response.data.data.activeUserDtos,
+      roomInfos: response.data.data.roomInfoDtos,
+    };
   else
     return {
       channelId: -1,
-      activeUserDtos: [],
-      roomInfoDtos: [],
+      activeUsers: [],
+      roomInfos: [],
     };
 }
 

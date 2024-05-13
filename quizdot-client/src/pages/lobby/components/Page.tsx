@@ -1,14 +1,9 @@
-import { useEffect, useRef } from 'react';
-
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-
-import { SocketStore } from '@/shared/stores/connectionStore/socket';
-import { LobbyWebsocket } from './LobbyWebsocket';
+import { LobbyContent, LobbyHeader } from '.';
 
 export function LobbyPage() {
   const { channelId } = useParams() as { channelId: string };
-
-  const stompInstance = useRef(new SocketStore());
 
   useEffect(() => {
     document.body.style.backgroundImage = 'url(/images/main_bg.png)';
@@ -16,12 +11,9 @@ export function LobbyPage() {
   }, []);
 
   return (
-    <div>
-      <h1 className={'p-5'}>로비 ({channelId} 채널)</h1>
-      <LobbyWebsocket
-        stompInstance={stompInstance.current}
-        channelId={Number(channelId)}
-      />
+    <div className={'h-screen w-screen'}>
+      <LobbyHeader channelId={Number(channelId)} />
+      <LobbyContent channelId={Number(channelId)} />
     </div>
   );
 }

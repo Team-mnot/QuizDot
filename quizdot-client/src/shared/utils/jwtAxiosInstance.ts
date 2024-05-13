@@ -1,8 +1,9 @@
 import axios from 'axios';
 import qs from 'qs';
+import { baseApi } from '../apis';
 
 const jwtAxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: baseApi,
   timeout: 60000,
   withCredentials: true,
   headers: {
