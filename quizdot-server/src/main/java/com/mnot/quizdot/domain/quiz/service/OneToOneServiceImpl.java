@@ -53,12 +53,15 @@ public class OneToOneServiceImpl implements OneToOneService {
         String strRoomId = String.valueOf(roomId);
         //제출 테이블키(submit+방번호)
         String submitKey = redisUtil.getSubmitKey(roomId);
+        //퀴즈리스트 키
+        String quizKey = String.format("rooms:%s:quiz", strRoomId);
 
         //퀴즈가 존재하는지 체크
         if (!quizRepository.existsById(questionId)) {
             throw new BusinessException(ErrorCode.NOT_FOUND_QUIZ);
         }
-        Set<Integer> quizList = redisTemplate.opsForSet().members(strRoomId);
+        Set<Integer> quizList = redisTemplate.opsForSet().members(quizKey);
+        log.info("Quiz List {}: {}", strRoomId, quizList);
         if (!quizList.contains(questionId)) {
             throw new BusinessException(ErrorCode.NOT_EXSITS_LIST);
         }
@@ -80,6 +83,7 @@ public class OneToOneServiceImpl implements OneToOneService {
             for (SubmitDto sender : submitDtoSet) {
                 for (SubmitDto receiver : submitDtoSet) {
                     if (sender.getMemberId() != receiver.getMemberId()) {
+                        log.info("퀴즈ID값 체크 : {}", receiver.getQuestionId());
                         Quiz quiz = quizRepository.findById(receiver.getQuestionId())
                             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_QUIZ));
                         QuizRes quizRes = new QuizRes();
