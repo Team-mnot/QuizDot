@@ -8,6 +8,8 @@ export function getPlayerData(): PlayerInSurvivalMode[] {
   return dummyCharacters as PlayerInSurvivalMode[];
 }
 
+// const url = 'survival';
+
 export async function fetchQuizData(
   roomId: number,
   category: string,
