@@ -232,8 +232,6 @@ public class SurvivalServiceImpl implements SurvivalService {
         if (left == 1) {
             // 만약 생존자가 1명이면 서바이벌 게임 종료, 모든 대기실의 상태 변경 (INPROGRESS -> WAITING)
             messageType = MessageType.EXIT;
-
-            //
         }
 
         messagingTemplate.convertAndSend(getGameDestination(roomId),
