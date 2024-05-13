@@ -2,7 +2,6 @@ package com.mnot.quizdot.domain.quiz.controller;
 
 import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
 import com.mnot.quizdot.domain.member.entity.ModeType;
-import com.mnot.quizdot.domain.quiz.dto.QuizListRes;
 import com.mnot.quizdot.domain.quiz.dto.QuizParam;
 import com.mnot.quizdot.domain.quiz.service.QuizService;
 import com.mnot.quizdot.global.result.ResultResponse;
@@ -35,8 +34,8 @@ public class QuizController {
     public ResponseEntity<ResultResponse> getQuizzes(
         @PathVariable("room_id") int roomId,
         @ModelAttribute @ParameterObject QuizParam quizParam) {
-        QuizListRes quizListRes = quizService.getQuizzes(roomId, quizParam);
-        return ResponseEntity.ok(ResultResponse.of(200, "퀴즈 목록 조회에 성공하였습니다.", quizListRes));
+        quizService.getQuizzes(roomId, quizParam);
+        return ResponseEntity.ok(ResultResponse.of(200, "퀴즈 목록 조회에 성공하였습니다."));
     }
 
     @PostMapping("/quiz/{room_id}/{question_id}")
