@@ -1,12 +1,11 @@
 package com.mnot.quizdot.domain.quiz.service;
 
 import com.mnot.quizdot.domain.member.entity.ModeType;
-import com.mnot.quizdot.domain.quiz.dto.QuizListRes;
 import com.mnot.quizdot.domain.quiz.dto.QuizParam;
 
 public interface QuizService {
 
-    QuizListRes getQuizzes(int roomNum, QuizParam quizParam);
+    void getQuizzes(int roomNum, QuizParam quizParam);
 
     void passQuestion(int roomId, int questionId, int memberId, String nickname);
 

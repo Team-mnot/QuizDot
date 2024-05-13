@@ -125,7 +125,7 @@ public class SurvivalServiceImpl implements SurvivalService {
                 if (!unlockList.isEmpty()) {
                     log.info("멤버 pk : {}", id);
                     log.info("칭호 체크 : {}", unlockList);
-                    messagingTemplate.convertAndSend(TITLE_DESTINATION + id,
+                    messagingTemplate.convertAndSend(getGameDestination(roomId) + "/title/" + id,
                         MessageDto.of(SERVER_SENDER, "칭호가 해금되었습니다", MessageType.TILE, unlockList));
                 }
 
