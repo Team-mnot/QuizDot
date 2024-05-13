@@ -103,7 +103,6 @@ public class LobbyServiceImpl implements LobbyService {
      * 동시 접속자 목록 조회
      */
     public List<ActiveUserDto> getActiveUserList(int channelId, int memberId) {
-        // TODO : 동시 접속자 REDIS Set에서 접속하지않는 유저 확인하고 삭제해줘야함(웹소켓 필요 예상)
         Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
 
@@ -114,11 +113,11 @@ public class LobbyServiceImpl implements LobbyService {
             .build();
 
         // 해당 유저를 동시접속목록 REDIS Set에 추가
-        String roomKey = redisUtil.getActiveUserKey(channelId);
+        String roomKey = redisUtil.getActivePlayerKey(channelId);
         redisTemplate.opsForSet().add(roomKey, activeUserDto);
 
         // 채널 내 동시 접속자 목록 반환
-        return redisUtil.getActiveUsers(roomKey);
+        return redisUtil.getActivePlayers(roomKey);
     }
 
     /**
@@ -149,7 +148,7 @@ public class LobbyServiceImpl implements LobbyService {
         // 레디스에서 채널별로 동시접속자 수 구해오기
         List<ChannelInfo> channelInfos = new ArrayList<>();
         for (int channel = 1; channel <= MAX_CHANNEL; channel++) {
-            String key = redisUtil.getActiveUserKey(channel);
+            String key = redisUtil.getActivePlayerKey(channel);
             long activeUserCount = redisTemplate.opsForSet().size(key);
 
             // 각 채널의 동시접속자 반영
@@ -168,7 +167,7 @@ public class LobbyServiceImpl implements LobbyService {
      * 채널 입장 가능 여부 확인
      */
     public void checkAvailable(int channelId) {
-        String key = redisUtil.getActiveUserKey(channelId);
+        String key = redisUtil.getActivePlayerKey(channelId);
 
         if (MAX_CAPACITY == redisTemplate.opsForSet().size(key)) {
             throw new BusinessException(ErrorCode.CHANNEL_LIMIT_EXCEEDED);
