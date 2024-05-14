@@ -24,6 +24,12 @@ const schema = z.object({
 });
 
 export function SignUpForm() {
+  const store = useUserStore();
+  const navi = useNavigate();
+  const { register, handleSubmit } = useForm({
+    resolver: zodResolver(schema),
+  });
+
   // 입력 확인용 변수
   const [memberId, setMemberId] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -45,12 +51,6 @@ export function SignUpForm() {
   const togglePwdView = () => {
     setShowPassword(!showPassword);
   };
-
-  const store = useUserStore();
-  const navi = useNavigate();
-  const { register, handleSubmit } = useForm({
-    resolver: zodResolver(schema),
-  });
 
   // 폼 제출 커스텀 핸들러
   type CustomSubmitHandler = SubmitHandler<FieldValues>;
@@ -298,12 +298,21 @@ export function SignUpForm() {
           <span className="text-green-600">사용 가능한 닉네임입니다</span>
         )}
       </div>
+      {/* 전부 유효 ? 회원가입 : ( 입력 안된 것 있음 ? 입력되지 않은 : 올바르지 않은) */}
       {idValid && passwordValid && hintValid && nicknameValid ? (
         <button
           type="submit"
           className="mt-6 w-full hover:border-transparent hover:bg-gray-200 focus:outline-none active:bg-gray-300"
         >
           Sign Up
+        </button>
+      ) : memberId === '' ||
+        password === '' ||
+        chkPassword === '' ||
+        hint === '' ||
+        nickname === '' ? (
+        <button className="mt-6 w-full bg-gray-200 hover:border-transparent focus:outline-none">
+          입력되지 않은 항목이 있습니다
         </button>
       ) : (
         <button className="mt-6 w-full bg-gray-200 hover:border-transparent focus:outline-none">
