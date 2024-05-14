@@ -95,6 +95,7 @@ public class RoomServiceImpl implements RoomService {
             .orElseThrow(() -> new BusinessException(ErrorCode.LOCK_TITLE_ERROR)).getTitle();
 
         PlayerInfoDto player = PlayerInfoDto.builder()
+            .id(member.getId())
             .level(member.getLevel())
             .title(title)
             .characterId(member.getCharacterId())
