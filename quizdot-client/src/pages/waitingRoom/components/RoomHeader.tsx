@@ -41,7 +41,10 @@ export function RoomHeader(props: {
               mode={roomInfo.gameMode}
             />
           ) : (
-            <SurvivalMatchBtn roomId={roomInfo.roomId} />
+            <SurvivalMatchBtn
+              roomId={roomInfo.roomId}
+              category={roomInfo.category}
+            />
           )}
         </div>
       </div>

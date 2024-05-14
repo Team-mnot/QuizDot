@@ -7,9 +7,10 @@ import { useNavigate } from 'react-router-dom';
 
 interface Props {
   roomId: number;
+  category: string;
 }
 
-export function SurvivalMatchBtn({ roomId }: Props) {
+export function SurvivalMatchBtn({ roomId, category }: Props) {
   // const matchStatus = useRef<number>(0);
   // const [matchCount, setMatchCount] = useState<number>(0);
   const { isReady, callbackMsg } = useContext(WebSocketContext);
@@ -37,7 +38,7 @@ export function SurvivalMatchBtn({ roomId }: Props) {
     if (!isReady) return;
     try {
       const response = await axios.post(
-        `${baseApi}/survival/${roomId}/enter?category=ECONOMY`,
+        `${baseApi}/survival/${roomId}/enter?category=${category}`,
       );
       if (response.status === 200) {
         setMatchStatus(1);
