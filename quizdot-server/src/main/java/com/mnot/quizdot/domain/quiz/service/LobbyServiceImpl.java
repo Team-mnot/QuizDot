@@ -112,11 +112,11 @@ public class LobbyServiceImpl implements LobbyService {
             .build();
 
         // 해당 유저를 동시접속목록 REDIS Set에 추가
-        String roomKey = redisUtil.getActiveUserKey(channelId);
-        redisTemplate.opsForSet().add(roomKey, activeUserDto);
+        String activePlayerKey = redisUtil.getActivePlayerKey(channelId);
+        redisTemplate.opsForHash().put(activePlayerKey, String.valueOf(memberId), activeUserDto);
 
         // 채널 내 동시 접속자 목록 반환
-        return redisUtil.getActiveUsers(roomKey);
+        return redisUtil.getActivePlayers(activePlayerKey);
     }
 
     /**
@@ -128,7 +128,7 @@ public class LobbyServiceImpl implements LobbyService {
 
         redisTemplate.execute((RedisConnection connection) -> {
             try (Cursor<byte[]> cursor = connection.scan(
-                ScanOptions.scanOptions().match(pattern).count(MAX_ROOM).build())) {
+                ScanOptions.scanOptions().match(pattern).build())) {
                 while (cursor.hasNext()) {
                     String key = new String(cursor.next());
                     log.info("key : {}", key);
@@ -151,8 +151,8 @@ public class LobbyServiceImpl implements LobbyService {
         // 레디스에서 채널별로 동시접속자 수 구해오기
         List<ChannelInfo> channelInfos = new ArrayList<>();
         for (int channel = 1; channel <= MAX_CHANNEL; channel++) {
-            String key = redisUtil.getActiveUserKey(channel);
-            long activeUserCount = redisTemplate.opsForSet().size(key);
+            String key = redisUtil.getActivePlayerKey(channel);
+            long activeUserCount = redisTemplate.opsForHash().size(key);
 
             // 각 채널의 동시접속자 반영
             ChannelInfo channelInfo = ChannelInfo.builder()
@@ -170,9 +170,9 @@ public class LobbyServiceImpl implements LobbyService {
      * 채널 입장 가능 여부 확인
      */
     public void checkAvailable(int channelId) {
-        String key = redisUtil.getActiveUserKey(channelId);
+        String key = redisUtil.getActivePlayerKey(channelId);
 
-        if (MAX_CAPACITY == redisTemplate.opsForSet().size(key)) {
+        if (MAX_CAPACITY == redisTemplate.opsForHash().size(key)) {
             throw new BusinessException(ErrorCode.CHANNEL_LIMIT_EXCEEDED);
         }
     }
