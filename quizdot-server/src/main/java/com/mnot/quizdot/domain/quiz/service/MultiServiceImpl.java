@@ -36,7 +36,6 @@ public class MultiServiceImpl implements MultiService {
 
     private static final String SERVER_SENDER = "SYSTEM";
     private static final String GAME_DESTINATION = "/sub/info/game/";
-    private static final String TITLE_DESTINATION = "/sub/title/";
     private final RedisUtil redisUtil;
     private final RedisTemplate redisTemplate;
     private final SimpMessagingTemplate messagingTemplate;
@@ -70,8 +69,14 @@ public class MultiServiceImpl implements MultiService {
         messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
             MessageDto.of(SERVER_SENDER, MessageType.UPDATE, updatedScore));
 
-        // TODO: 전체 플레이어가 풀었을 경우 패스 메세지 보내기
-
+        // 모든 플레이어가 답안을 제출하는 경우
+        // TODO: 만약 문제가 넘어가고 나서 패스 메세지가 전송되어도 처리하지 않도록 프론트 전달하기
+        Long playerCount = redisTemplate.opsForHash().size(redisUtil.getPlayersKey(roomId));
+        if (size == playerCount) {
+            messagingTemplate.convertAndSend(getGameDestination(roomId),
+                MessageDto.of(SERVER_SENDER, "모든 플레이어가 답안을 제출하였습니다.", MessageType.PASS,
+                    System.currentTimeMillis()));
+        }
     }
 
     /**
