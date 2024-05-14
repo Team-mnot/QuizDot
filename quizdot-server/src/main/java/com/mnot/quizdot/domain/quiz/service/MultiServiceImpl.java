@@ -127,7 +127,8 @@ public class MultiServiceImpl implements MultiService {
                 multiRecord.updateRecord(rank == 1 ? 1 : 0, 1);
 
                 //칭호 확인
-                List<String> unlockList = titleUtil.checkRequirment(id, ModeType.NORMAL);
+                List<String> unlockList = titleUtil.checkRequirment(member, multiRecord,
+                    ModeType.NORMAL);
                 if (!unlockList.isEmpty()) {
                     messagingTemplate.convertAndSend(getGameDestination(roomId) + "/title/" + id,
                         MessageDto.of(SERVER_SENDER, "칭호가 해금되었습니다", MessageType.TILE, unlockList));
