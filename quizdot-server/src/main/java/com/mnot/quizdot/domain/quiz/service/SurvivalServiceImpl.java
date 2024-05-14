@@ -137,7 +137,8 @@ public class SurvivalServiceImpl implements SurvivalService {
                 multiRecord.updateRecord(rank == 1 ? 1 : 0, 1);
 
                 //칭호 얻은게 있으면
-                List<String> unlockList = titleUtil.checkRequirment(id, ModeType.SURVIVAL);
+                List<String> unlockList = titleUtil.checkRequirment(member, multiRecord,
+                    ModeType.SURVIVAL);
                 if (!unlockList.isEmpty()) {
                     log.info("멤버 pk : {}", id);
                     log.info("칭호 체크 : {}", unlockList);

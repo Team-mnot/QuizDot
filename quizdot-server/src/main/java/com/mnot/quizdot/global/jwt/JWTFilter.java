@@ -27,7 +27,7 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
 
-        //request에서 Authorization 헤더 찾기
+        //request에서 access 헤더 찾기
         String authorization = request.getHeader("access");
 
         //헤더 검증
@@ -60,7 +60,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String role = jwtUtil.getRole(authorization);
         int id = jwtUtil.getId(authorization);
         String nickname = jwtUtil.getNickname(authorization);
-        
+
         Member member = Member.builder()
             .memberId(memberId)
             .role(Role.valueOf(Role.class, role))
