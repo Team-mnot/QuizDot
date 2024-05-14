@@ -268,7 +268,7 @@ public class SurvivalServiceImpl implements SurvivalService {
         int playerCount = redisUtil.getPlayers(playersKey).size();
 
         // 게임 시작 여부 확인
-        if (playerCount < 10) {
+        if (playerCount < 2) {
             // 대기실 인원이 10명 미만이면, 매칭 등록 후 게임 시작 여부를 다시 확인한다
             redisTemplate.opsForHash().put(matchKey, strRoomId, playerCount);
 
@@ -278,7 +278,7 @@ public class SurvivalServiceImpl implements SurvivalService {
             log.info("[registMatchMaking] 카테고리의 매칭 큐 : {}명", totalPlayer);
 
             // 매칭 대기자가 10명 미만이면 기다린다
-            if (totalPlayer < 10) {
+            if (totalPlayer < 2) {
                 messagingTemplate.convertAndSend(ROOM_CHAT_DESTINATION + roomId,
                     MessageDto.of(SERVER_SENDER, "최소 인원 수가 부족해 서바이벌 게임 매칭을 시작합니다.",
                         MessageType.CHAT));
