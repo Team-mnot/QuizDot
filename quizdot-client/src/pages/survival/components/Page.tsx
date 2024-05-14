@@ -13,6 +13,7 @@ import { CountDown } from './CountDown';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
 import { useParams, useLocation } from 'react-router-dom';
+import useIsSubmitAnswer from '../hooks/useIsSubmitAnswer';
 
 export function SurvivalPage() {
   const { roomId } = useParams() as {
@@ -38,6 +39,7 @@ export function SurvivalPage() {
     setQuizzes,
   } = useQuizStore();
 
+  const { submitAnswer } = useIsSubmitAnswer();
   const { onSend, onSubscribe, callbackMsg } = useContext(WebSocketContext);
   const [messages, setMessages] = useState<
     { nickname: string; content: string }[]
@@ -69,6 +71,9 @@ export function SurvivalPage() {
       callbackMsg.address == `quiz/game/${roomId}` &&
       callbackMsg.msg.type == 'PASS'
     ) {
+      if (roomInfo.hostId === userStore.id) {
+        submitAnswer(parseInt(roomId)); // 방장만 호출하는 정답제출 함수
+      }
       setShowResult(true);
       setShowChatBox(true);
       setShowHint(false);
@@ -96,7 +101,7 @@ export function SurvivalPage() {
       {showCountDown ? (
         <CountDown />
       ) : showResult ? (
-        <QuizResultComponent roomInfo={roomInfo} />
+        <QuizResultComponent />
       ) : (
         <QuizComponent roomId={Number(roomId)} />
       )}
