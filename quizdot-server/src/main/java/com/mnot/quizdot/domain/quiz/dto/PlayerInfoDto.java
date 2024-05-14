@@ -1,14 +1,17 @@
 package com.mnot.quizdot.domain.quiz.dto;
 
+import java.io.Serializable;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
-public class PlayerInfoDto {
+public class PlayerInfoDto implements Serializable {
 
     private int level;
 

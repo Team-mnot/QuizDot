@@ -7,10 +7,13 @@ import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 
 public interface SurvivalService {
 
-    void updateScores(int roomId, String memberId, int isCorrect);
+    void updateScores(int roomId, int memberId, int isCorrect);
 
     List<ResultDto> exitGame(int roomId, int memberId);
 
     Set<TypedTuple<String>> getStageResult(int roomId, int memberId);
 
+    String registMatchmaking(int roomId, String category);
+
+    void cancelMatchmaking(int roomId, String category);
 }

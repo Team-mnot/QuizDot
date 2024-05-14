@@ -1,14 +1,18 @@
 package com.mnot.quizdot.domain.quiz.dto;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
-public class ChannelListRes {
+public class MatchRoomDto {
 
-    private List<ChannelInfo> channelInfos;
+    private String roomId;
+
+    private int playerCount;
+
 }

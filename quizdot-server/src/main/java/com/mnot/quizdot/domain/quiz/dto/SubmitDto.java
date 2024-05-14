@@ -1,21 +1,21 @@
 package com.mnot.quizdot.domain.quiz.dto;
 
-import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
+//같은 형태의 Dto가 있는데 이름이 다르다는 이유로 새로 만들어야하는지?
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoomEnterRes {
+public class SubmitDto {
 
-    // 대기실 내 회원 목록
-    Map<String, PlayerInfoDto> players;
+    private String roomId;
 
-    // 대기실 정보
-    RoomInfoDto roomInfo;
+    private int questionId;
 
+    private int memberId;
 }

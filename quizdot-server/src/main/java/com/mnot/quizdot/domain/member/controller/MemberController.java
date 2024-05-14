@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -58,6 +59,33 @@ public class MemberController {
 
         return ResponseEntity.ok(ResultResponse.of(200, "회원가입 성공"));
     }
+
+    /**
+     * 닉네임 중복 체크
+     */
+    @GetMapping("/check-nickname")
+    @Operation(summary = "닉네임 중복 체크")
+    public ResponseEntity<ResultResponse> checkNickname(@RequestParam String nickname) {
+        if (!memberService.checkNickname(nickname)) {
+            return ResponseEntity.ok(ResultResponse.of(200, "사용할 수 있는 닉네임입니다."));
+        } else {
+            return ResponseEntity.ok(ResultResponse.of(409, "이미 존재하는 닉네임입니다."));
+        }
+    }
+
+    /**
+     * 아이디 중복 체크
+     */
+    @GetMapping("/check-id")
+    @Operation(summary = "아이디 중복 체크")
+    public ResponseEntity<ResultResponse> checkId(@RequestParam String id) {
+        if (!memberService.checkId(id)) {
+            return ResponseEntity.ok(ResultResponse.of(200, "사용할 수 있는 아이디입니다."));
+        } else {
+            return ResponseEntity.ok(ResultResponse.of(409, "이미 존재하는 아이디입니다."));
+        }
+    }
+
 
     /**
      * 회원 탈퇴

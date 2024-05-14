@@ -22,5 +22,4 @@ public class QuizRes {
     private QuestionType questionType;
     private String description;
     private List<String> answers;
-
 }

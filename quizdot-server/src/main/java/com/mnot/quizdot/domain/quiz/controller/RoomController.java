@@ -1,6 +1,5 @@
 package com.mnot.quizdot.domain.quiz.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
 import com.mnot.quizdot.domain.quiz.dto.RoomEnterRes;
 import com.mnot.quizdot.domain.quiz.dto.RoomReq;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -38,7 +38,7 @@ public class RoomController {
     public ResponseEntity<ResultResponse> modifyRoomInfo(
         @AuthenticationPrincipal CustomMemberDetail memberDetail,
         @PathVariable("room_id") int roomId,
-        @RequestBody RoomReq roomReq) throws JsonProcessingException {
+        @RequestBody RoomReq roomReq) {
         roomService.modifyRoomInfo(roomId, memberDetail.getId(), roomReq);
         return ResponseEntity.ok(ResultResponse.of(200, "대기실 정보 변경에 성공하였습니다."));
     }
@@ -47,7 +47,7 @@ public class RoomController {
     @Operation(summary = "대기실 입장 API")
     public ResponseEntity<ResultResponse> enterRoom(
         @AuthenticationPrincipal CustomMemberDetail memberDetail,
-        @PathVariable("room_id") int roomId) throws JsonProcessingException {
+        @PathVariable("room_id") int roomId) {
         RoomEnterRes roomEnterRes = roomService.enterRoom(roomId, memberDetail.getId());
         return ResponseEntity.ok(ResultResponse.of(200, "대기실 입장에 성공하였습니다.", roomEnterRes));
     }
@@ -56,8 +56,26 @@ public class RoomController {
     @Operation(summary = "대기실 퇴장 API")
     public ResponseEntity<ResultResponse> leaveRoom(
         @AuthenticationPrincipal CustomMemberDetail memberDetail,
-        @PathVariable("room_id") int roomId) throws JsonProcessingException {
+        @PathVariable("room_id") int roomId) {
         roomService.leaveRoom(roomId, String.valueOf(memberDetail.getId()));
         return ResponseEntity.ok(ResultResponse.of(200, "대기실 퇴장에 성공하였습니다."));
+    }
+
+    @GetMapping("/{room_id}/invite")
+    @Operation(summary = "초대 링크 생성 API")
+    public ResponseEntity<ResultResponse> inviteRoom(
+        @AuthenticationPrincipal CustomMemberDetail memberDetail,
+        @PathVariable("room_id") int roomId) {
+        String inviteLink = roomService.inviteRoom(roomId, memberDetail.getId());
+        return ResponseEntity.ok(ResultResponse.of(200, "대기실 초대 링크 생성에 성공하였습니다.", inviteLink));
+    }
+
+    @GetMapping("/invite")
+    @Operation(summary = "초대받은 대기실 입장 API")
+    public ResponseEntity<ResultResponse> enterInvitedRoom(
+        @AuthenticationPrincipal CustomMemberDetail memberDetail,
+        @RequestParam String data) {
+        RoomEnterRes roomEnterRes = roomService.enterInvitedRoom(data, memberDetail.getId());
+        return ResponseEntity.ok(ResultResponse.of(200, "초대받은 대기실 입장에 성공하였습니다.", roomEnterRes));
     }
 }

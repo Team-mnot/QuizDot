@@ -42,6 +42,8 @@ public class MemberServiceImpl implements MemberService {
     //비밀번호 암호화
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    private final static int claimPoint = 10000;
+
     @Override
     public void joinMember(JoinDto joinDTO) {
 
@@ -83,16 +85,23 @@ public class MemberServiceImpl implements MemberService {
             .mode(ModeType.SURVIVAL)
             .build();
         multiRecordRepository.save(survivalRecord);
-
-        //TODO: 칭호는 해금방식이기 때문에 처음에 생성될 때 중계테이블에 모든 칭호를 담아주고 1번 칭호만 true를 설정해주고 나머지 칭호는 모두 false인 상태로 값을 추가해놓아야함.
-        Title defaultTitle = titleRepository.findById(1)
-            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_TITLE));
-        MemberTitle memberTitle = MemberTitle.builder()
-            .title(defaultTitle)
+        MultiRecord ilgitoRecord = MultiRecord.builder()
             .member(member)
-            .isGet(true)
+            .mode(ModeType.ILGITO)
             .build();
-        memberTitleRepository.save(memberTitle);
+        multiRecordRepository.save(ilgitoRecord);
+
+        //칭호는 해금방식이기 때문에 처음에 생성될 때 중계테이블에 모든 칭호를 담아주고 1번 칭호만 true를 설정해주고 나머지 칭호는 모두 false인 상태로 값을 추가해놓아야함.
+        List<Title> titleList = titleRepository.findAll();
+        for (Title title : titleList) {
+            boolean isFirst = title.getId() == 1;
+            MemberTitle memberTitle = MemberTitle.builder()
+                .title(title)
+                .member(member)
+                .isGet(isFirst)
+                .build();
+            memberTitleRepository.save(memberTitle);
+        }
 
         Character defaultCharacter = characterRepository.findById(1)
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_CHRACTERS));
@@ -102,6 +111,16 @@ public class MemberServiceImpl implements MemberService {
             .build();
         memberCharacterRepository.save(memberCharacter);
         log.info("회원 가입 서비스 : COMPLETE");
+    }
+
+    @Override
+    public boolean checkNickname(String nickname) {
+        return memberRepository.existsByNickname(nickname);
+    }
+
+    @Override
+    public boolean checkId(String id) {
+        return memberRepository.existsByMemberId(id);
     }
 
 
@@ -234,6 +253,8 @@ public class MemberServiceImpl implements MemberService {
     public void modifyCharacter(CustomMemberDetail customMemberDetail, int characterId) {
         Member member = memberRepository.findByMemberId(customMemberDetail.getUsername())
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
+        characterRepository.findById(characterId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_CHRACTERS));
         member.updateCharacterId(characterId);
     }
 
@@ -242,8 +263,8 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findByMemberId(customMemberDetail.getUsername())
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
         if (!memberTitleRepository.existsByTitleIdAndMemberIdAndIsGetTrue(
-            customMemberDetail.getId(),
-            titleId)) {
+            titleId, customMemberDetail.getId()
+        )) {
             throw new BusinessException(ErrorCode.LOCK_TITLE_ERROR);
         }
         member.updateTitleId(titleId);
@@ -253,13 +274,14 @@ public class MemberServiceImpl implements MemberService {
     public int gachaCharacter(CustomMemberDetail customMemberDetail) {
         Member member = memberRepository.findById(customMemberDetail.getId())
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
-        if (member.getPoint() < 50) {
+        if (member.getPoint() < claimPoint) {
             throw new BusinessException(ErrorCode.REJECT_ACCOUNT_POINT);
         }
 
+        //TODO : 캐릭터 정해지면 바꿀것
         //2부터 10까지
         int pickCharacter = (int) (Math.random() * 9) + 2;
-        member.updatePoint(member.getPoint() - 50);
+        member.updatePoint(member.getPoint() - claimPoint);
         List<Integer> characterList = memberCharacterRepository.findCharacterIdsByMemberId(
             member.getId());
 
@@ -281,11 +303,11 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findById(customMemberDetail.getId())
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
 
-        if (member.getPoint() < 50) {
+        if (member.getPoint() < claimPoint) {
             throw new BusinessException(ErrorCode.REJECT_ACCOUNT_POINT);
         }
 
-        member.updatePoint(member.getPoint() - 50);
+        member.updatePoint(member.getPoint() - claimPoint);
         int r = (int) (Math.random() * 256);
         int g = (int) (Math.random() * 256);
         int b = (int) (Math.random() * 256);
