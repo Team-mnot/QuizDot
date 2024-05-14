@@ -109,15 +109,19 @@ public class RedisUtil {
      * 채널 내 동시 접속 유저 정보 KEY 생성
      */
     public String getActivePlayerKey(int channelId) {
-        return String.format("channel:%d:lobby:players", channelId);
+        return String.format("channel:%d:players", channelId);
     }
 
     /**
      * 채널 동시 접속 유저 리스트 조회
      */
     public List<ActiveUserDto> getActivePlayers(String key) {
-        // 레디스에서 해당 채널의 동시 접속 유저 목록 추출
-        return new ArrayList<>(redisTemplate.opsForSet().members(key));
+        Map<String, Object> activePlayers = redisTemplate.opsForHash().entries(key);
+        List<ActiveUserDto> result = activePlayers.values().stream()
+            .map(obj -> (ActiveUserDto) obj)
+            .collect(Collectors.toList());
+
+        return result;
     }
 
     /**
@@ -244,7 +248,8 @@ public class RedisUtil {
                     String key = new String(cursor.next());
                     // memberId의 유저가 패스했는지 확인
                     if (redisTemplate.opsForSet().isMember(key, memberId)) {
-                        redisTemplate.opsForSet().remove(key, memberId);
+                        Long result = redisTemplate.opsForSet().remove(key, memberId);
+                        log.info("패스 정보 지운 개수: " + result);
                     }
                 }
             }
