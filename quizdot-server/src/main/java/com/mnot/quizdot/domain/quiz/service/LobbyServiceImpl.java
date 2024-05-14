@@ -131,8 +131,11 @@ public class LobbyServiceImpl implements LobbyService {
                 ScanOptions.scanOptions().match(pattern).count(MAX_ROOM).build())) {
                 while (cursor.hasNext()) {
                     String key = new String(cursor.next());
-                    RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(key);
-                    roomsList.add(roomInfoDto);
+                    log.info("key : {}", key);
+                    if (!(key.endsWith("0520:info"))) {
+                        RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(key);
+                        roomsList.add(roomInfoDto);
+                    }
                 }
             }
             return null;
