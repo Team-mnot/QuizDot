@@ -143,6 +143,7 @@ public class LobbyServiceImpl implements LobbyService {
         return roomsList;
     }
 
+
     /**
      * 채널 목록 조회
      */
@@ -186,5 +187,11 @@ public class LobbyServiceImpl implements LobbyService {
         if (!roomInfoDto.getPassword().equals(password)) {
             throw new BusinessException(ErrorCode.INVALID_ROOM_PASSWORD);
         }
+    }
+
+    @Override
+    public void exitChannel(int memberId, int channelId) {
+        String channelKey = redisUtil.getActiveUserKey(channelId);
+        redisTemplate.opsForHash().delete(channelKey, memberId);
     }
 }

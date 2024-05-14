@@ -62,8 +62,8 @@ public class QuizServiceImpl implements QuizService {
         switch (quizParam.getModeType()) {
             case NORMAL:
             case SURVIVAL:
-                messagingTemplate.convertAndSend("/sub/game/quiz" + roomId,
-                    MessageDto.of(SERVER_SENDER, "조회된 퀴즈 리스트 입니다.", MessageType.QUIZ, quizList));
+                messagingTemplate.convertAndSend("/sub/quiz/game/" + roomId,
+                    MessageDto.of(SERVER_SENDER, "조회된 퀴즈 리스트 입니다.", MessageType.QUIZ, quizListRes));
                 break;
             case ILGITO:
                 String memberKey = redisUtil.getPlayersKey(roomId);
@@ -72,9 +72,9 @@ public class QuizServiceImpl implements QuizService {
                     quizListRes.subList(quizListRes.size() - 3, quizListRes.size()));
                 List<QuizRes> player2 = new ArrayList<>(
                     quizListRes.subList(quizListRes.size() - 6, quizListRes.size() - 3));
-                messagingTemplate.convertAndSend("/sub/game/quiz/" + roomId + "/" + players.get(0),
+                messagingTemplate.convertAndSend("/sub/quiz/game/" + roomId + "/" + players.get(0),
                     MessageDto.of(SERVER_SENDER, "조회된 퀴즈 리스트 입니다.", MessageType.QUIZ, player1));
-                messagingTemplate.convertAndSend("/sub/game/quiz/" + roomId + "/" + players.get(1),
+                messagingTemplate.convertAndSend("/sub/quiz/game/" + roomId + "/" + players.get(1),
                     MessageDto.of(SERVER_SENDER, "조회된 퀴즈 리스트 입니다.", MessageType.QUIZ, player2));
                 break;
             default:

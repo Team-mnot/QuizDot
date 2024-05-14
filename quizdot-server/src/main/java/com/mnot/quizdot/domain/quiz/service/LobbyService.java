@@ -22,4 +22,6 @@ public interface LobbyService {
     void checkAvailable(int channelId);
 
     void checkPassword(int roomId, String password);
+
+    void exitChannel(int memberId, int channelId);
 }
