@@ -88,6 +88,6 @@ public class LobbyController {
     public ResponseEntity<ResultResponse> exitChannel(
         @AuthenticationPrincipal CustomMemberDetail memberDetail, @RequestParam int channelId) {
         lobbyService.exitChannel(memberDetail.getId(), channelId);
-        return ResponseEntity.ok(ResultResponse.of(200, "동시 접속자 수 변경에 성공하였습니다."));
+        return ResponseEntity.ok(ResultResponse.of(200, "채널을 나가는데 성공하였습니다."));
     }
 }
