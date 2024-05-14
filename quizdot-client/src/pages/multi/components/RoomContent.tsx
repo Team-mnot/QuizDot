@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { PlayerList, RoomChattingBox } from '.';
-
-import { EnteringRoomType } from '../api/types';
+import { EnteringRoomType } from '@/pages/waitingRoom/api/types';
+import { PlayerList } from './PlayerList';
+import { RoomChattingBox } from './RoomChattingBox';
+import { QuizPreview } from './QuizPreview';
 
 export function RoomContent({
   waitingRoom,
@@ -20,6 +21,9 @@ export function RoomContent({
           players={waitingRoom.players}
           roomId={waitingRoom.roomInfo.roomId}
         />
+      </div>
+      <div>
+        <QuizPreview />
       </div>
       <div>
         <RoomChattingBox roomId={waitingRoom.roomInfo.roomId} />

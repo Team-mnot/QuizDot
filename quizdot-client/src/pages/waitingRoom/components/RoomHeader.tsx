@@ -13,14 +13,18 @@ export function RoomHeader(props: {
   const [roomInfo, setRoomInfo] = useState<RoomInfoType>(props.roomInfo);
 
   useEffect(() => {
-    if (callbackMsg && callbackMsg.type == 'MODIFY') {
-      setRoomInfo(callbackMsg.data as RoomInfoType);
+    if (
+      callbackMsg.msg &&
+      callbackMsg.address == `info/room/${roomInfo.roomId}` &&
+      callbackMsg.msg.type == 'MODIFY'
+    ) {
+      setRoomInfo(callbackMsg.msg.data as RoomInfoType);
     }
-  }, [roomInfo]);
+  }, [roomInfo, callbackMsg]);
 
   return (
-    <div className="absolute left-[0px] top-[0px] flex w-full justify-between px-[50px] py-[20px]">
-      <div>
+    <div className="absolute left-[0px] top-[0px] w-full px-[50px] py-[20px]">
+      <div className="flex justify-between">
         <div>
           <RoomInfo roomInfo={roomInfo} channelId={props.channelId} />
         </div>
