@@ -1,8 +1,6 @@
 package com.mnot.quizdot.global.config;
 
 import com.mnot.quizdot.global.jwt.JWTUtil;
-import com.mnot.quizdot.global.result.error.ErrorCode;
-import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import com.mnot.quizdot.global.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
@@ -12,7 +10,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -20,8 +17,6 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -48,7 +43,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
         registry.setApplicationDestinationPrefixes(("/pub/chat")) // 클라이언트→서버 PREFIX
             .enableSimpleBroker("/sub") // 서버→클라이언트 PREFIX
-            .setHeartbeatValue(new long[]{1000,1000}) // 하트비트 1초로 설정
+            .setHeartbeatValue(new long[]{1000, 1000}) // 하트비트 1초로 설정
             .setTaskScheduler(taskScheduler); // 하트비트 시간 설정하기 위해서 스케줄러 추가
     }
 
@@ -91,8 +86,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     String accessToken = accessor.getFirstNativeHeader("access");
                     if (accessToken != null) {
+                        log.info("access token 있다 : {}", accessToken);
                         // Access token을 세션 속성에 저장
                         accessor.getSessionAttributes().put("access", accessToken);
+                    } else {
+                        log.info("access token 없다");
                     }
                 }
                 return message;
