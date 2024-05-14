@@ -1,4 +1,3 @@
-// import { useNavigate } from 'react-router-dom';
 import axios, { AxiosResponse } from 'axios';
 import { baseApi } from '@/shared/apis';
 import type { FindPwdProps, Response } from './types';
