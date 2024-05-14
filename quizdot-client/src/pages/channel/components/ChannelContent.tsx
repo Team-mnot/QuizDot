@@ -9,7 +9,7 @@ export function ChannelContent() {
   } = useChannelsQuery();
 
   return (
-    <div className={'absolute left-[0px] top-[150px] w-full p-[20px]'}>
+    <div className="absolute left-[0px] top-[150px] flex w-full justify-center p-[20px]">
       {isChannelError && (
         <div className="text-center">채널 목록을 불러올 수 없습니다.</div>
       )}

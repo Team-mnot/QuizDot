@@ -19,7 +19,7 @@ export function Room({
             <p className="flex-none">{roomInfo.category}</p>
           </div>
           <div className="flex w-[300px] flex-col pr-[10px] text-left">
-            {roomInfo.title.length > 11 ? (
+            {roomInfo.title && roomInfo.title.length > 11 ? (
               <p className="flex-grow">
                 {roomInfo.open ? '🎶' : '🔒'}&nbsp;
                 {roomInfo.title.substr(0, 11)}&nbsp;.&nbsp;.&nbsp;.
