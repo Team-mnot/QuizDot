@@ -298,6 +298,8 @@ public class SurvivalServiceImpl implements SurvivalService {
         int gameId = Integer.parseInt(strGameId);
         int hostId = redisUtil.getRoomInfo(roomKey).getHostId();
         RoomInfoDto gameRoomInfoDto = RoomInfoDto.builder()
+            .title("게임 진행 대기실")
+            .gameMode(String.valueOf(ModeType.SURVIVAL))
             .roomId(gameId)
             .category(category)
             .hostId(hostId)
