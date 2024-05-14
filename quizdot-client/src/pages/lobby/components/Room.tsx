@@ -19,10 +19,7 @@ export function Room({
             <p className="flex-grow">{roomInfo.roomId}</p>
             <p className="flex-none">{roomInfo.category}</p>
           </div>
-          <div
-            className="{room.state} flex w-[300px] flex-col pr-[10px] 
-                  text-left"
-          >
+          <div className="flex w-[300px] flex-col pr-[10px] text-left">
             {roomInfo.title.length > 11 ? (
               <p className="flex-grow">
                 {roomInfo.open ? '🎶' : '🔒'}&nbsp;

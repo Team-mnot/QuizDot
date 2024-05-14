@@ -65,12 +65,8 @@ export function LogInForm() {
     const truncatedValue = alphanumericValue.slice(0, 20); // 최대 20자리까지만 유지
     setMemberId(truncatedValue);
     const response = await IdCheckAPi(truncatedValue);
-    console.log(response)
     setCheckId(response);
-    if (
-      truncatedValue.length >= 6 &&
-      idRegex.test(truncatedValue)
-    ) {
+    if (truncatedValue.length >= 6 && idRegex.test(truncatedValue)) {
       setIdValid(true);
     } else {
       setIdValid(false);
@@ -83,10 +79,7 @@ export function LogInForm() {
     const alphanumericValue = inputValue.replace(/[^a-zA-Z0-9]/g, ''); // 영어와 숫자만 추출
     const truncatedValue = alphanumericValue.slice(0, 20); // 최대 20자리까지만 유지
     setPassword(truncatedValue);
-    if (
-      truncatedValue.length >= 8 &&
-      passwordRegex.test(truncatedValue)
-    ) {
+    if (truncatedValue.length >= 8 && passwordRegex.test(truncatedValue)) {
       setPasswordValid(true);
     } else {
       setPasswordValid(false);
@@ -96,22 +89,22 @@ export function LogInForm() {
   // 유효성 체크 및 해당하는 오류 알림
   const onValidChk = () => {
     if (memberId === '') {
-      window.alert('아이디를 입력해주세요')
-      return
+      window.alert('아이디를 입력해주세요');
+      return;
     }
     if (!idValid) {
-      window.alert('올바르지 않은 아이디 형식입니다')
-      return
+      window.alert('올바르지 않은 아이디 형식입니다');
+      return;
     }
     if (password === '') {
-      window.alert('비밀번호를 입력해주세요')
-      return
+      window.alert('비밀번호를 입력해주세요');
+      return;
     }
     if (!passwordValid) {
-      window.alert('올바르지 않은 비밀번호 형식입니다')
-      return
+      window.alert('올바르지 않은 비밀번호 형식입니다');
+      return;
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -154,20 +147,21 @@ export function LogInForm() {
           </button>
         </div>
       </div>
-      {idValid && passwordValid ? (<button
-        type="submit"
-        className="mt-6 w-full hover:border-transparent hover:bg-gray-200 focus:outline-none active:bg-gray-300"
-      >
-        Log In
-      </button>):(
+      {idValid && passwordValid ? (
         <button
-        onClick={onValidChk}
-        className="mt-6 w-full hover:border-transparent hover:bg-gray-200 focus:outline-none active:bg-gray-300"
-      >
-        Log In
-      </button>
+          type="submit"
+          className="mt-6 w-full hover:border-transparent hover:bg-gray-200 focus:outline-none active:bg-gray-300"
+        >
+          Log In
+        </button>
+      ) : (
+        <button
+          onClick={onValidChk}
+          className="mt-6 w-full hover:border-transparent hover:bg-gray-200 focus:outline-none active:bg-gray-300"
+        >
+          Log In
+        </button>
       )}
-      
     </form>
   );
 }

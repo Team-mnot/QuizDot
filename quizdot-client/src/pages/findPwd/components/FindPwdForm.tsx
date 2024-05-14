@@ -1,4 +1,5 @@
 import { useState, ChangeEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,17 +18,20 @@ const schema = z.object({
 });
 
 export function FindPwdForm() {
+  const navi = useNavigate();
+  const { register, handleSubmit } = useForm({
+    resolver: zodResolver(schema),
+  });
+
   const [memberId, setMemberId] = useState<string>('');
   const [hint, setHint] = useState<string>('');
   const [checkId, setCheckId] = useState<boolean>(true);
   const [idValid, setIdValid] = useState(false);
   const [hintValid, setHintValid] = useState(false);
-  const { register, handleSubmit } = useForm({
-    resolver: zodResolver(schema),
-  });
 
   type CustomSubmitHandler = SubmitHandler<FieldValues>;
 
+  // 폼 제출 함수
   const onSubmit: CustomSubmitHandler = async (data) => {
     if (checkId) {
       window.alert('존재하지 않는 아이디입니다');
@@ -42,7 +46,7 @@ export function FindPwdForm() {
       window.alert('힌트가 일치하지 않습니다');
       return;
     } else {
-      window.alert('check');
+      navi('/reset-pwd', { state: { memberId: data.memberId } });
     }
   };
 
@@ -59,7 +63,6 @@ export function FindPwdForm() {
     } else {
       setIdValid(false);
     }
-    console.log(idValid);
   };
 
   // 비밀번호 힌트 확인
@@ -73,7 +76,6 @@ export function FindPwdForm() {
     } else {
       setHintValid(false);
     }
-    console.log(hintValid);
   };
 
   return (
@@ -98,12 +100,25 @@ export function FindPwdForm() {
           value={hint}
         />
       </div>
-      <button
-        className="mt-6 w-full hover:border-transparent hover:bg-gray-200 focus:outline-none active:bg-gray-300"
-        type="submit"
-      >
-        비밀번호 찾기
-      </button>
+      <div className="text-center">
+        {hint.length !== 6 || !/^\d+$/.test(hint) ? (
+          <span className="text-red-400">힌트는 6자리의 숫자입니다</span>
+        ) : (
+          <span className="text-green-600">올바른 힌트 형식입니다</span>
+        )}
+      </div>
+      {idValid && hintValid ? (
+        <button
+          className="mt-6 w-full hover:border-transparent hover:bg-gray-200 focus:outline-none active:bg-gray-300"
+          type="submit"
+        >
+          비밀번호 찾기
+        </button>
+      ) : (
+        <button className="mt-6 w-full hover:border-transparent  focus:outline-none">
+          비밀번호 찾기
+        </button>
+      )}
     </form>
   );
 }
