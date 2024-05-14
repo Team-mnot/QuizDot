@@ -1,5 +1,7 @@
 import { useLobbyQuery } from '../hooks/useLobbyQuery';
 import { LobbyChattingBox, MyProfile, OnlineUserList, RoomList } from '.';
+import { useContext, useEffect } from 'react';
+import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 
 export function LobbyContent({ channelId }: { channelId: number }) {
   const {
@@ -7,6 +9,17 @@ export function LobbyContent({ channelId }: { channelId: number }) {
     isError: isLobbyError,
     isLoading: isLobbyLoading,
   } = useLobbyQuery(Number(channelId));
+
+  // 로딩 때문에 깜빡거리는 문제 해결하기
+  const { isReady, onSubscribe, onUnsubscribe } = useContext(WebSocketContext);
+
+  useEffect(() => {
+    onSubscribe(`chat/lobby/${channelId}`);
+
+    return () => {
+      onUnsubscribe(`chat/lobby/${channelId}`);
+    };
+  }, [isReady]);
 
   return (
     <div className={'absolute left-[0px] top-[70px] flex w-full p-[20px]'}>

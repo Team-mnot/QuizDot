@@ -1,7 +1,8 @@
 // src/pages/survival/components/CharacterPreview.tsx
 
-import { getPlayerData } from '../api/api';
-import { PlayerInSurvivalModeComponent } from './CharacterInSurvivalModeComponent';
+// import { getPlayerData } from '../api/api';
+import { PlayerType } from '@/shared/apis/types';
+import { PlayerInSurvivalModeComponent } from './PlayerInSurvivalModeComponent';
 
 // 미리 지정된 위치 정보
 const predefinedPositions = [
@@ -25,13 +26,16 @@ const predefinedPositions = [
   { id: 'grid-item-18', position: { top: 0, left: 0 } },
 ];
 
-export function CharacterPreview() {
+interface PlayerPreviewProps {
+  players: PlayerType[];
+}
+
+export function PlayerPreview({ players }: PlayerPreviewProps) {
   // 더미 캐릭터 데이터
-  const playerData = getPlayerData();
 
   return (
     <div>
-      {playerData.map((player, index) => (
+      {players.map((player, index) => (
         <PlayerInSurvivalModeComponent
           key={index}
           characterId={player.characterId} // character 객체의 characterId 속성 참조
@@ -40,8 +44,8 @@ export function CharacterPreview() {
           nicknameColor={player.nicknameColor} // nicknameColor 추가
           level={player.level} // level 추가
           position={predefinedPositions[index]?.position} // 미리 지정된 위치 정보 사용
-          isAlive={player.isAlive}
-          isRevive={player.isRevive}
+          // isAlive={player.isAlive}
+          // isRevive={player.isRevive}
         />
       ))}
     </div>

@@ -15,13 +15,16 @@ export function QuizComponent({ roomId }: { roomId: number }) {
     setShowResult,
     setCurrentQuiz,
     currentQuizIndex,
+    currentQuiz,
+    isCorrect,
+    setIsCorrect,
+    showHint,
+    setShowHint,
   } = useQuizStore();
 
   const { loading, error } = useQuiz2(); // 수정: useQuiz2에서 필요한 데이터를 가져오도록 함
   const [userAnswer, setUserAnswer] = useState(''); // 사용자 입력을 저장할 상태
   const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false); // 사용자 입력을 저장할 상태
-  const [showHint, setShowHint] = useState(false); // 힌트 줄 까 말 까 ~~
-  const { currentQuiz, isCorrect, setIsCorrect } = useQuizStore();
 
   const {
     submitAnswer,

@@ -1,20 +1,26 @@
 // src/pages/survival/components/CharacterWithPositionComponent.tsx
 import { Character } from '@/shared/ui/Character';
-import { PlayerInSurvivalMode } from '../api/types';
+import { PlayerType } from '@/shared/apis/types';
 
 // `CharacterWithPositionProps` 타입에 `position` 프로퍼티를 추가해야 합니다.
 
+interface PlayerInSurvivalModeProps extends PlayerType {
+  position: { top: number; left: number };
+  // isAlive: boolean;
+  // isRevive: boolean;
+}
+
 export function PlayerInSurvivalModeComponent({
-  characterId,
-  title,
   level,
   nickname,
   nicknameColor,
+  title,
+  characterId,
   position,
-  isAlive,
-  isRevive,
-}: PlayerInSurvivalMode) {
-  const displayCharacterId = isAlive ? characterId : 0;
+  // isAlive,
+  // isRevive,
+}: PlayerInSurvivalModeProps) {
+  // const displayCharacterId = isAlive ? characterId : 0;
 
   return (
     <div
@@ -31,7 +37,8 @@ export function PlayerInSurvivalModeComponent({
         className="relative z-10" // characterImageUrl의 z-index를 설정합니다.
       >
         <Character
-          characterId={displayCharacterId}
+          // characterId={displayCharacterId}
+          characterId={characterId}
           title={title}
           nickname={nickname}
           nicknameColor={nicknameColor} // 색상 전달
@@ -40,13 +47,13 @@ export function PlayerInSurvivalModeComponent({
       </div>
 
       {/* 부활하면 머리에 링 씌워주려고요 ~ */}
-      {isRevive && (
+      {/* {isRevive && (
         <img
           src="/images/halo.png"
           alt="Revived"
           className={'h-30 w-30 absolute -top-5 z-0 '}
         />
-      )}
+      )} */}
     </div>
   );
 }
