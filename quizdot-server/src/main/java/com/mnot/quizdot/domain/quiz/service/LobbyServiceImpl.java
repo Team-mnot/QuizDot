@@ -191,7 +191,7 @@ public class LobbyServiceImpl implements LobbyService {
 
     @Override
     public void exitChannel(int memberId, int channelId) {
-        String channelKey = redisUtil.getActiveUserKey(channelId);
-        redisTemplate.opsForHash().delete(channelKey, memberId);
+        String channelKey = redisUtil.getActivePlayerKey(channelId);
+        redisTemplate.opsForHash().delete(channelKey, String.valueOf(memberId));
     }
 }
