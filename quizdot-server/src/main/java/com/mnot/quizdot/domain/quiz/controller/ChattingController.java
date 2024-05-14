@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class ChattingContoller {
+public class ChattingController {
 
     private final SimpMessagingTemplate messagingTemplate;
 
