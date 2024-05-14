@@ -264,25 +264,20 @@ public class RedisUtil {
                 String activePlayerKey = getActivePlayerKey(channel);
 
                 // memberId를 가진 유저가 해당 채널에 있는지 확인
-                Set<Object> channelPlayers = redisTemplate.opsForSet().members(activePlayerKey);
-                ActiveUserDto targetUser = channelPlayers.stream()
-                    .filter(
-                        player -> ((ActiveUserDto) player).getId() == Integer.parseInt(memberId))
-                    .map(player -> (ActiveUserDto) player)
-                    .findFirst()
-                    .orElse(null);
+                Map<String, Object> channelPlayers = redisTemplate.opsForHash().entries(activePlayerKey);
+                ActiveUserDto targetUser = (ActiveUserDto) channelPlayers.get(memberId);
 
                 if (targetUser != null) {
                     // 유저가 있던 채널의 동시 접속자 목록에서 삭제
-                    redisTemplate.opsForSet().remove(activePlayerKey, targetUser);
+                    redisTemplate.opsForHash().delete(activePlayerKey, memberId);
                 }
             }
             return;
         }
         // 유저가 방에 있다 연결을 끊은 경우
         int channelId = roomId / 1000;
-        String activeUserKey = getActivePlayerKey(channelId);
-        List<ActiveUserDto> activeUsers = getActivePlayers(activeUserKey);
+        String activePlayerKey = getActivePlayerKey(channelId);
+        List<ActiveUserDto> activeUsers = getActivePlayers(activePlayerKey);
 
         ActiveUserDto targetUser = activeUsers.stream()
             .filter(user -> user.getId() == Integer.parseInt(memberId))
@@ -290,7 +285,7 @@ public class RedisUtil {
             .orElse(null);
 
         if (targetUser != null) {
-            redisTemplate.opsForSet().remove(activeUserKey, targetUser);
+            redisTemplate.opsForHash().delete(activePlayerKey, memberId);
         } else {
             log.info("접속중인 유저가 아닙니다.");
         }
