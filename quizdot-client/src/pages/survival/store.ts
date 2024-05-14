@@ -38,7 +38,10 @@ const useQuizStore = create<QuizStore>((set) => ({
   isQuizOver: false,
   isCorrect: false,
 
-  setQuizzes: (quizzes: iQuiz[]) => set({ quizzes }),
+  setQuizzes: (quizzes: iQuiz[]) => {
+    console.log('Updating quizzes state:', quizzes);
+    set({ quizzes });
+  },
   setCurrentQuiz: (quiz: iQuiz) => set({ currentQuiz: quiz }),
   setCurrentQuizIndex: (index: number) => set({ currentQuizIndex: index }),
   setShowResult: (show: boolean) => set({ showResult: show }),

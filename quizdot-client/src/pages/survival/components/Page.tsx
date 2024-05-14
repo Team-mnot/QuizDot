@@ -13,7 +13,7 @@ import { CountDown } from './CountDown';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
 import { useParams, useLocation } from 'react-router-dom';
-import useIsSubmitAnswer from '../hooks/useIsSubmitAnswer';
+import useRequestQuestion from '../hooks/useRequestQuestion';
 
 export function SurvivalPage() {
   const { roomId } = useParams() as {
@@ -44,27 +44,37 @@ export function SurvivalPage() {
     quizzes,
   } = useQuizStore();
 
-  const { submitAnswer } = useIsSubmitAnswer();
+  const { requestQuestion } = useRequestQuestion();
   const { onSend, onSubscribe, callbackMsg } = useContext(WebSocketContext);
   const [messages, setMessages] = useState<
     { nickname: string; content: string }[]
   >([]);
   const userStore = useUserStore();
+  const { category, gameMode } = roomInfo;
 
   console.log('내아디', roomInfo.hostId);
   console.log('방장아디', userStore.id);
 
   useEffect(() => {
+    if (roomInfo.hostId === userStore.id) {
+      requestQuestion(parseInt(roomId), category, 10, gameMode); // 방장만 호출하는rj
+    }
+  }, []);
+
+  useEffect(() => {
     // 페이지가 로드될 때 body의 스타일을 설정합니다.
     document.body.style.backgroundImage = 'url(/images/SurvivalBackground.png)';
     document.body.style.backgroundSize = 'cover';
+    setShowCountDown(true);
 
     // TODO : 나중에 Props로 넘기던가 어쩌구로 설정 바까라
 
     onSubscribe(`chat/game/${roomId}`);
     onSubscribe(`quiz/game/${roomId}`); // 퀴즈 받을 구독 주소 임니다
-    setShowCountDown(true);
+    onSubscribe(`info/game/${roomId}`); // 게임하는 동안 알림 받을 주소
+  }, []);
 
+  useEffect(() => {
     if (
       callbackMsg.msg &&
       callbackMsg.address == `chat/game/${roomId}` &&
@@ -76,13 +86,10 @@ export function SurvivalPage() {
       ]);
     } else if (
       callbackMsg.msg &&
-      callbackMsg.address == `quiz/game/${roomId}` &&
+      callbackMsg.address == `info/game/${roomId}` &&
       callbackMsg.msg.type == 'PASS'
     ) {
-      if (roomInfo.hostId === userStore.id) {
-        console.log('내가 방장이다');
-        submitAnswer(parseInt(roomId)); // 방장만 호출하는 정답제출 함수
-      }
+      console.log('패스다 패스!!');
       setShowResult(true);
       setShowChatBox(true);
       setShowHint(false);
@@ -91,8 +98,7 @@ export function SurvivalPage() {
       callbackMsg.address == `quiz/game/${roomId}` &&
       callbackMsg.msg.type == 'QUIZ'
     ) {
-      console.log(callbackMsg);
-      setQuizzes(callbackMsg.msg.data.quizResList);
+      setQuizzes(callbackMsg.msg.data);
     }
     console.log(quizzes);
   }, [callbackMsg]);

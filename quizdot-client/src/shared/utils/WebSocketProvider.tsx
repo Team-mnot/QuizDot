@@ -12,6 +12,7 @@ const WebSocketContext = createContext<{
   onConnect: () => void;
   onSubscribe: (address: string) => void;
   onUnsubscribe: (address: string) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSend: (address: string, data: any) => void;
   onDisconnect: () => void;
 }>({
@@ -60,6 +61,7 @@ const WebSocketProvider = ({ children }: { children: ReactNode }) => {
         setIsReady(true);
         console.log('[소켓 연결 성공 콜백]', isReady);
       },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (error: any) => {
         console.error('[소켓 연결 실패 콜백]', error);
       },
@@ -119,6 +121,7 @@ const WebSocketProvider = ({ children }: { children: ReactNode }) => {
     }, {});
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSend = async (address: string, data: any) => {
     if (!isReady) return;
     client.current?.send(`/pub/chat/${address}`, {}, JSON.stringify(data));

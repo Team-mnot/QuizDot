@@ -4,6 +4,7 @@ import axios from 'axios';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 import { baseApi } from '@/shared/apis';
 import { useNavigate } from 'react-router-dom';
+import jwtAxiosInstance from '@/shared/utils/jwtAxiosInstance';
 
 interface Props {
   roomId: number;
@@ -28,7 +29,7 @@ export function SurvivalMatchBtn({ roomId, category }: Props) {
       matchTimer.current = null;
       setMatchStatus(2);
       const newRoomId = callbackMsg.msg.data.roomInfo.roomId; // 새로 생긴 roomId입니다..
-      const channelId = Math.floor(roomId / 1000); // 새로운 roomId 기반으로 channelId 계산
+      const channelId = Math.floor(newRoomId / 10000000); // 새로운 roomId 기반으로 channelId 계산
       navigate(`/${channelId}/${newRoomId}/survival`, {
         state: callbackMsg.msg.data,
       });
@@ -38,7 +39,7 @@ export function SurvivalMatchBtn({ roomId, category }: Props) {
   const handleMatchGame = async () => {
     if (!isReady) return;
     try {
-      const response = await axios.post(
+      const response = await jwtAxiosInstance.post(
         `${baseApi}/survival/match/${roomId}/enter?category=${category}`,
       );
       if (response.status === 200) {

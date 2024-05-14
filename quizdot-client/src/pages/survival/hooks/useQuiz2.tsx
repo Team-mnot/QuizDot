@@ -17,7 +17,7 @@ export function useQuiz2() {
 
   // TODO : 이거 문제 비었을 때 경우 고려 수정해야함
   useEffect(() => {
-    if (quizzes.length > 0) {
+    if (quizzes && quizzes.length > 0) {
       setLoading(false);
       setError(null);
     } else {

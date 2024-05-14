@@ -2,7 +2,7 @@
 
 import { useQuiz2 } from '../hooks/useQuiz2';
 import { useState, useEffect } from 'react';
-import useIsSubmitAnswer from '../hooks/useIsSubmitAnswer';
+import useIsSubmitAnswer from '../hooks/useRequestQuestion';
 import useQuizStore from '../store';
 import { postQuizResult } from '../api/api';
 
@@ -72,7 +72,7 @@ export function QuizComponent({ roomId }: { roomId: number }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowHint(true);
-    }, 3000);
+    }, 5000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -83,7 +83,7 @@ export function QuizComponent({ roomId }: { roomId: number }) {
       setShowChatBox(true);
       setShowResult(true);
       setShowHint(false);
-    }, 6000);
+    }, 10000);
 
     return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 해제
   }, []);

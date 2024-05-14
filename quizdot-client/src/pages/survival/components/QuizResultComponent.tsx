@@ -18,7 +18,7 @@ export function QuizResultComponent() {
     const timer = setTimeout(() => {
       setShowResult(false);
       setShowCountDown(true); // 카운트다운 페이지 가져와
-    }, 3000);
+    }, 5000);
     return () => clearTimeout(timer);
   }, []);
 

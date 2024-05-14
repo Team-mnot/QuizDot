@@ -23,16 +23,19 @@ export function CountDown() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      if (count > 1) {
-        setCount(count - 1);
-      } else {
-        clearInterval(timer);
-        setShowCountDown(false); // 카운트다운 상태를 false로 설정
-      }
+      setCount((prevCount) => {
+        if (prevCount > 1) {
+          return prevCount - 1;
+        } else {
+          clearInterval(timer);
+          setShowCountDown(false); // 카운트다운 상태를 false로 설정
+          return prevCount;
+        }
+      });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [setShowCountDown]);
 
   if (resultType === 'STAGE_RESULT') {
     return <StageResultComponent resultData={resultData} />;
