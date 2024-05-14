@@ -43,8 +43,6 @@ public class SurvivalServiceImpl implements SurvivalService {
     private static final String GAME_DEFAULT_ID = "0520";
     private static final String MATCH_KEY = "match:";
     private static final String ROOM_CHAT_DESTINATION = "/sub/chat/room/";
-
-    private static final String TITLE_DESTINATION = "/sub/title/";
     private final RedisTemplate redisTemplate;
     private final RedisUtil redisUtil;
     private final SimpMessagingTemplate messagingTemplate;

@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class QuizServiceImpl implements QuizService {
 
     private static final String GAME_CHAT_DESTINATION = "/sub/chat/game/";
+    private static final String GAME_INFO_DESTINATION = "/sub/info/game/";
     private static final String SERVER_SENDER = "SYSTEM";
     private final RedisTemplate redisTemplate;
     private final QuizRepository quizRepository;
@@ -102,7 +103,7 @@ public class QuizServiceImpl implements QuizService {
 
         if (passPeople == playerCount) {
             // 모든 유저가 PASS 버튼을 눌렀다면
-            messagingTemplate.convertAndSend(GAME_CHAT_DESTINATION + roomId,
+            messagingTemplate.convertAndSend(GAME_INFO_DESTINATION + roomId,
                 MessageDto.of(SERVER_SENDER, "모든 유저의 동의 하에 문제가 패스되었습니다.", MessageType.PASS,
                     System.currentTimeMillis()));
         } else {
