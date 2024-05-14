@@ -247,7 +247,6 @@ public class SurvivalServiceImpl implements SurvivalService {
 
         messagingTemplate.convertAndSend(getGameDestination(roomId),
             MessageDto.of(SERVER_SENDER, messageType, results));
-
         return results;
     }
 
@@ -321,19 +320,18 @@ public class SurvivalServiceImpl implements SurvivalService {
         // 게임 시작
         matchRooms.entrySet().forEach(entry -> {
             // 대기실 상태 변경 (WAITING => INPROGRESS)
-            int intRoomId = Integer.parseInt(entry.getKey());
-            redisUtil.modifyRoomState(redisUtil.getRoomInfoKey(intRoomId), GameState.INPROGRESS);
+            int matchRoomId = Integer.parseInt(entry.getKey());
+            redisUtil.modifyRoomState(redisUtil.getRoomInfoKey(matchRoomId), GameState.INPROGRESS);
 
             // 임시 게임 대기실 ID, 게임 플레이어 정보를 메세지로 전송
             messagingTemplate.convertAndSend(
-                ROOM_CHAT_DESTINATION + roomId,
+                ROOM_CHAT_DESTINATION + matchRoomId,
                 MessageDto.of(SERVER_SENDER, "매칭을 완료했습니다. 게임을 시작합니다 ♪(´▽｀)", MessageType.START,
                     new RoomEnterRes(matchPlayers, gameRoomInfoDto)));
         });
 
         return strGameId;
     }
-
 
     /**
      * 서바이벌 게임 매칭 취소
@@ -352,7 +350,6 @@ public class SurvivalServiceImpl implements SurvivalService {
         messagingTemplate.convertAndSend(ROOM_CHAT_DESTINATION + roomId,
             MessageDto.of(SERVER_SENDER, "매칭이 취소되었습니다.", MessageType.CHAT));
     }
-
 
     private String getSurviveKey(int roomId) {
         return String.format("rooms:%d:survivors", roomId);
