@@ -22,7 +22,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
-import com.mnot.quizdot.domain.quiz.dto.MatchRoomDto;
 
 @Slf4j
 @Component
@@ -137,7 +136,7 @@ public class RedisUtil {
         Map<Integer, Set<ActiveUserDto>> allActivePlayers = new HashMap<>();
         final int maxChannel = 8;
 
-        for(int channel = 1; channel <= maxChannel; channel++) {
+        for (int channel = 1; channel <= maxChannel; channel++) {
             String key = getActivePlayerKey(channel);
             Set<ActiveUserDto> players = redisTemplate.opsForSet().members(key);
             allActivePlayers.put(channel, players);
@@ -149,10 +148,10 @@ public class RedisUtil {
     /**
      * 게임 중 나간 플레이어 정보 모두 삭제
      */
-    public void deleteInactivePlayer(String memberId) {
+    public void deleteInactivePlayerData(String memberId) {
         // TODO : players 지울 때 모두 나간 방 처리와 나간 유저가 방장인 경우?????
         // 플레이어 정보를 제거하고 방 번호 반환
-        int roomId = deletePlayer(memberId);
+        int roomId = deleteGamePlayer(memberId);
         log.info("플레이어 정보 제거 성공");
 
         // 패스 정보 제거
@@ -161,8 +160,8 @@ public class RedisUtil {
 
         // 점수 정보 제거
         String boardKey = getBoardKey(roomId);
-        redisTemplate.opsForZSet().remove(boardKey, memberId);
-        log.info("점수 정보 제거 성공");
+        Long deleteBoard = redisTemplate.opsForZSet().remove(boardKey, memberId);
+        log.info("점수 정보 제거 성공 = deleteBoardCount={}", deleteBoard);
 
         // 서바이벌 생존자 정보 제거
         String surviveKey = String.format("rooms:%d:survivors", roomId);
@@ -170,14 +169,14 @@ public class RedisUtil {
         log.info("서바이벌 생존자 정보 제거 성공");
 
         // 서바이벌 탈락자 정보 제거
-        if(!removedFromSurvive) {
+        if (!removedFromSurvive) {
             String eliminatedKey = String.format("rooms:%d:eliminated", roomId);
             redisTemplate.opsForZSet().remove(eliminatedKey, memberId);
             log.info("서바이벌 탈락자 정보 제거 성공");
         }
 
         // 매칭중인 경우, 정보 제거
-        try{
+        try {
             deleteMatch(roomId);
             log.info("매칭 정보 제거 성공");
         } catch (BusinessException e) {
@@ -187,29 +186,26 @@ public class RedisUtil {
         }
 
         // 동시접속자 정보 제거
-        deleteInactiveUser(memberId, roomId);
+        deleteInactivePlayer(memberId, roomId);
         log.info("동시접속자 정보 제거 성공");
     }
 
-    public int deletePlayer(String memberId) {
+    public int deleteGamePlayer(String memberId) {
         // scan을 이용해서 키를 찾고 해당 방의 플레이어 정보 제거
         AtomicInteger roomId = new AtomicInteger();
         String pattern = "rooms:*:players";
         ScanOptions options = ScanOptions.scanOptions().match(pattern).build();
         redisTemplate.execute((RedisConnection connection) -> {
-            Cursor<byte[]> cursor = connection.scan(options);
-            while (cursor.hasNext()) {
-                String key = new String(cursor.next());
-                Map<String, PlayerInfoDto> players =
-                    (Map<String, PlayerInfoDto>) redisTemplate.opsForHash().entries(key);
-
-                // memberId와 일치하는 플레이어 정보를 찾아 삭제
-                if (players.containsKey(memberId)) {
-                    redisTemplate.opsForHash().delete(key, memberId);
-                    // 플레이어가 있던 방 번호 저장
-                    String[] parts = key.split(":");
-                    roomId.set(Integer.parseInt(parts[1]));
-                    break;
+            try (Cursor<byte[]> cursor = connection.scan(options)) {
+                while (cursor.hasNext()) {
+                    String key = new String(cursor.next());
+                    if (redisTemplate.opsForHash().hasKey(key, memberId)) {
+                        redisTemplate.opsForHash().delete(key, memberId);
+                        // 플레이어가 있던 방 번호 저장
+                        String[] parts = key.split(":");
+                        roomId.set(Integer.parseInt(parts[1]));
+                        break;
+                    }
                 }
             }
             return null;
@@ -221,18 +217,19 @@ public class RedisUtil {
         String strRoomId = String.valueOf(roomId);
         String roomKey = getRoomInfoKey(roomId);
         String category = getRoomInfo(roomKey).getCategory();
-        String matchKey = "match:"+category;
+        String matchKey = "match:" + category;
 
-        Set<MatchRoomDto> existRooms = redisTemplate.opsForSet().members(matchKey);
-        MatchRoomDto targetRoom = existRooms.stream()
-            .filter(room -> room.getRoomId().equals(strRoomId))
-            .findFirst()
-            .orElse(null);
+        // 유저의 있던 방에서 매칭 중인 플레이어 수
+        Integer playerCount = (Integer) redisTemplate.opsForHash().get(matchKey, strRoomId);
 
-        if(targetRoom != null) {
-            redisTemplate.opsForSet().remove(matchKey, targetRoom); // 기존 객체 제거
-            targetRoom.setPlayerCount(targetRoom.getPlayerCount() - 1); // playerCount 감소
-            redisTemplate.opsForSet().add(matchKey, targetRoom); // 수정된 객체 추가
+        if (playerCount != null) {
+            if (playerCount > 1) {
+                // 세션이 끊어진 사용자를 매칭에서 제외
+                redisTemplate.opsForHash().put(matchKey, strRoomId, playerCount - 1);
+            } else {
+                // 사용자가 매칭중인 방의 마지막 유저인 경우 매칭 삭제
+                redisTemplate.opsForHash().delete(matchKey, strRoomId);
+            }
             return true;
         }
         return false;
@@ -248,7 +245,6 @@ public class RedisUtil {
                     // memberId의 유저가 패스했는지 확인
                     if (redisTemplate.opsForSet().isMember(key, memberId)) {
                         redisTemplate.opsForSet().remove(key, memberId);
-                        break;
                     }
                 }
             }
@@ -256,17 +252,24 @@ public class RedisUtil {
         });
     }
 
-    public void deleteInactiveUser(String memberId, int roomId) {
+    public void deleteInactivePlayer(String memberId, int roomId) {
         if (roomId == 0) {
             // 유저가 로비에 있다가 연결을 끊은 경우
-            Map<Integer, Set<ActiveUserDto>> allActivePlayers = getAllActivePlayers();
             for (int channel = 1; channel <= 8; channel++) {
-                Set<ActiveUserDto> channelPlayers = allActivePlayers.get(channel);
-                for (ActiveUserDto target : channelPlayers) {
-                    if (String.valueOf(target.getId()).equals(memberId)) {
-                        // 유저가 있던 채널의 동시 접속자 목록에서 삭제
-                        redisTemplate.opsForSet().remove(getActivePlayerKey(channel), target);
-                    }
+                String activePlayerKey = getActivePlayerKey(channel);
+
+                // memberId를 가진 유저가 해당 채널에 있는지 확인
+                Set<Object> channelPlayers = redisTemplate.opsForSet().members(activePlayerKey);
+                ActiveUserDto targetUser = channelPlayers.stream()
+                    .filter(
+                        player -> ((ActiveUserDto) player).getId() == Integer.parseInt(memberId))
+                    .map(player -> (ActiveUserDto) player)
+                    .findFirst()
+                    .orElse(null);
+
+                if (targetUser != null) {
+                    // 유저가 있던 채널의 동시 접속자 목록에서 삭제
+                    redisTemplate.opsForSet().remove(activePlayerKey, targetUser);
                 }
             }
             return;
