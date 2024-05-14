@@ -43,6 +43,7 @@ public class SurvivalServiceImpl implements SurvivalService {
     private static final String GAME_DEFAULT_ID = "0520";
     private static final String MATCH_KEY = "match:";
     private static final String ROOM_CHAT_DESTINATION = "/sub/chat/room/";
+
     private final RedisTemplate redisTemplate;
     private final RedisUtil redisUtil;
     private final SimpMessagingTemplate messagingTemplate;
@@ -189,13 +190,11 @@ public class SurvivalServiceImpl implements SurvivalService {
         if (redisTemplate.opsForZSet().count(surviveKey, 0, MAX_SCORE) == 0) {
             Set<String> resurrections = redisTemplate.opsForZSet()
                 .rangeByScoreWithScores(eliminatedKey, 0, MAX_SCORE);
-
             Set<TypedTuple<String>> newRessurections = new HashSet<>();
             for (String playerId : resurrections) {
                 // 부활 처리
                 Double originalScore = redisTemplate.opsForZSet().score(boardKey, playerId);
                 newRessurections.add(TypedTuple.of(playerId, originalScore * (-1)));
-                // TODO: REDIS 호출 최적화 (현재는 생존자/탈락자 수만큼 반복하며 REDIS 호출)
             }
 
             log.info("[getStageResult] newRessurections : {}", newRessurections);

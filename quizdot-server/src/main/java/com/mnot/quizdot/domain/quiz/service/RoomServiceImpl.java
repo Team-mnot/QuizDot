@@ -154,8 +154,7 @@ public class RoomServiceImpl implements RoomService {
             redisTemplate.opsForValue().set(roomKey, roomInfoDto);
 
             log.info("[leaveRoom] Host 변경 : {}", newHostId);
-            messagingTemplate.convertAndSend(ROOM_INFO_DESTINATION + roomId,
-                MessageDto.of(SERVER_SENDER, MessageType.MODIFY, roomInfoDto));
+            messagingTemplate.convertAndSend(ROOM_INFO_DESTINATION + roomId, roomInfoDto);
             messagingTemplate.convertAndSend(ROOM_CHAT_DESTINATION + roomId,
                 MessageDto.of(SERVER_SENDER, "방장이 변경되었습니다", MessageType.CHAT));
         }
