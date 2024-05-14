@@ -1,8 +1,6 @@
 import { Button } from '@/shared/ui';
 import { leaveRoomApi } from '../api/api';
 import { useRouter } from '@/shared/hooks';
-import { useContext } from 'react';
-import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 import { enterLobbyApi } from '@/pages/lobby/api/api';
 
 export function LeaveBtn({
@@ -12,16 +10,12 @@ export function LeaveBtn({
   roomId: number;
   channelId: number;
 }) {
-  const { onUnsubscribe } = useContext(WebSocketContext);
   const router = useRouter();
 
   const handleLeaveRoom = async () => {
     // 퇴장 하시겠냐고 한 번은 묻는 게 좋을까?
     const response = await leaveRoomApi(roomId);
     if (response == 200) {
-      onUnsubscribe(`chat/room/${roomId}`);
-      onUnsubscribe(`info/room/${roomId}`);
-      onUnsubscribe(`players/room/${roomId}`);
       handleEnterLobby();
     } else console.log('[로비 입장 실패]');
   };

@@ -1,9 +1,9 @@
 import { Button, Input } from '@/shared/ui';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { Toast } from '@/shared/ui/Toast';
 import { useRouter } from '@/shared/hooks';
 import { checkRoomPwdApi } from '../api/api';
-import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
+import { enterRoomApi } from '@/pages/waitingRoom/api/api';
 
 export function RoomPwd({
   roomId,
@@ -15,7 +15,6 @@ export function RoomPwd({
   const [password, setPassword] = useState<string>('');
   const [toastState, setToastState] = useState<boolean>(false);
 
-  const { onUnsubscribe } = useContext(WebSocketContext);
   const router = useRouter();
 
   const changePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,11 +25,20 @@ export function RoomPwd({
     const response = await checkRoomPwdApi(roomId, password);
 
     if (response == 200) {
-      onUnsubscribe(`chat/lobby/${channelId}`);
-      router.routeTo(`/${channelId}/${roomId}/waiting`);
+      handleEnterRoom(channelId, roomId);
     } else {
       setToastState(true);
     }
+  };
+
+  const handleEnterRoom = async (_channelId: number, _roomId: number) => {
+    const response = await enterRoomApi(_roomId);
+
+    if (response.status == 200)
+      router.routeToWithData(
+        `/${_channelId}/${_roomId}/waiting`,
+        response.data,
+      );
   };
 
   return (

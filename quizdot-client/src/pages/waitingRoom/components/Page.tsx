@@ -1,13 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { RoomFetchingData } from './RoomFetchingData';
+import { useEffect, useRef } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
+import { EnteringRoomType } from '../api/types';
+import { RoomContent, RoomHeader } from '.';
 
 export function WaitingRoomPage() {
   const { channelId, roomId } = useParams() as {
     channelId: string;
     roomId: string;
   };
+  roomId;
+  const location = useLocation();
+  const waitingRoomInfo = useRef<EnteringRoomType>(location.state);
 
   useEffect(() => {
     document.body.style.backgroundImage = 'url(/images/MultiBackground.png)';
@@ -15,8 +19,12 @@ export function WaitingRoomPage() {
   }, []);
 
   return (
-    <div className={'h-screen w-screen'}>
-      <RoomFetchingData channelId={Number(channelId)} roomId={Number(roomId)} />
+    <div>
+      <RoomHeader
+        channelId={Number(channelId)}
+        roomInfo={waitingRoomInfo.current.roomInfo}
+      />
+      <RoomContent waitingRoom={waitingRoomInfo.current} />
     </div>
   );
 }

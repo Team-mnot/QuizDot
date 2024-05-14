@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { AxiosError, AxiosResponse } from 'axios';
+import { AxiosError } from 'axios';
+import { Response } from '@/shared/apis/types';
 
-type RequestFn<T> = (params: T) => Promise<AxiosResponse>;
+type RequestFn<T> = (params: T) => Promise<Response>;
 
-const useAxios = <T>(requestFn: RequestFn<T>, params: T) => {
-  const [response, setResponse] = useState<AxiosResponse>();
+export const useAxios = <T>(requestFn: RequestFn<T>, params: T) => {
+  const [response, setResponse] = useState<Response>();
   const [error, setError] = useState<AxiosError>();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -15,7 +16,7 @@ const useAxios = <T>(requestFn: RequestFn<T>, params: T) => {
 
     try {
       const response = await requestFn(params);
-      setResponse(response);
+      setResponse(response.data);
     } catch (error) {
       setError(error as AxiosError);
     }
@@ -32,5 +33,3 @@ const useAxios = <T>(requestFn: RequestFn<T>, params: T) => {
 
   return { response, error, isLoading, sendRequest };
 };
-
-export default useAxios;

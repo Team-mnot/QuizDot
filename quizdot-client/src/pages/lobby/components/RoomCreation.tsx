@@ -1,5 +1,5 @@
 import { Button, Dropbox, Input, Toast } from '@/shared/ui';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CreatingRoomType } from '../api/types';
 import { useRouter } from '@/shared/hooks';
 import {
@@ -10,7 +10,7 @@ import {
   openList,
 } from '../constants';
 import { createRoomApi } from '../api/api';
-import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
+import { enterRoomApi } from '@/pages/waitingRoom/api/api';
 
 export function RoomCreation({ channelId }: { channelId: number }) {
   const [title, setTitle] = useState<string>('테스트');
@@ -23,8 +23,6 @@ export function RoomCreation({ channelId }: { channelId: number }) {
   const [maxQuestion, setMaxQuestion] = useState<number>(10);
 
   const [toastState, setToastState] = useState<boolean>(false);
-
-  const { onUnsubscribe } = useContext(WebSocketContext);
   const router = useRouter();
 
   useEffect(() => {
@@ -77,11 +75,20 @@ export function RoomCreation({ channelId }: { channelId: number }) {
     const response = await createRoomApi(channelId, creatingRoom);
 
     if (response.status == 201) {
-      onUnsubscribe(`chat/lobby/${channelId}`);
-      router.routeTo(`/${channelId}/${response.data.roomId}/waiting`);
+      handleEnterRoom(channelId, response.data.roomId);
     } else {
       setToastState(true);
     }
+  };
+
+  const handleEnterRoom = async (_channelId: number, _roomId: number) => {
+    const response = await enterRoomApi(_roomId);
+
+    if (response.status == 200)
+      router.routeToWithData(
+        `/${_channelId}/${_roomId}/waiting`,
+        response.data,
+      );
   };
 
   return (

@@ -1,7 +1,7 @@
-import { useLobbyQuery } from '../hooks/useLobbyQuery';
 import { LobbyChattingBox, MyProfile, OnlineUserList, RoomList } from '.';
 import { useContext, useEffect } from 'react';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
+import { useLobbyQuery } from '../hooks/useLobbyQuery';
 
 export function LobbyContent({ channelId }: { channelId: number }) {
   const {

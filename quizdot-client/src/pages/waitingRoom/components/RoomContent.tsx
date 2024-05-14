@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect } from 'react';
 import { PlayerList, RoomChattingBox } from '.';
 
 import { EnteringRoomType } from '../api/types';
@@ -11,8 +11,6 @@ export function RoomContent({
 }) {
   // const playerKeys = Object.keys(temp.players);
   // const userStore = useUserStore();
-
-  useState<EnteringRoomType>(waitingRoom);
 
   // 로딩 때문에 깜빡거리는 문제 해결하기
   // TODO: 이렇게 하면? 재렌더링 안될지도? 근데 새로고침 하면 필요 없을거 같기도

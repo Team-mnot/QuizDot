@@ -1,9 +1,9 @@
 import { Button, Modal } from '@/shared/ui';
 import { useOpenModal, useRouter } from '@/shared/hooks';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { RoomInfoType } from '../api/types';
 import { Room, RoomCreation, RoomPwd } from '.';
-import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
+import { enterRoomApi } from '@/pages/waitingRoom/api/api';
 
 export function RoomList({
   roomInfos,
@@ -24,13 +24,17 @@ export function RoomList({
   } = useOpenModal();
 
   const router = useRouter();
-  const { onUnsubscribe } = useContext(WebSocketContext);
   const [clickedRoom, setClickedRoom] = useState<number>(-1);
 
   const handleEnterRoom = async (roomId: number, isPublic: boolean) => {
     if (isPublic) {
-      onUnsubscribe(`chat/lobby/${channelId}`);
-      router.routeTo(`/${channelId}/${roomId}/waiting`);
+      const response = await enterRoomApi(roomId);
+
+      if (response.status == 200)
+        router.routeToWithData(
+          `/${channelId}/${roomId}/waiting`,
+          response.data,
+        );
     } else {
       setClickedRoom(roomId);
       if (roomId != -1) clickPwdModal();

@@ -1,33 +1,16 @@
 import jwtAxiosInstance from '@/shared/utils/jwtAxiosInstance';
 import { baseApi } from '@/shared/apis';
-import { EnteringRoomType, ModifyingRoomType } from './types';
+import { ModifyingRoomType } from './types';
 import { Response } from '@/shared/apis/types';
 
 const url = 'room';
 
 /*** 게임 대기실 입장 ***/
-async function enterRoomApi(roomId: number): Promise<EnteringRoomType> {
+async function enterRoomApi(roomId: number): Promise<Response> {
   const response = await jwtAxiosInstance.get(`${baseApi}/${url}/${roomId}`);
 
   console.log(`[${response.data.status}] ${response.data.message}`);
-  if (response.data.status == 200) return response.data.data;
-  else
-    return {
-      players: {},
-      roomInfo: {
-        roomId: -1,
-        title: '',
-        password: '',
-        gameMode: '',
-        maxPeople: -1,
-        category: '',
-        maxQuestion: -1,
-        hostId: -1,
-        open: true,
-        inviteLink: null,
-        state: 'WAITING',
-      },
-    };
+  return response.data;
 }
 
 /*** 게임 대기실 퇴장 ***/
