@@ -11,10 +11,14 @@ export function LobbyContent({ channelId }: { channelId: number }) {
   } = useLobbyQuery(Number(channelId));
 
   // 로딩 때문에 깜빡거리는 문제 해결하기
-  const { isReady, onSubscribe } = useContext(WebSocketContext);
+  const { isReady, onSubscribe, onUnsubscribe } = useContext(WebSocketContext);
 
   useEffect(() => {
     onSubscribe(`chat/lobby/${channelId}`);
+
+    return () => {
+      onUnsubscribe(`chat/lobby/${channelId}`);
+    };
   }, [isReady]);
 
   return (

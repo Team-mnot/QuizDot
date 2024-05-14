@@ -12,5 +12,5 @@ export function LeaveBtn({ channelId }: { channelId: number }) {
     router.routeTo('/channel');
   };
 
-  return <Button value="로비로 이동" onClick={handleLeaveRoom} />;
+  return <Button value="채널로 이동" onClick={handleLeaveRoom} />;
 }

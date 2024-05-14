@@ -55,17 +55,29 @@ export function SurvivalPage() {
     onSubscribe(`quiz/game/${roomId}`); // 퀴즈 받을 구독 주소 임니다
     setShowCountDown(true);
 
-    if (callbackMsg && callbackMsg.type == 'CHAT') {
+    if (
+      callbackMsg.msg &&
+      callbackMsg.address == `chat/game/${roomId}` &&
+      callbackMsg.msg.type == 'CHAT'
+    ) {
       setMessages((messages) => [
         ...messages,
-        { nickname: callbackMsg.sender, content: callbackMsg.text },
+        { nickname: callbackMsg.msg.sender, content: callbackMsg.msg.text },
       ]);
-    } else if (callbackMsg && callbackMsg.type == 'PASS') {
+    } else if (
+      callbackMsg.msg &&
+      callbackMsg.address == `quiz/game/${roomId}` &&
+      callbackMsg.msg.type == 'PASS'
+    ) {
       setShowResult(true);
       setShowChatBox(true);
       setShowHint(false);
-    } else if (callbackMsg && callbackMsg.type === 'QUIZ') {
-      setQuizzes(callbackMsg.data.quizResList);
+    } else if (
+      callbackMsg.msg &&
+      callbackMsg.address == `quiz/game/${roomId}` &&
+      callbackMsg.msg.type == 'QUIZ'
+    ) {
+      setQuizzes(callbackMsg.msg.data.quizResList);
     }
   }, [callbackMsg]);
 

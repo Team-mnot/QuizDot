@@ -26,10 +26,17 @@ export function RoomChattingBox({ roomId }: { roomId: number }) {
   //   잠깐 보이도록 하는 이벤트 발생 추가
   //   채팅 영역 말고 캐릭터 영역에서 설정하면 된다
   useEffect(() => {
-    if (callbackMsg && callbackMsg.type == 'CHAT') {
-      setMessages((messages) => [
-        ...messages,
-        { nickname: callbackMsg.sender, content: callbackMsg.text },
+    if (
+      callbackMsg.msg &&
+      callbackMsg.address == `chat/room/${roomId}` &&
+      callbackMsg.msg.type == 'CHAT'
+    ) {
+      setMessages((msg) => [
+        ...msg,
+        {
+          nickname: callbackMsg.msg.sender,
+          content: callbackMsg.msg.text,
+        },
       ]);
     }
   }, [callbackMsg]);

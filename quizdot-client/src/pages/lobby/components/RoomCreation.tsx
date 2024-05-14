@@ -13,7 +13,7 @@ import { createRoomApi } from '../api/api';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 
 export function RoomCreation({ channelId }: { channelId: number }) {
-  const [title, setTitle] = useState<string>('지는 사람은 개가 되는 걸로');
+  const [title, setTitle] = useState<string>('테스트');
   const [open, setOpen] = useState<number>(1);
   const [password, setPassword] = useState<string>('');
   const [mode, setMode] = useState<string>('NORMAL');

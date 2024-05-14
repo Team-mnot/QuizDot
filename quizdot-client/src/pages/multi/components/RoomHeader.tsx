@@ -1,31 +1,31 @@
 import { RoomInfo } from './RoomInfo';
 import { LeaveBtn } from './LeaveBtn';
+import { RoomInfoType } from '@/pages/lobby/api/types';
+import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
+import { useContext, useEffect, useState } from 'react';
 
-const dummyRoomInfo = {
-  title: '익!',
-  public: false,
-  password: '1234',
-  mode: 'multi',
-  maxPeople: 5,
-  category: '상식',
-  maxQuestion: 20,
-};
+export function RoomHeader(props: {
+  channelId: number;
+  roomInfo: RoomInfoType;
+}) {
+  const { callbackMsg } = useContext(WebSocketContext);
+  const [roomInfo, setRoomInfo] = useState<RoomInfoType>(props.roomInfo);
 
-export function RoomHeader() {
+  useEffect(() => {
+    if (callbackMsg && callbackMsg.type == 'MODIFY') {
+      setRoomInfo(callbackMsg.data as RoomInfoType);
+    }
+  }, [roomInfo, callbackMsg]);
+
   return (
-    <div
-      style={{
-        position: 'absolute',
-        top: '0px',
-        left: '0px',
-      }}
-      className={'flex w-full justify-between p-5'}
-    >
-      <div>
-        <RoomInfo roomInfo={dummyRoomInfo}></RoomInfo>
-      </div>
-      <div>
-        <LeaveBtn />
+    <div className="absolute left-[0px] top-[0px] w-full px-[50px] py-[20px]">
+      <div className="flex justify-between">
+        <div>
+          <RoomInfo roomInfo={roomInfo} channelId={props.channelId} />
+        </div>
+        <div>
+          <LeaveBtn roomId={roomInfo.roomId} channelId={props.channelId} />
+        </div>
       </div>
     </div>
   );
