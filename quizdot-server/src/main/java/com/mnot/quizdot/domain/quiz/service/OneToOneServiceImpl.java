@@ -37,7 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class OneToOneServiceImpl implements OneToOneService {
 
     private static final String SERVER_SENDER = "SYSTEM";
-    private static final String TITLE_DESTINATION = "/sub/title/";
     private static final int EXP = 300;
     private final RedisUtil redisUtil;
     private final RedisTemplate redisTemplate;
