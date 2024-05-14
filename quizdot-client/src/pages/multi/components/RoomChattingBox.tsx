@@ -10,6 +10,7 @@ export function RoomChattingBox({ roomId }: { roomId: number }) {
 
   const userStore = useUserStore();
   const { onSend, callbackMsg } = useContext(WebSocketContext);
+  const [isView, setIsView] = useState<boolean>(true);
 
   const handleSubmitMessage = (message: string) => {
     const chattingMessage = {
@@ -39,7 +40,23 @@ export function RoomChattingBox({ roomId }: { roomId: number }) {
         },
       ]);
     }
-  });
+    // else if (
+    //   callbackMsg.msg &&
+    //   callbackMsg.address == `chat/room/${roomId}` &&
+    //   callbackMsg.msg.type == 'CHAT'
+    // ) {
+    //   setIsView(false);
+    // }
 
-  return <ChattingBox onSend={handleSubmitMessage} messages={messages} />;
+    // 빌드 오류 나서 넣음
+    setIsView(true);
+  }, [callbackMsg]);
+
+  return (
+    <div>
+      {isView && (
+        <ChattingBox onSend={handleSubmitMessage} messages={messages} />
+      )}
+    </div>
+  );
 }

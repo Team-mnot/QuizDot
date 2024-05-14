@@ -19,11 +19,17 @@ export function SurvivalMatchBtn({ roomId }: Props) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (callbackMsg?.type === 'START') {
+    if (
+      callbackMsg.msg &&
+      callbackMsg.address == `chat/room/${roomId}` &&
+      callbackMsg.msg.type == 'START'
+    ) {
       matchTimer.current = null;
       setMatchStatus(2);
       const channelId = Math.floor(roomId / 1000);
-      navigate(`/${channelId}/${roomId}/survival`, { state: callbackMsg.data });
+      navigate(`/${channelId}/${roomId}/survival`, {
+        state: callbackMsg.msg.data,
+      });
     }
   }, [callbackMsg]);
 
