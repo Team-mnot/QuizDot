@@ -71,6 +71,7 @@ public class MultiServiceImpl implements MultiService {
             MessageDto.of(SERVER_SENDER, MessageType.UPDATE, updatedScore));
 
         // TODO: 전체 플레이어가 풀었을 경우 패스 메세지 보내기
+
     }
 
     /**
