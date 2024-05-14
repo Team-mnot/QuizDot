@@ -13,6 +13,8 @@ import lombok.ToString;
 @NoArgsConstructor
 public class PlayerInfoDto implements Serializable {
 
+    private int id;
+
     private int level;
 
     private String nickname;
@@ -25,8 +27,9 @@ public class PlayerInfoDto implements Serializable {
 
 
     @Builder
-    public PlayerInfoDto(int level, String nickname, String nicknameColor, String title,
+    public PlayerInfoDto(int id, int level, String nickname, String nicknameColor, String title,
         int characterId) {
+        this.id = id;
         this.level = level;
         this.nickname = nickname;
         this.nicknameColor = nicknameColor;
