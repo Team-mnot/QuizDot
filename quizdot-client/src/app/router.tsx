@@ -41,7 +41,7 @@ export const router = createBrowserRouter([
     element: <WaitingRoomPage />,
   },
   {
-    path: '/:channelId/:roomId/multi',
+    path: '/:channelId/:roomId/normal',
     element: <MultiPage />,
   },
   {

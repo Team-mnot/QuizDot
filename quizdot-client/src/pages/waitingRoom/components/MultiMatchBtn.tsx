@@ -1,8 +1,7 @@
 import { startGameApi } from '@/shared/apis/commonApi';
 import { useRouter } from '@/shared/hooks';
 import { Button } from '@/shared/ui';
-import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
-import { useContext } from 'react';
+import { modeList } from '../constants';
 
 export function MultiMatchBtn({
   channelId,
@@ -15,18 +14,11 @@ export function MultiMatchBtn({
 }) {
   const router = useRouter();
 
-  const { onUnsubscribe } = useContext(WebSocketContext);
-
   const handleStartGame = async () => {
     const response = await startGameApi(roomId, mode);
 
     if (response == 200) {
-      onUnsubscribe('');
-      router.routeTo(`/${channelId}/${roomId}/${mode}`);
-
-      // onSubscribe(`chat/room/${waitingRoom.roomInfo.roomId}`);
-      // onSubscribe(`info/room/${waitingRoom.roomInfo.roomId}`);
-      // onSubscribe(`players/room/${waitingRoom.roomInfo.roomId}`);
+      router.routeTo(`/${channelId}/${roomId}/${modeList[mode]}`);
     } else console.log('[멀티 게임 입장 실패]');
   };
 

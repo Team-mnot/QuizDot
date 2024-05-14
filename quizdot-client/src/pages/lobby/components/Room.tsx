@@ -1,4 +1,5 @@
 import { RoomInfoType } from '../api/types';
+import { roomStateColors } from '../constants';
 
 export function Room({
   roomInfo,
@@ -10,7 +11,7 @@ export function Room({
   return (
     <div className="px-[20px] py-[10px]">
       <div
-        className="h-[110px] w-[450px] rounded-lg border-2 bg-white p-[20px] shadow-md"
+        className={`h-[110px] w-[450px] rounded-lg border-2 bg-white p-[20px] shadow-md text-[${roomStateColors[roomInfo.state]}]`}
         onClick={() => handleEnterRoom(roomInfo.roomId, roomInfo.open)}
       >
         <div className="flex h-full">
@@ -18,7 +19,10 @@ export function Room({
             <p className="flex-grow">{roomInfo.roomId}</p>
             <p className="flex-none">{roomInfo.category}</p>
           </div>
-          <div className="flex w-[300px] flex-col pr-[10px] text-left">
+          <div
+            className="{room.state} flex w-[300px] flex-col pr-[10px] 
+                  text-left"
+          >
             {roomInfo.title.length > 11 ? (
               <p className="flex-grow">
                 {roomInfo.open ? '🎶' : '🔒'}&nbsp;

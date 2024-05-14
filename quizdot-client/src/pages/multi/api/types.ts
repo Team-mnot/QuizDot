@@ -33,10 +33,22 @@ interface RoomInfoDto {
   maxQuestion: number;
 }
 
+interface QuizType {
+  id: number;
+  question: string;
+  hint: string;
+  imagePath: string;
+  category: string;
+  questionType: string;
+  description: string;
+  answers: string[];
+}
+
 export type {
   CharacterProps,
   QuizSetProps,
   QuizProps,
   AnswerProps,
   RoomInfoDto,
+  QuizType,
 };

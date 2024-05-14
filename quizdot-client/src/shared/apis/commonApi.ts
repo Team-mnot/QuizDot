@@ -7,8 +7,11 @@ const url = 'game';
 
 /*** 게임 시작 ***/
 async function startGameApi(roomId: number, mode: string): Promise<number> {
+  const params = new URLSearchParams();
+  params.append('mode', mode);
   const response = await jwtAxiosInstance.get(
-    `${baseApi}/${url}/start/${roomId}/mode=${mode}`,
+    `${baseApi}/${url}/start/${roomId}`,
+    { params: params },
   );
 
   console.log(`[${response.data.status}] ${response.data.message}`);
