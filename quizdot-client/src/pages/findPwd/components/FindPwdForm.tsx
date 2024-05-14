@@ -30,51 +30,50 @@ export function FindPwdForm() {
 
   const onSubmit: CustomSubmitHandler = async (data) => {
     if (checkId) {
-      window.alert('존재하지 않는 아이디입니다')
-      return
+      window.alert('존재하지 않는 아이디입니다');
+      return;
     }
     const props: FindPwdProps = {
       memberId: data.memberId as string,
       hint: data.hint as string,
     };
-    const response = await FindPwdApi(props)
+    const response = await FindPwdApi(props);
     if (!response) {
-      window.alert('힌트가 일치하지 않습니다')
-      return
+      window.alert('힌트가 일치하지 않습니다');
+      return;
     } else {
-      window.alert('check')
+      window.alert('check');
     }
   };
 
-    // 아이디 확인
-    const idHandleChange = async (e: ChangeEvent<HTMLInputElement>) => {
-      const inputValue = e.target.value;
-      const alphanumericValue = inputValue.replace(/[^a-zA-Z0-9]/g, ''); // 영어와 숫자만 추출
-      const truncatedValue = alphanumericValue.slice(0, 20); // 최대 20자리까지만 유지
-      setMemberId(truncatedValue);
-      const response = await IdCheckAPi(truncatedValue);
-      setCheckId(response);
-      if (
-        truncatedValue.length >= 6 &&
-        idRegex.test(truncatedValue)
-      ) {
-        setIdValid(true);
-      } else {
-        setIdValid(false);
-      }
-    };
+  // 아이디 확인
+  const idHandleChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    const alphanumericValue = inputValue.replace(/[^a-zA-Z0-9]/g, ''); // 영어와 숫자만 추출
+    const truncatedValue = alphanumericValue.slice(0, 20); // 최대 20자리까지만 유지
+    setMemberId(truncatedValue);
+    const response = await IdCheckAPi(truncatedValue);
+    setCheckId(response);
+    if (truncatedValue.length >= 6 && idRegex.test(truncatedValue)) {
+      setIdValid(true);
+    } else {
+      setIdValid(false);
+    }
+    console.log(idValid);
+  };
 
-     // 비밀번호 힌트 확인
-    const hintHandleChange = (e: ChangeEvent<HTMLInputElement>) => {
-      const inputValue = e.target.value;
-      const numericValue = inputValue.replace(/\D/g, ''); // 숫자만 추출
-      const truncatedValue = numericValue.slice(0, 6); // 최대 6자리까지만 유지
-      setHint(truncatedValue);
+  // 비밀번호 힌트 확인
+  const hintHandleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    const numericValue = inputValue.replace(/\D/g, ''); // 숫자만 추출
+    const truncatedValue = numericValue.slice(0, 6); // 최대 6자리까지만 유지
+    setHint(truncatedValue);
     if (hintRegex.test(truncatedValue)) {
       setHintValid(true);
     } else {
       setHintValid(false);
     }
+    console.log(hintValid);
   };
 
   return (
