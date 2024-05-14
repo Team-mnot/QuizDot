@@ -2,8 +2,8 @@ package com.mnot.quizdot.domain.quiz.controller;
 
 import com.mnot.quizdot.domain.member.dto.CustomMemberDetail;
 import com.mnot.quizdot.domain.quiz.dto.ActiveUserDto;
-import com.mnot.quizdot.domain.quiz.dto.ChannelListRes;
 import com.mnot.quizdot.domain.quiz.dto.ChannelInfo;
+import com.mnot.quizdot.domain.quiz.dto.ChannelListRes;
 import com.mnot.quizdot.domain.quiz.dto.LobbyRes;
 import com.mnot.quizdot.domain.quiz.dto.RoomInfoDto;
 import com.mnot.quizdot.domain.quiz.dto.RoomReq;
@@ -82,4 +82,5 @@ public class LobbyController {
         lobbyService.checkPassword(roomId, password); // 비밀번호 불일치시, 예외 발생
         return ResponseEntity.ok(ResultResponse.of(200, "올바른 비밀번호입니다."));
     }
+
 }

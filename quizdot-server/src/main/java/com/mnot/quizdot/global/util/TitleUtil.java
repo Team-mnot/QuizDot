@@ -7,8 +7,6 @@ import com.mnot.quizdot.domain.member.entity.MultiRecord;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
 import com.mnot.quizdot.domain.member.repository.MemberTitleRepository;
 import com.mnot.quizdot.domain.member.repository.MultiRecordRepository;
-import com.mnot.quizdot.global.result.error.ErrorCode;
-import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -23,14 +21,10 @@ public class TitleUtil {
     private final MultiRecordRepository multiRecordRepository;
     private final MemberTitleRepository memberTitleRepository;
 
-    public List<String> checkRequirment(int memberId, ModeType modeType) {
+    public List<String> checkRequirment(Member member, MultiRecord multiRecord, ModeType modeType) {
         List<String> unlockList = new ArrayList<>();
-        Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
-        MultiRecord multiRecord = multiRecordRepository.findByMemberIdAndMode(memberId, modeType)
-            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_RECORD));
         List<MemberTitle> memberTitleList = memberTitleRepository.findAllByMemberIdAndIsGetFalse(
-            memberId);
+            member.getId());
 
         TitleData titleData = new TitleData(member, multiRecord, modeType);
         for (MemberTitle memberTitle : memberTitleList) {

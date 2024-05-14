@@ -37,7 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class OneToOneServiceImpl implements OneToOneService {
 
     private static final String SERVER_SENDER = "SYSTEM";
-    private static final String TITLE_DESTINATION = "/sub/title/";
     private static final int EXP = 300;
     private final RedisUtil redisUtil;
     private final RedisTemplate redisTemplate;
@@ -202,7 +201,8 @@ public class OneToOneServiceImpl implements OneToOneService {
                 }
 
                 //칭호 확인
-                List<String> unlockList = titleUtil.checkRequirment(id, ModeType.ILGITO);
+                List<String> unlockList = titleUtil.checkRequirment(member, multiRecord,
+                    ModeType.ILGITO);
                 if (!unlockList.isEmpty()) {
                     messagingTemplate.convertAndSend(getGameDestination(roomId) + "/title/" + id,
                         MessageDto.of(SERVER_SENDER, "칭호가 해금되었습니다", MessageType.TILE, unlockList));
