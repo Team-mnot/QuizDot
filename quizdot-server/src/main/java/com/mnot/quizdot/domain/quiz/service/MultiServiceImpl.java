@@ -36,7 +36,7 @@ public class MultiServiceImpl implements MultiService {
 
     private static final String SERVER_SENDER = "SYSTEM";
     private static final String GAME_DESTINATION = "/sub/info/game/";
-    private static final String TITLE_DESTINATION = "/sub/title/";
+
     private final RedisUtil redisUtil;
     private final RedisTemplate redisTemplate;
     private final SimpMessagingTemplate messagingTemplate;
@@ -48,9 +48,9 @@ public class MultiServiceImpl implements MultiService {
      * 멀티 점수 업데이트 (문제를 맞힌 순서에 따라 점수 업데이트)
      */
     @Override
-    public void updateScores(int roomId, int questionId, int memberId) {
+    public void updateScores(int roomId, int memberId) {
         // 나의 제출 순위 조회
-        String stageKey = String.format("rooms:%d:%d", roomId, questionId);
+        String stageKey = String.format("rooms:%d:submit", roomId);
         if (redisTemplate.opsForList().lastIndexOf(stageKey, memberId) != null) {
             throw new BusinessException(ErrorCode.SUBMIT_ALREADY_COMPLETE);
         }
@@ -70,7 +70,15 @@ public class MultiServiceImpl implements MultiService {
         messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
             MessageDto.of(SERVER_SENDER, MessageType.UPDATE, updatedScore));
 
-        // TODO: 전체 플레이어가 풀었을 경우 패스 메세지 보내기
+        // 모든 플레이어가 제출한 경우, 패스 메세지 전송
+        // TODO: 만약 문제가 넘어가고 나서 패스 메세지가 전송된다면 어떡하나요
+        Long playerCount = redisTemplate.opsForHash().size(redisUtil.getPlayersKey(roomId));
+        if (size == playerCount) {
+            messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
+                MessageDto.of(SERVER_SENDER, "모든 플레이어가 답안을 제출하였습니다.", MessageType.PASS,
+                    System.currentTimeMillis()));
+        }
+
     }
 
     /**
@@ -129,7 +137,7 @@ public class MultiServiceImpl implements MultiService {
                 //칭호 확인
                 List<String> unlockList = titleUtil.checkRequirment(id, ModeType.NORMAL);
                 if (!unlockList.isEmpty()) {
-                    messagingTemplate.convertAndSend(getGameDestination(roomId) + "/title/" + id,
+                    messagingTemplate.convertAndSend(GAME_DESTINATION + "/title/" + id,
                         MessageDto.of(SERVER_SENDER, "칭호가 해금되었습니다", MessageType.TILE, unlockList));
                 }
                 ResultDto resultDto = ResultDto.builder()
@@ -154,9 +162,5 @@ public class MultiServiceImpl implements MultiService {
         String roomKey = redisUtil.getRoomInfoKey(roomId);
         redisUtil.modifyRoomState(roomKey, GameState.WAITING);
         return resultDtoList;
-    }
-
-    private String getGameDestination(int roomId) {
-        return String.format("/sub/info/game/%d", roomId);
     }
 }

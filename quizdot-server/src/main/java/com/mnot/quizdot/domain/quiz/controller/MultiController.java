@@ -29,8 +29,8 @@ public class MultiController {
     @Operation(summary = "멀티 모드 점수 업데이트 API")
     public ResponseEntity<ResultResponse> updateScores(
         @AuthenticationPrincipal CustomMemberDetail memberDetail,
-        @PathVariable("room_id") int roomId, @PathVariable("question_id") int questionId) {
-        multiService.updateScores(roomId, questionId, memberDetail.getId());
+        @PathVariable("room_id") int roomId) {
+        multiService.updateScores(roomId, memberDetail.getId());
         return ResponseEntity.ok(ResultResponse.of(200, "점수 업데이트에 성공하였습니다."));
     }
 

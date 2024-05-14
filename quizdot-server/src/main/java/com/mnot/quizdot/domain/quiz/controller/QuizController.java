@@ -44,8 +44,7 @@ public class QuizController {
         @AuthenticationPrincipal CustomMemberDetail memberDetail,
         @PathVariable("room_id") int roomId,
         @PathVariable("question_id") int questionId) {
-        quizService.passQuestion(roomId, questionId, memberDetail.getId(),
-            memberDetail.getNickname());
+        quizService.passQuestion(roomId, memberDetail.getId(), memberDetail.getNickname());
         return ResponseEntity.ok(ResultResponse.of(200, "문제 패스에 성공하였습니다."));
     }
 

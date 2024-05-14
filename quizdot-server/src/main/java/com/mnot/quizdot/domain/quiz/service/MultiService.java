@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface MultiService {
 
-    void updateScores(int roomId, int questionId, int memberId);
+    void updateScores(int roomId, int memberId);
 
     List<ResultDto> exitGame(int roomId, int memberId);
 }

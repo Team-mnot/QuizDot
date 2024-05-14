@@ -7,7 +7,7 @@ public interface QuizService {
 
     void getQuizzes(int roomNum, QuizParam quizParam);
 
-    void passQuestion(int roomId, int questionId, int memberId, String nickname);
+    void passQuestion(int roomId, int memberId, String nickname);
 
     void startGame(int roomId, int memberId, ModeType mode);
 

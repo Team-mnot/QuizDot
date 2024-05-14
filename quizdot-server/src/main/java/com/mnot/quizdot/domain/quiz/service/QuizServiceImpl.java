@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class QuizServiceImpl implements QuizService {
 
+    private static final String GAME_CHAT_DESTINATION = "/sub/chat/game/";
     private static final String SERVER_SENDER = "SYSTEM";
     private final RedisTemplate redisTemplate;
     private final QuizRepository quizRepository;
@@ -86,8 +87,8 @@ public class QuizServiceImpl implements QuizService {
      * 문제 패스 API (REDIS PASS 유저 집합에 추가, 모든 유저가 PASS 버튼을 누른 경우에는 PASS 메세지 전송)
      */
     @Override
-    public void passQuestion(int roomId, int questionId, int memberId, String nickname) {
-        String passKey = String.format("rooms:%d:%d:pass", roomId, questionId);
+    public void passQuestion(int roomId, int memberId, String nickname) {
+        String passKey = String.format("rooms:%d:pass", roomId);
 
         // 이미 패스한 유저가 시도하는 경우
         if (redisTemplate.opsForSet().isMember(passKey, memberId)) {
@@ -97,21 +98,19 @@ public class QuizServiceImpl implements QuizService {
         // 유저 PK를 REDIS의 PASS 유저 집합에 추가하고 메세지 전송
         redisTemplate.opsForSet().add(passKey, memberId);
         Long passPeople = redisTemplate.opsForSet().size(passKey);
+        Long playerCount = redisTemplate.opsForHash().size(redisUtil.getPlayersKey(roomId));
 
-        String memberKey = String.format("rooms:%d:players", roomId);
-        Long totalPeople = redisTemplate.opsForHash().size(memberKey);
-
-        if (passPeople == totalPeople) {
+        if (passPeople == playerCount) {
             // 모든 유저가 PASS 버튼을 눌렀다면
-            messagingTemplate.convertAndSend("/sub/chat/game/" + roomId,
+            messagingTemplate.convertAndSend(GAME_CHAT_DESTINATION + roomId,
                 MessageDto.of(SERVER_SENDER, "모든 유저의 동의 하에 문제가 패스되었습니다.", MessageType.PASS,
                     System.currentTimeMillis()));
         } else {
             // 아직 모든 유저가 PASS 버튼을 누르지 않았다면
-            messagingTemplate.convertAndSend("/sub/chat/game/" + roomId,
-                MessageDto.of(SERVER_SENDER,
-                    String.format("%s님이 문제를 패스했습니다. [%d명/%d명]", nickname, passPeople,
-                        totalPeople), MessageType.CHAT));
+            String message = String.format("%s님이 문제를 패스했습니다. [%d명/%d명]", nickname, passPeople,
+                playerCount);
+            messagingTemplate.convertAndSend(GAME_CHAT_DESTINATION + roomId,
+                MessageDto.of(SERVER_SENDER, message, MessageType.CHAT));
         }
     }
 
