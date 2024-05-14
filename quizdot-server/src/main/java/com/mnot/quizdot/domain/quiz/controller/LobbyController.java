@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -78,9 +79,15 @@ public class LobbyController {
     @Operation(summary = "비공개 방 비밀번호 확인")
     public ResponseEntity<ResultResponse> checkPassword(@PathVariable("room_id") int roomId,
         @RequestBody String password) {
-
         lobbyService.checkPassword(roomId, password); // 비밀번호 불일치시, 예외 발생
         return ResponseEntity.ok(ResultResponse.of(200, "올바른 비밀번호입니다."));
     }
 
+    @GetMapping("/channel/exit")
+    @Operation(summary = "채널 선택창으로 이동 시 채널 동시 접속자 수 변경")
+    public ResponseEntity<ResultResponse> exitChannel(
+        @AuthenticationPrincipal CustomMemberDetail memberDetail, @RequestParam int channelId) {
+        lobbyService.exitChannel(memberDetail.getId(), channelId);
+        return ResponseEntity.ok(ResultResponse.of(200, "동시 접속자 수 변경에 성공하였습니다."));
+    }
 }

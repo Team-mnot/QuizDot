@@ -51,7 +51,6 @@ public class RoomServiceImpl implements RoomService {
         if (memberId != roomInfoDto.getHostId()) {
             throw new BusinessException(ErrorCode.IS_NOT_HOST);
         }
-
         // 대기실 정보 업데이트
         roomInfoDto.modifyInfo(roomReq);
         redisTemplate.opsForValue().set(roomKey, roomInfoDto);
