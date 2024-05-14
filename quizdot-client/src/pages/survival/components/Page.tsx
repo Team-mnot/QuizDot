@@ -26,7 +26,11 @@ export function SurvivalPage() {
   // const roomInfo = location.state.roomInfo; // state를 RoomInfoType으로 타입 캐스팅
   // const players = location.state.players;
   // 한방에 받아오기 ( 코드 있어보이게 )
-  const { players, roomInfo } = location.state || { players: [], roomInfo: {} };
+  const { players: playersObj, roomInfo } = location.state || {
+    players: {},
+    roomInfo: {},
+  };
+  const players = Object.keys(playersObj).map((key) => playersObj[key]);
 
   const {
     showChatBox,
@@ -37,6 +41,7 @@ export function SurvivalPage() {
     setShowCountDown,
     showCountDown,
     setQuizzes,
+    quizzes,
   } = useQuizStore();
 
   const { submitAnswer } = useIsSubmitAnswer();
@@ -45,6 +50,9 @@ export function SurvivalPage() {
     { nickname: string; content: string }[]
   >([]);
   const userStore = useUserStore();
+
+  console.log('내아디', roomInfo.hostId);
+  console.log('방장아디', userStore.id);
 
   useEffect(() => {
     // 페이지가 로드될 때 body의 스타일을 설정합니다.
@@ -72,6 +80,7 @@ export function SurvivalPage() {
       callbackMsg.msg.type == 'PASS'
     ) {
       if (roomInfo.hostId === userStore.id) {
+        console.log('내가 방장이다');
         submitAnswer(parseInt(roomId)); // 방장만 호출하는 정답제출 함수
       }
       setShowResult(true);
@@ -82,8 +91,10 @@ export function SurvivalPage() {
       callbackMsg.address == `quiz/game/${roomId}` &&
       callbackMsg.msg.type == 'QUIZ'
     ) {
+      console.log(callbackMsg);
       setQuizzes(callbackMsg.msg.data.quizResList);
     }
+    console.log(quizzes);
   }, [callbackMsg]);
 
   const handleSubmitMessage = (message: string) => {
