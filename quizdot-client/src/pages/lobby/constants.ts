@@ -35,6 +35,12 @@ const expList = {
   2: 20000,
 } as { [key: number]: number };
 
+const roomStateColors = {
+  INPROGRESS: 'grey',
+  WAITING: 'green',
+  MATCHING: 'red',
+} as { [key: string]: string };
+
 export {
   openList,
   modeList,
@@ -42,4 +48,5 @@ export {
   categoryList,
   maxQuestionList,
   expList,
+  roomStateColors,
 };

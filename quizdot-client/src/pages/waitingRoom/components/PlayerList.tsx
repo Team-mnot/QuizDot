@@ -1,17 +1,15 @@
 import { Modal } from '@/shared/ui';
 import { useOpenModal } from '@/shared/hooks';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Character } from '@/shared/ui/Character';
 
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
-import { PlayerType, PlayersType } from '@/pages/waitingRoom/api/types';
+import { PlayersType } from '@/pages/waitingRoom/api/types';
 
 export function PlayerList(props: { roomId: number; players: PlayersType }) {
   // useRef 를 써야 할까요?
-  const [players, setPlayers] = useState<PlayersType>(props.players);
-  const [playersCount, setPlayersCount] = useState<number>(
-    Object.keys(players).length,
-  );
+  const players = useRef<PlayersType>(props.players);
+  const playersCount = useRef<number>(Object.keys(players).length);
 
   const { isOpenModal, clickModal, closeModal } = useOpenModal();
   const [clickedUserId, setClickedUserId] = useState<string>('');
@@ -20,27 +18,26 @@ export function PlayerList(props: { roomId: number; players: PlayersType }) {
   const { callbackMsg } = useContext(WebSocketContext);
 
   useEffect(() => {
-    if (
-      callbackMsg.msg &&
-      callbackMsg.address == `players/room/${props.roomId}` &&
-      callbackMsg.msg.type == 'ENTER'
-    ) {
-      setPlayersCount(playersCount + 1);
-      setPlayers((players: PlayersType) => {
-        return {
-          ...players,
-          [String(playersCount)]: callbackMsg.msg.data as PlayerType,
-        };
-      });
+    const msg = callbackMsg.msg;
+    const address = callbackMsg.address;
+
+    if (address == `players/room/${props.roomId}`) {
+      if (msg.type == 'ENTER') {
+        players.current[Object.keys(msg.data)[0]] = msg.data;
+        playersCount.current = Object.keys(players.current).length;
+      } else if (msg.type == 'LEAVE') {
+        delete players.current[msg.data];
+        playersCount.current = Object.keys(players.current).length;
+      }
     }
   }, [callbackMsg, players]);
 
   return (
-    <div>
+    <div className="flex justify-between">
       <div>
-        {players &&
-          Object.entries(players)
-            .slice(0, Object.entries(players).length - 4)
+        {players.current &&
+          Object.entries(players.current)
+            .slice(0, (playersCount.current + 1) / 2)
             .map(([key, player]) => (
               <div
                 key={key}
@@ -60,9 +57,9 @@ export function PlayerList(props: { roomId: number; players: PlayersType }) {
             ))}
       </div>
       <div>
-        {Object.entries(players).length > 4 &&
-          Object.entries(players)
-            .slice(4, Object.entries(players).length)
+        {players.current &&
+          Object.entries(players.current)
+            .slice((playersCount.current + 1) / 2, playersCount.current)
             .map(([key, player]) => (
               <div
                 key={key}
@@ -72,7 +69,6 @@ export function PlayerList(props: { roomId: number; players: PlayersType }) {
                 }}
               >
                 <Character
-                  key={key}
                   title={player.title}
                   nickname={player.nickname}
                   nicknameColor={player.nicknameColor}

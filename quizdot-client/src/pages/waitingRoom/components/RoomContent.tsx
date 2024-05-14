@@ -29,7 +29,7 @@ export function RoomContent({
   }, [isReady]);
 
   return (
-    <div className={'absolute left-[0px] top-[70px] w-full p-[30px]'}>
+    <div className={'absolute left-[0px] top-[100px] w-full p-[30px]'}>
       <div>
         <PlayerList
           players={waitingRoom.players}

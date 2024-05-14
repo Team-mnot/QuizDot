@@ -1,4 +1,5 @@
 import { RoomInfoType } from '../api/types';
+import { roomStateColors } from '../constants';
 
 export function Room({
   roomInfo,
@@ -10,7 +11,7 @@ export function Room({
   return (
     <div className="px-[20px] py-[10px]">
       <div
-        className="h-[110px] w-[450px] rounded-lg border-2 bg-white p-[20px] shadow-md"
+        className={`h-[110px] w-[450px] rounded-lg border-2 bg-white p-[20px] shadow-md text-[${roomStateColors[roomInfo.state]}]`}
         onClick={() => handleEnterRoom(roomInfo.roomId, roomInfo.open)}
       >
         <div className="flex h-full">

@@ -4,6 +4,7 @@ import { MainPage } from '@/pages/main';
 import { SignUpPage } from '@/pages/signUp';
 import { LoginPage } from '@/pages/logIn';
 import { FindPwdPage } from '@/pages/findPwd';
+import { ResetPwdPage } from '@/pages/resetPwd';
 import { ChannelPage } from '@/pages/channel';
 import { LobbyPage } from '@/pages/lobby';
 import { MultiPage } from '@/pages/multi';
@@ -29,6 +30,10 @@ export const router = createBrowserRouter([
     element: <FindPwdPage />,
   },
   {
+    path: '/reset-pwd',
+    element: <ResetPwdPage />,
+  },
+  {
     path: '/channel',
     element: <ChannelPage />,
   },
@@ -41,7 +46,7 @@ export const router = createBrowserRouter([
     element: <WaitingRoomPage />,
   },
   {
-    path: '/:channelId/:roomId/multi',
+    path: '/:channelId/:roomId/normal',
     element: <MultiPage />,
   },
   {

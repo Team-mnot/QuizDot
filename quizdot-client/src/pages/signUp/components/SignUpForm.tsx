@@ -47,11 +47,6 @@ export function SignUpForm() {
   const [hintValid, setHintValid] = useState(false);
   const [nicknameValid, setNicknameValid] = useState(false);
 
-  // 비밀번호 표시 토글 함수
-  const togglePwdView = () => {
-    setShowPassword(!showPassword);
-  };
-
   // 폼 제출 커스텀 핸들러
   type CustomSubmitHandler = SubmitHandler<FieldValues>;
 
@@ -82,7 +77,13 @@ export function SignUpForm() {
       console.error('Error Sign Up', error);
     }
   };
-  // 아이디 확인
+
+  // 비밀번호 표시 토글 함수
+  const togglePwdView = () => {
+    setShowPassword(!showPassword);
+  };
+
+  // 아이디 입력 및 중복 체크
   const idHandleChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     const alphanumericValue = inputValue.replace(/[^a-zA-Z0-9]/g, ''); // 영어와 숫자만 추출
