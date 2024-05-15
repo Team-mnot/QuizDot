@@ -111,13 +111,15 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
         <div key={currentQuiz.id}>
           <h2>{currentQuiz.question}</h2>
           <p>{currentQuiz.description}</p>
-          {/* <p>Category: {currentQuiz.category}</p> */}
           {/* <p>Type: {currentQuiz.questionType}</p> */}
           {/* <p>Answers: {currentQuiz.answers.join(', ')}</p> */}
         </div>
       </div>
+      <div className=" fixed left-0 right-0 top-56 mx-auto max-w-3xl">
+        Category: {currentQuiz.category}
+      </div>
       {showHint && (
-        <div className="fixed left-0 right-0 top-56 mx-auto max-w-3xl">
+        <div className="fixed left-0 right-0 top-64 mx-auto max-w-3xl">
           초성힌트: {currentQuiz.hint}
         </div>
       )}
@@ -140,7 +142,7 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
                 value={userAnswer}
                 onChange={(e) => setUserAnswer(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="정답을~ 적어줘요~"
+                placeholder="정답 입력"
                 className="w-5/6 pl-10"
               />
               <button onClick={handleAnswerSubmit} disabled={submitLoading}>

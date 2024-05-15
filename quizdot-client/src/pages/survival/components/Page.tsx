@@ -55,6 +55,8 @@ export function SurvivalPage() {
   >([]);
   const userStore = useUserStore();
   const { category, gameMode, hostId } = roomInfo;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [rewardData, setRewardData] = useState<any[]>([]);
 
   // console.log('내아디', roomInfo.hostId);
   // console.log('방장아디', userStore.id);
@@ -95,9 +97,14 @@ export function SurvivalPage() {
     ) {
       console.log('결과결과');
       console.log(callbackMsg.msg.data);
-      // setShowResult(true);
-      // setShowChatBox(true);
-      // setShowHint(false);
+    } else if (
+      callbackMsg.msg &&
+      callbackMsg.address == `info/game/${roomId}` &&
+      callbackMsg.msg.type == 'REWARD'
+    ) {
+      console.log('리워드');
+      console.log(callbackMsg.msg.data);
+      setRewardData(callbackMsg.msg.data);
     } else if (
       callbackMsg.msg &&
       callbackMsg.address == `info/game/${roomId}` &&
@@ -115,9 +122,10 @@ export function SurvivalPage() {
             console.error('Exit request failed:', error);
           });
       }
-      console.log(isGameOver);
-      setIsGameOver(true);
-      console.log(isGameOver);
+      setTimeout(() => {
+        setIsGameOver(true);
+        console.log(isGameOver);
+      }, 4500);
       console.log('종료호출');
     } else if (
       callbackMsg.msg &&
@@ -149,9 +157,9 @@ export function SurvivalPage() {
   };
 
   return (
-    <div className={'flex h-full flex-col items-center justify-center'}>
+    <div className={''}>
       {isGameOver ? (
-        <GameOverComponent />
+        <GameOverComponent rewardData={rewardData} />
       ) : showCountDown ? (
         <CountDown />
       ) : showResult ? (

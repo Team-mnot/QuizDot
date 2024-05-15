@@ -31,8 +31,6 @@ interface PlayerPreviewProps {
 }
 
 export function PlayerPreview({ players }: PlayerPreviewProps) {
-  // 더미 캐릭터 데이터
-
   console.log('유저', players);
 
   return (
@@ -46,8 +44,8 @@ export function PlayerPreview({ players }: PlayerPreviewProps) {
           nicknameColor={player.nicknameColor} // nicknameColor 추가
           level={player.level} // level 추가
           position={predefinedPositions[index]?.position} // 미리 지정된 위치 정보 사용
-          // isAlive={player.isAlive}
-          // isRevive={player.isRevive}
+          isAlive={true}
+          isRevive={false}
         />
       ))}
     </div>
