@@ -117,6 +117,7 @@ export async function GetCharacterApi() {
   try {
     const response: AxiosResponse<Response> = await axios.post(
       `${baseApi}/member/reward/random-pick/character`,
+      {},
       {
         headers: {
           'Content-Type': 'application/json',
@@ -142,6 +143,7 @@ export async function GetColerApi() {
   try {
     const response: AxiosResponse<Response> = await axios.post(
       `${baseApi}/member/reward/random-pick/color`,
+      {},
       {
         headers: {
           'Content-Type': 'application/json',
