@@ -4,25 +4,36 @@ import { useEffect } from 'react';
 import useQuizStore from '../store';
 import { useQuiz2 } from '../hooks/useQuiz2';
 import { RoomInfoType } from '@/shared/apis/types';
-
+import { useUserStore } from '@/shared/stores/userStore/userStore';
+import { getQuizResult } from '../api/api';
 // interface QuizResultComponentProps {
 //   roomInfo: RoomInfoType;
 // }
 
 export function QuizResultComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
-  const { resultMessage, setShowResult, setShowCountDown } = useQuizStore();
+  const { resultMessage, setShowResult, setShowCountDown, isGameOver } =
+    useQuizStore();
   const { handleNextQuiz } = useQuiz2(
     roomInfo.roomId,
     roomInfo.category,
     roomInfo.gameMode,
   );
 
+  const userStore = useUserStore();
+
   useEffect(() => {
-    handleNextQuiz();
+    if (roomInfo.hostId === userStore.id) {
+      getQuizResult(roomInfo.roomId); // 방장만 호출하는거
+    }
+    handleNextQuiz(); // 각 개인이 갖고있는 퀴즈목록에서 다음으로 가자는거임
     const timer = setTimeout(() => {
       setShowResult(false);
       setShowCountDown(true); // 카운트다운 페이지 가져와
     }, 5000);
+
+    if (isGameOver) {
+      clearTimeout(timer);
+    }
     return () => clearTimeout(timer);
   }, []);
 

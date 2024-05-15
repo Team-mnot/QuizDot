@@ -33,6 +33,8 @@ interface PlayerPreviewProps {
 export function PlayerPreview({ players }: PlayerPreviewProps) {
   // 더미 캐릭터 데이터
 
+  console.log('유저', players);
+
   return (
     <div>
       {players.map((player, index) => (

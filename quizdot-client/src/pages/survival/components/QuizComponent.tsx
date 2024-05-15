@@ -17,7 +17,7 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
     setCurrentQuiz,
     currentQuizIndex,
     currentQuiz,
-    isCorrect,
+    // isCorrect,
     setIsCorrect,
     showHint,
     setShowHint,
@@ -40,13 +40,15 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
   useEffect(() => {
     const currentQuiz = quizzes[currentQuizIndex] || null;
     setIsCorrect(false);
-    setResultMessage('제출 안하니? 🐦');
+    setResultMessage('제출 안함');
     setCurrentQuiz(currentQuiz);
     setShowChatBox(false);
   }, [currentQuizIndex, quizzes]);
 
   const handleAnswerSubmit = async () => {
     setIsAnswerSubmitted(true);
+    let answerIsCorrect = false;
+
     if (currentQuiz) {
       if (
         userAnswer.trim() === '' ||
@@ -55,14 +57,15 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
         setResultMessage('오답 😿');
       } else {
         setResultMessage('정답! 🐣');
-        setIsCorrect(true);
+        answerIsCorrect = true;
       }
 
       setShowChatBox(true);
       setUserAnswer('');
+      setIsCorrect(answerIsCorrect);
 
       // TODO : isCorrect를 그냥 1, -1 로 보냈어도 될것..같은데 이건 리팩토링으로 하자
-      await postQuizResult(roomInfo.roomId, isCorrect); // API 호출
+      await postQuizResult(roomInfo.roomId, answerIsCorrect); // API 호출
     }
   };
 

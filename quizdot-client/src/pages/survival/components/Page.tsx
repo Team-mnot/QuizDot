@@ -14,6 +14,8 @@ import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
 import { useParams, useLocation } from 'react-router-dom';
 import useRequestQuestion from '../hooks/useRequestQuestion';
+import jwtAxiosInstance from '@/shared/utils/jwtAxiosInstance';
+import { GameOverComponent } from './GameOverComponent';
 
 export function SurvivalPage() {
   const { roomId } = useParams() as {
@@ -41,6 +43,8 @@ export function SurvivalPage() {
     setShowCountDown,
     showCountDown,
     setQuizzes,
+    setIsGameOver,
+    isGameOver,
     // quizzes,
   } = useQuizStore();
 
@@ -50,14 +54,14 @@ export function SurvivalPage() {
     { nickname: string; content: string }[]
   >([]);
   const userStore = useUserStore();
-  const { category, gameMode } = roomInfo;
+  const { category, gameMode, hostId } = roomInfo;
 
   // console.log('내아디', roomInfo.hostId);
   // console.log('방장아디', userStore.id);
 
   useEffect(() => {
-    if (roomInfo.hostId === userStore.id) {
-      requestQuestion(parseInt(roomId), category, 3, gameMode); // 방장만 호출하는rj
+    if (hostId === userStore.id) {
+      requestQuestion(parseInt(roomId), category, 3, gameMode); // 방장만 호출하는거
     }
   }, []);
 
@@ -97,9 +101,30 @@ export function SurvivalPage() {
     } else if (
       callbackMsg.msg &&
       callbackMsg.address == `info/game/${roomId}` &&
+      callbackMsg.msg.type == 'EXIT'
+    ) {
+      // TODO : 여기서 렌더링이 한번 더 되면서 초기화되는듯
+      if (roomInfo.hostId === userStore.id) {
+        console.log('방장');
+        jwtAxiosInstance
+          .post(`/survival/exit/${roomInfo.roomId}`, {})
+          .then((response) => {
+            console.log('Exit request successful:', response.data);
+          })
+          .catch((error) => {
+            console.error('Exit request failed:', error);
+          });
+      }
+      console.log(isGameOver);
+      setIsGameOver(true);
+      console.log(isGameOver);
+      console.log('종료호출');
+    } else if (
+      callbackMsg.msg &&
+      callbackMsg.address == `info/game/${roomId}` &&
       callbackMsg.msg.type == 'PASS'
     ) {
-      console.log('패스다 패스!!');
+      console.log('패스');
       setShowResult(true);
       setShowChatBox(true);
       setShowHint(false);
@@ -125,7 +150,9 @@ export function SurvivalPage() {
 
   return (
     <div className={'flex h-full flex-col items-center justify-center'}>
-      {showCountDown ? (
+      {isGameOver ? (
+        <GameOverComponent />
+      ) : showCountDown ? (
         <CountDown />
       ) : showResult ? (
         <QuizResultComponent roomInfo={roomInfo} />
