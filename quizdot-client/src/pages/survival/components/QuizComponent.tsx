@@ -2,11 +2,12 @@
 
 import { useQuiz2 } from '../hooks/useQuiz2';
 import { useState, useEffect } from 'react';
-import useIsSubmitAnswer from '../hooks/useRequestQuestion';
+import requestQuestion from '../hooks/useRequestQuestion';
 import useQuizStore from '../store';
 import { postQuizResult } from '../api/api';
+import { RoomInfoType } from '@/shared/apis/types';
 
-export function QuizComponent({ roomId }: { roomId: number }) {
+export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
   const {
     setShowChatBox,
     // resultMessage,
@@ -22,14 +23,19 @@ export function QuizComponent({ roomId }: { roomId: number }) {
     setShowHint,
   } = useQuizStore();
 
-  const { loading, error } = useQuiz2(); // 수정: useQuiz2에서 필요한 데이터를 가져오도록 함
+  // TODO : useQuiz에 handleNextQuiz 넣을 필요 없는데 나중에 분리합시다
+  const { loading, error } = useQuiz2(
+    roomInfo.roomId,
+    roomInfo.category,
+    roomInfo.gameMode,
+  );
   const [userAnswer, setUserAnswer] = useState(''); // 사용자 입력을 저장할 상태
   const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false); // 사용자 입력을 저장할 상태
 
   const {
     loading: submitLoading,
     // error: submitError,
-  } = useIsSubmitAnswer();
+  } = requestQuestion();
 
   useEffect(() => {
     const currentQuiz = quizzes[currentQuizIndex] || null;
@@ -56,7 +62,7 @@ export function QuizComponent({ roomId }: { roomId: number }) {
       setUserAnswer('');
 
       // TODO : isCorrect를 그냥 1, -1 로 보냈어도 될것..같은데 이건 리팩토링으로 하자
-      await postQuizResult(roomId, isCorrect); // API 호출
+      await postQuizResult(roomInfo.roomId, isCorrect); // API 호출
     }
   };
 
@@ -72,7 +78,7 @@ export function QuizComponent({ roomId }: { roomId: number }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowHint(true);
-    }, 5000);
+    }, 10000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -83,7 +89,7 @@ export function QuizComponent({ roomId }: { roomId: number }) {
       setShowChatBox(true);
       setShowResult(true);
       setShowHint(false);
-    }, 10000);
+    }, 20000);
 
     return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 해제
   }, []);

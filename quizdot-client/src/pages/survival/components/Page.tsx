@@ -41,7 +41,7 @@ export function SurvivalPage() {
     setShowCountDown,
     showCountDown,
     setQuizzes,
-    quizzes,
+    // quizzes,
   } = useQuizStore();
 
   const { requestQuestion } = useRequestQuestion();
@@ -52,12 +52,12 @@ export function SurvivalPage() {
   const userStore = useUserStore();
   const { category, gameMode } = roomInfo;
 
-  console.log('내아디', roomInfo.hostId);
-  console.log('방장아디', userStore.id);
+  // console.log('내아디', roomInfo.hostId);
+  // console.log('방장아디', userStore.id);
 
   useEffect(() => {
     if (roomInfo.hostId === userStore.id) {
-      requestQuestion(parseInt(roomId), category, 10, gameMode); // 방장만 호출하는rj
+      requestQuestion(parseInt(roomId), category, 3, gameMode); // 방장만 호출하는rj
     }
   }, []);
 
@@ -67,7 +67,7 @@ export function SurvivalPage() {
     document.body.style.backgroundSize = 'cover';
     setShowCountDown(true);
 
-    // TODO : 나중에 Props로 넘기던가 어쩌구로 설정 바까라
+    // TODO : Unscribe는?
 
     onSubscribe(`chat/game/${roomId}`);
     onSubscribe(`quiz/game/${roomId}`); // 퀴즈 받을 구독 주소 임니다
@@ -87,6 +87,16 @@ export function SurvivalPage() {
     } else if (
       callbackMsg.msg &&
       callbackMsg.address == `info/game/${roomId}` &&
+      callbackMsg.msg.type == 'STAGE_RESULT'
+    ) {
+      console.log('결과결과');
+      console.log(callbackMsg.msg.data);
+      // setShowResult(true);
+      // setShowChatBox(true);
+      // setShowHint(false);
+    } else if (
+      callbackMsg.msg &&
+      callbackMsg.address == `info/game/${roomId}` &&
       callbackMsg.msg.type == 'PASS'
     ) {
       console.log('패스다 패스!!');
@@ -100,7 +110,7 @@ export function SurvivalPage() {
     ) {
       setQuizzes(callbackMsg.msg.data);
     }
-    console.log(quizzes);
+    // console.log(quizzes);
   }, [callbackMsg]);
 
   const handleSubmitMessage = (message: string) => {
@@ -118,9 +128,9 @@ export function SurvivalPage() {
       {showCountDown ? (
         <CountDown />
       ) : showResult ? (
-        <QuizResultComponent />
+        <QuizResultComponent roomInfo={roomInfo} />
       ) : (
-        <QuizComponent roomId={Number(roomId)} />
+        <QuizComponent roomInfo={roomInfo} />
       )}
       <PlayerPreview players={players} />
       <ChattingBox onSend={handleSubmitMessage} messages={messages} />

@@ -15,10 +15,10 @@ interface MessageDto {
 
 interface RoomInfoType {
   roomId: number;
-  title: string | null;
+  title: string;
   open: boolean;
   password: string | null;
-  gameMode: string | null;
+  gameMode: string;
   maxPeople: number;
   category: string;
   maxQuestion: number;

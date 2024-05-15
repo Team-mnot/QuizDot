@@ -3,15 +3,19 @@
 import { useEffect } from 'react';
 import useQuizStore from '../store';
 import { useQuiz2 } from '../hooks/useQuiz2';
+import { RoomInfoType } from '@/shared/apis/types';
 
 // interface QuizResultComponentProps {
 //   roomInfo: RoomInfoType;
 // }
 
-// TODO : 이거 필요없어. 왜냐? 결과만 띄워주거든 받아서 띄우면 끝임
-export function QuizResultComponent() {
+export function QuizResultComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
   const { resultMessage, setShowResult, setShowCountDown } = useQuizStore();
-  const { handleNextQuiz } = useQuiz2();
+  const { handleNextQuiz } = useQuiz2(
+    roomInfo.roomId,
+    roomInfo.category,
+    roomInfo.gameMode,
+  );
 
   useEffect(() => {
     handleNextQuiz();
