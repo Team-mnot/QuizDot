@@ -58,9 +58,11 @@ public class CustomWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
         if (accessToken != null) {
             log.info("연결 끊겼다 : {}", accessToken);
             redisUtil.deleteInactivePlayerData(String.valueOf(jwtUtil.getId(accessToken)));
-        } else {
-            log.info("헤더 없는데?");
-            throw new BusinessException(ErrorCode.HTTP_HEADER_INVALID);
         }
+        // TODO : 나중에 살리기
+//        else {
+//            log.info("헤더 없는데?");
+//            throw new BusinessException(ErrorCode.HTTP_HEADER_INVALID);
+//        }
     }
 }
