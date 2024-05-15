@@ -11,7 +11,8 @@ import { getQuizResult } from '../api/api';
 // }
 
 export function QuizResultComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
-  const { resultMessage, setShowResult, setShowCountDown } = useQuizStore();
+  const { resultMessage, setShowResult, setShowCountDown, isGameOver } =
+    useQuizStore();
   const { handleNextQuiz } = useQuiz2(
     roomInfo.roomId,
     roomInfo.category,
@@ -29,6 +30,10 @@ export function QuizResultComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
       setShowResult(false);
       setShowCountDown(true); // 카운트다운 페이지 가져와
     }, 5000);
+
+    if (isGameOver) {
+      clearTimeout(timer);
+    }
     return () => clearTimeout(timer);
   }, []);
 

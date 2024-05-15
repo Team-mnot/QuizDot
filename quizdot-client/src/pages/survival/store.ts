@@ -12,6 +12,7 @@ interface QuizStore {
   isQuizOver: boolean; // 퀴즈 종료 여부 상태 추가
   showCountDown: boolean;
   isCorrect: boolean;
+  isGameOver: boolean;
 
   setQuizzes: (quizzes: iQuiz[]) => void;
   setCurrentQuiz: (quiz: iQuiz) => void;
@@ -20,6 +21,7 @@ interface QuizStore {
   setResultMessage: (message: string) => void;
   setShowChatBox: (show: boolean) => void;
   setIsQuizOver: (value: boolean) => void;
+  setIsGameOver: (value: boolean) => void;
   setShowCountDown: (value: boolean) => void;
   setIsCorrect: (isCorrect: boolean) => void;
 
@@ -36,6 +38,7 @@ const useQuizStore = create<QuizStore>((set) => ({
   currentQuiz: null, // 초기 퀴즈는 null로 설정
   showCountDown: false,
   isQuizOver: false,
+  isGameOver: false,
   isCorrect: false,
 
   setQuizzes: (quizzes: iQuiz[]) => {
@@ -49,6 +52,7 @@ const useQuizStore = create<QuizStore>((set) => ({
   setResultMessage: (message) => set({ resultMessage: message }), // message 받는 setMessageResult 함수 쓴다는 뜻 ㅎ
   setShowCountDown: (show: boolean) => set({ showCountDown: show }),
   setIsQuizOver: (value: boolean) => set({ isQuizOver: value }),
+  setIsGameOver: (value: boolean) => set({ isGameOver: value }),
   setIsCorrect: (value: boolean) => set({ isCorrect: value }),
 
   showHint: false, // 초기 힌트 표시 여부는 false로 설정
