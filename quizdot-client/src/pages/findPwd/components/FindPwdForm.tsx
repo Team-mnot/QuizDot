@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from 'react';
+import { useState, useRef, ChangeEvent, KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,15 +25,19 @@ export function FindPwdForm() {
 
   const [memberId, setMemberId] = useState<string>('');
   const [hint, setHint] = useState<string>('');
-  const [checkId, setCheckId] = useState<boolean>(true);
   const [idValid, setIdValid] = useState(false);
   const [hintValid, setHintValid] = useState(false);
 
+  // 엔터로 바로 제출용
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
+
+  // 폼 제출 커스텀 핸들러
   type CustomSubmitHandler = SubmitHandler<FieldValues>;
 
   // 폼 제출 함수
   const onSubmit: CustomSubmitHandler = async (data) => {
-    if (checkId) {
+    const idCheck = await IdCheckAPi(data.memberId);
+    if (idCheck) {
       window.alert('존재하지 않는 아이디입니다');
       return;
     }
@@ -56,8 +60,6 @@ export function FindPwdForm() {
     const alphanumericValue = inputValue.replace(/[^a-zA-Z0-9]/g, ''); // 영어와 숫자만 추출
     const truncatedValue = alphanumericValue.slice(0, 20); // 최대 20자리까지만 유지
     setMemberId(truncatedValue);
-    const response = await IdCheckAPi(truncatedValue);
-    setCheckId(response);
     if (truncatedValue.length >= 6 && idRegex.test(truncatedValue)) {
       setIdValid(true);
     } else {
@@ -86,8 +88,9 @@ export function FindPwdForm() {
           type="text"
           placeholder="아이디"
           {...register('memberId')}
-          onChange={idHandleChange}
+          autoFocus
           value={memberId}
+          onChange={idHandleChange}
         />
       </div>
       <div className="mb-1 mt-6 rounded-lg bg-white p-2 px-3">
@@ -96,8 +99,15 @@ export function FindPwdForm() {
           type="text"
           placeholder="비밀번호 힌트"
           {...register('hint')}
-          onChange={hintHandleChange}
           value={hint}
+          onChange={hintHandleChange}
+          onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              submitButtonRef.current?.focus();
+              handleSubmit(onSubmit)();
+            }
+          }}
         />
       </div>
       <div className="text-center">
@@ -111,6 +121,7 @@ export function FindPwdForm() {
         <button
           className="mt-6 w-full hover:border-transparent hover:bg-gray-200 focus:outline-none active:bg-gray-300"
           type="submit"
+          ref={submitButtonRef}
         >
           비밀번호 찾기
         </button>

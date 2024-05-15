@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, KeyboardEvent, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -46,6 +46,9 @@ export function SignUpForm() {
   const [passwordValid, setPasswordValid] = useState(false);
   const [hintValid, setHintValid] = useState(false);
   const [nicknameValid, setNicknameValid] = useState(false);
+
+  // 엔터로 바로 제출용
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
 
   // 폼 제출 커스텀 핸들러
   type CustomSubmitHandler = SubmitHandler<FieldValues>;
@@ -164,6 +167,7 @@ export function SignUpForm() {
           type="text"
           placeholder="아이디"
           {...register('memberId')}
+          autoFocus
           minLength={4}
           maxLength={20}
           onChange={idHandleChange}
@@ -284,8 +288,15 @@ export function SignUpForm() {
           {...register('nickname')}
           minLength={2}
           maxLength={8}
-          onChange={nicknameHandleChange}
           value={nickname}
+          onChange={nicknameHandleChange}
+          onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              submitButtonRef.current?.focus();
+              handleSubmit(onSubmit)();
+            }
+          }}
         />
       </div>
       <div className="text-center">
@@ -303,6 +314,7 @@ export function SignUpForm() {
       {idValid && passwordValid && hintValid && nicknameValid ? (
         <button
           type="submit"
+          ref={submitButtonRef}
           className="mt-6 w-full hover:border-transparent hover:bg-gray-200 focus:outline-none active:bg-gray-300"
         >
           Sign Up
