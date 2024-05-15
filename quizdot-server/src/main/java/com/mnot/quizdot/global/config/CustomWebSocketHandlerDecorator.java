@@ -4,6 +4,7 @@ import com.mnot.quizdot.global.jwt.JWTUtil;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import com.mnot.quizdot.global.util.RedisUtil;
+import com.mnot.quizdot.global.util.SessionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -15,13 +16,13 @@ import org.springframework.web.socket.handler.WebSocketHandlerDecorator;
 @Slf4j
 public class CustomWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
 
-    private final RedisUtil redisUtil;
+    private final SessionUtil sessionUtil;
     private final JWTUtil jwtUtil;
 
-    public CustomWebSocketHandlerDecorator(WebSocketHandler handler, RedisUtil redisUtil,
+    public CustomWebSocketHandlerDecorator(WebSocketHandler handler, SessionUtil sessionUtil,
         JWTUtil jwtUtil) {
         super(handler);
-        this.redisUtil = redisUtil;
+        this.sessionUtil = sessionUtil;
         this.jwtUtil = jwtUtil;
     }
 
@@ -56,9 +57,10 @@ public class CustomWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
         // 웹소켓 연결이 끊긴 사용자의 데이터 삭제
         String accessToken = (String) session.getAttributes().get("access");
         if (accessToken != null) {
-            redisUtil.deleteInactivePlayerData(String.valueOf(jwtUtil.getId(accessToken)));
-        } else {
-            throw new BusinessException(ErrorCode.HTTP_HEADER_INVALID);
+            sessionUtil.deleteInactivePlayerData(String.valueOf(jwtUtil.getId(accessToken)));
         }
+//        else {
+//            throw new BusinessException(ErrorCode.HTTP_HEADER_INVALID);
+//        }
     }
 }

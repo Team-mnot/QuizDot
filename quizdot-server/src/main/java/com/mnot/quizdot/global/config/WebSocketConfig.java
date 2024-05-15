@@ -3,7 +3,7 @@ package com.mnot.quizdot.global.config;
 import com.mnot.quizdot.global.jwt.JWTUtil;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
-import com.mnot.quizdot.global.util.RedisUtil;
+import com.mnot.quizdot.global.util.SessionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -66,9 +66,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registration.addDecoratorFactory(new WebSocketHandlerDecoratorFactory() {
             @Override
             public WebSocketHandler decorate(WebSocketHandler handler) {
-                RedisUtil redisUtil = applicationContext.getBean(RedisUtil.class);
+                SessionUtil sessionUtil = applicationContext.getBean(SessionUtil.class);
                 JWTUtil jwtUtil = applicationContext.getBean(JWTUtil.class);
-                return new CustomWebSocketHandlerDecorator(handler, redisUtil, jwtUtil);
+                return new CustomWebSocketHandlerDecorator(handler, sessionUtil, jwtUtil);
             }
         });
     }

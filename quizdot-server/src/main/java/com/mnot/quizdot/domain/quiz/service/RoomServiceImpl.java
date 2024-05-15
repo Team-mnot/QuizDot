@@ -135,6 +135,7 @@ public class RoomServiceImpl implements RoomService {
         String roomKey = redisUtil.getRoomInfoKey(roomId);
         RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(roomKey);
         if (memberId.equals(String.valueOf(roomInfoDto.getHostId()))) {
+            playerKey = redisUtil.getPlayersKey(roomId);
             String newHostId = (String) redisTemplate.opsForHash().randomKey(playerKey);
 
             // 모든 사람이 퇴장했으면, 대기실 데이터 삭제
