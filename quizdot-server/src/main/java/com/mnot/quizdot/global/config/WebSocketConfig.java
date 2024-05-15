@@ -42,9 +42,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         taskScheduler.initialize();
 
         registry.setApplicationDestinationPrefixes(("/pub/chat")) // 클라이언트→서버 PREFIX
-            .enableSimpleBroker("/sub") // 서버→클라이언트 PREFIX
-            .setHeartbeatValue(new long[]{1000, 1000}) // 하트비트 1초로 설정
-            .setTaskScheduler(taskScheduler); // 하트비트 시간 설정하기 위해서 스케줄러 추가
+            .enableSimpleBroker("/sub"); // 서버→클라이언트 PREFIX
+//            .setHeartbeatValue(new long[]{1000, 1000}) // 하트비트 1초로 설정
+//            .setTaskScheduler(taskScheduler); // 하트비트 시간 설정하기 위해서 스케줄러 추가
     }
 
     @Override

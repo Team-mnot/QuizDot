@@ -62,3 +62,11 @@ cloud:
       auto: false
     cloudfront:
       domain: d3eb2qgtkbb4eu.cloudfront.net
+
+logging:
+  level:
+    org:
+      hibernate:
+        orm:
+          jdbc:
+            bind: trace
