@@ -8,7 +8,7 @@ export function CharacterList(chaInfo: {
   return (
     <div>
       {chaInfo.characterId}
-      {chaInfo.characterList.map((character, index) => (
+      {chaInfo.characterList?.map((character, index) => (
         <div key={index}>
           <p>Name: {character.id}</p>
         </div>

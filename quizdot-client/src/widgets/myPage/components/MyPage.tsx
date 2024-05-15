@@ -7,6 +7,9 @@ import { CharacterList } from './CharacterList';
 import { TitleList } from './TitleList';
 import { Settings } from './Settings';
 
+import { GetCharacterApi } from '../api/api';
+import { GetColerApi } from '../api/api';
+
 export function MyPage(props: { id: number }) {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [selected, setSelected] = useState('Record');
@@ -16,6 +19,7 @@ export function MyPage(props: { id: number }) {
         const userinfo = await GetUserInfoApi(props.id);
         if (userinfo) {
           setUserInfo(userinfo);
+          console.log(userInfo);
         }
       } catch (error) {
         console.error('Error Fetching UserInfo', error);
@@ -24,9 +28,18 @@ export function MyPage(props: { id: number }) {
     fetchData();
   }, []);
 
+  const handleGetCha = () => {
+    GetCharacterApi();
+  };
+
+  const handleGetCol = () => {
+    GetColerApi();
+  };
+
   const handleClick = (props: string) => {
     setSelected(props);
   };
+
   if (userInfo) {
     return (
       <div className="m-2 flex border bg-slate-400 p-2">
@@ -40,8 +53,8 @@ export function MyPage(props: { id: number }) {
           </div>
           <span>경험치 : {userInfo.exp}</span>
           <span>보유 코인: {userInfo.point} </span>
-          <button>닉네임 색상 뽑기</button>
-          <button>캐릭터 뽑기</button>
+          <button onClick={handleGetCol}>닉네임 색상 뽑기</button>
+          <button onClick={handleGetCha}>캐릭터 뽑기</button>
         </div>
         {/* 오른쪽 */}
         <div className="flex flex-col">
@@ -72,11 +85,11 @@ export function MyPage(props: { id: number }) {
             </button>
           </div>
           <div>
-            {selected === 'Record' && <Record userInfo={userInfo!} />}
+            {selected === 'Record' && <Record userInfo={userInfo} />}
             {selected === 'CharacterList' && (
               <CharacterList
-                characterId={userInfo!.characterId}
-                characterList={userInfo!.characterListDtos}
+                characterId={userInfo.characterId}
+                characterList={userInfo.characterListDtos}
               />
             )}
             {selected === 'TitleList' && (

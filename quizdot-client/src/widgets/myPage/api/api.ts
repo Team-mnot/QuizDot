@@ -109,3 +109,47 @@ export async function ChangePwdApi(props: ChangePwdProps) {
     console.error('Error Change Password', error);
   }
 }
+
+export async function GetCharacterApi() {
+  const accessToken = localStorage.getItem('accessToken');
+
+  try {
+    const response: AxiosResponse<Response> = await axios.post(
+      `${baseApi}//member/reward/random-pick/character`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          access: accessToken,
+        },
+      },
+    );
+    if (response.status === 200) {
+      console.log('캐릭터 뽑기 성공');
+      console.log(response);
+    }
+  } catch (error) {
+    console.error('Error Get Character', error);
+  }
+}
+
+export async function GetColerApi() {
+  const accessToken = localStorage.getItem('accessToken');
+
+  try {
+    const response: AxiosResponse<Response> = await axios.post(
+      `${baseApi}//member/reward/random-pick/color`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          access: accessToken,
+        },
+      },
+    );
+    if (response.status === 200) {
+      console.log('닉네임 색상 뽑기 성공');
+      console.log(response);
+    }
+  } catch (error) {
+    console.error('Error Get Color', error);
+  }
+}

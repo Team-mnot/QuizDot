@@ -94,7 +94,7 @@ export function ResetPwdForm(props: { id: string }) {
           <input
             className="rounded-lg px-3 focus:outline-none"
             type={showPassword ? 'text' : 'password'}
-            placeholder="비밀번호"
+            placeholder="새 비밀번호"
             {...register('password')}
             autoFocus
             value={password}

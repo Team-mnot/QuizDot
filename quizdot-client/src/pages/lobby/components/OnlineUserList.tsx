@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { ActiveUserType } from '../api/types';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
 import { OnlineUser } from '.';
+import { MyPage } from '@/widgets/myPage';
+import { UserInfo } from '@/widgets/userInfo';
 
 export function OnlineUserList({
   activeUsers,
@@ -47,9 +49,9 @@ export function OnlineUserList({
 
       <Modal isOpen={useOpenUserModal} onClose={closeUserModal}>
         {userStore.id == clickedUserId ? (
-          <div>마이페이지</div>
+          <MyPage id={userStore.id} />
         ) : (
-          <div>타인</div>
+          <UserInfo id={clickedUserId} />
         )}
       </Modal>
     </div>

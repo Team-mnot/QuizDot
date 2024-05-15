@@ -29,12 +29,6 @@ const maxQuestionList = { 30: 30, 20: 20, 10: 10 } as {
   [key: number]: number;
 };
 
-// 레벨에 따른 MAX 경험치
-const expList = {
-  1: 10000,
-  2: 20000,
-} as { [key: number]: number };
-
 const roomStateColors = {
   INPROGRESS: 'grey',
   WAITING: 'green',
@@ -47,6 +41,5 @@ export {
   maxPeopleList,
   categoryList,
   maxQuestionList,
-  expList,
   roomStateColors,
 };
