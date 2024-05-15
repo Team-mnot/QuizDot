@@ -19,7 +19,6 @@ export function MyPage(props: { id: number }) {
         const userinfo = await GetUserInfoApi(props.id);
         if (userinfo) {
           setUserInfo(userinfo);
-          console.log(userInfo);
         }
       } catch (error) {
         console.error('Error Fetching UserInfo', error);

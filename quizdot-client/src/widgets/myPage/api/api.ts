@@ -10,6 +10,7 @@ export async function GetUserInfoApi(props: number): Promise<UserInfo | null> {
         headers: {
           'Content-Type': 'application/json',
         },
+        withCredentials: true,
       },
     );
     if (response.status === 200) {
@@ -115,7 +116,7 @@ export async function GetCharacterApi() {
 
   try {
     const response: AxiosResponse<Response> = await axios.post(
-      `${baseApi}//member/reward/random-pick/character`,
+      `${baseApi}/member/reward/random-pick/character`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -137,7 +138,7 @@ export async function GetColerApi() {
 
   try {
     const response: AxiosResponse<Response> = await axios.post(
-      `${baseApi}//member/reward/random-pick/color`,
+      `${baseApi}/member/reward/random-pick/color`,
       {
         headers: {
           'Content-Type': 'application/json',
