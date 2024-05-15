@@ -11,16 +11,16 @@ public class TitleRequirment {
     private static final Map<Integer, Predicate<TitleData>> requirment = new HashMap<>();
 
     static {
-        requirment.put(2, titleData -> titleData.getMember().getLevel() == 3);
-        requirment.put(3, titleData -> titleData.getMember().getLevel() == 5);
-        requirment.put(4, titleData -> titleData.getMember().getLevel() == 10);
-        requirment.put(5, titleData -> titleData.getMember().getLevel() == 20);
-        requirment.put(6, titleData -> titleData.getMember().getLevel() == 30);
-        requirment.put(7, titleData -> titleData.getMember().getLevel() == 40);
-        requirment.put(8, titleData -> titleData.getMember().getLevel() == 50);
-        requirment.put(9, titleData -> titleData.getMember().getLevel() == 60);
-        requirment.put(10, titleData -> titleData.getMember().getLevel() == 70);
-        requirment.put(11, titleData -> titleData.getMember().getLevel() == 80);
+        requirment.put(2, titleData -> titleData.getMember().getLevel() == 10);
+        requirment.put(3, titleData -> titleData.getMember().getLevel() == 20);
+        requirment.put(4, titleData -> titleData.getMember().getLevel() == 30);
+        requirment.put(5, titleData -> titleData.getMember().getLevel() == 40);
+        requirment.put(6, titleData -> titleData.getMember().getLevel() == 50);
+        requirment.put(7, titleData -> titleData.getMember().getLevel() == 60);
+        requirment.put(8, titleData -> titleData.getMember().getLevel() == 70);
+        requirment.put(9, titleData -> titleData.getMember().getLevel() == 80);
+        requirment.put(10, titleData -> titleData.getMember().getLevel() == 90);
+        requirment.put(11, titleData -> titleData.getMember().getLevel() == 100);
 
         requirment.put(12, titleData -> titleData.getMember().getPoint() >= 1000);
         requirment.put(13, titleData -> titleData.getMember().getPoint() >= 10000);
@@ -32,11 +32,11 @@ public class TitleRequirment {
         requirment.put(17, titleData -> titleData.getMode() == ModeType.NORMAL
             && titleData.getMultiRecord().getWinCount() == 10);
         requirment.put(18, titleData -> titleData.getMode() == ModeType.NORMAL
-            && titleData.getMultiRecord().getWinCount() == 50);
+            && titleData.getMultiRecord().getWinCount() == 30);
         requirment.put(19, titleData -> titleData.getMode() == ModeType.NORMAL
-            && titleData.getMultiRecord().getWinCount() == 100);
+            && titleData.getMultiRecord().getWinCount() == 50);
         requirment.put(20, titleData -> titleData.getMode() == ModeType.NORMAL
-            && titleData.getMultiRecord().getWinCount() == 500);
+            && titleData.getMultiRecord().getWinCount() == 100);
 
         requirment.put(21, titleData -> titleData.getMode() == ModeType.NORMAL
             && titleData.getMultiRecord().getTotalCount() == 1);
@@ -54,11 +54,11 @@ public class TitleRequirment {
         requirment.put(27, titleData -> titleData.getMode() == ModeType.SURVIVAL
             && titleData.getMultiRecord().getWinCount() == 10);
         requirment.put(28, titleData -> titleData.getMode() == ModeType.SURVIVAL
-            && titleData.getMultiRecord().getWinCount() == 50);
+            && titleData.getMultiRecord().getWinCount() == 30);
         requirment.put(29, titleData -> titleData.getMode() == ModeType.SURVIVAL
-            && titleData.getMultiRecord().getWinCount() == 100);
+            && titleData.getMultiRecord().getWinCount() == 50);
         requirment.put(30, titleData -> titleData.getMode() == ModeType.SURVIVAL
-            && titleData.getMultiRecord().getWinCount() == 500);
+            && titleData.getMultiRecord().getWinCount() == 100);
 
         requirment.put(31, titleData -> titleData.getMode() == ModeType.SURVIVAL
             && titleData.getMultiRecord().getTotalCount() == 1);
@@ -69,6 +69,28 @@ public class TitleRequirment {
         requirment.put(34, titleData -> titleData.getMode() == ModeType.SURVIVAL
             && titleData.getMultiRecord().getTotalCount() == 100);
         requirment.put(35, titleData -> titleData.getMode() == ModeType.SURVIVAL
+            && titleData.getMultiRecord().getTotalCount() == 500);
+
+        requirment.put(36, titleData -> titleData.getMode() == ModeType.ILGITO
+            && titleData.getMultiRecord().getWinCount() == 1);
+        requirment.put(37, titleData -> titleData.getMode() == ModeType.ILGITO
+            && titleData.getMultiRecord().getWinCount() == 10);
+        requirment.put(38, titleData -> titleData.getMode() == ModeType.ILGITO
+            && titleData.getMultiRecord().getWinCount() == 30);
+        requirment.put(39, titleData -> titleData.getMode() == ModeType.ILGITO
+            && titleData.getMultiRecord().getWinCount() == 50);
+        requirment.put(40, titleData -> titleData.getMode() == ModeType.ILGITO
+            && titleData.getMultiRecord().getWinCount() == 100);
+
+        requirment.put(41, titleData -> titleData.getMode() == ModeType.ILGITO
+            && titleData.getMultiRecord().getTotalCount() == 1);
+        requirment.put(42, titleData -> titleData.getMode() == ModeType.ILGITO
+            && titleData.getMultiRecord().getTotalCount() == 10);
+        requirment.put(43, titleData -> titleData.getMode() == ModeType.ILGITO
+            && titleData.getMultiRecord().getTotalCount() == 50);
+        requirment.put(44, titleData -> titleData.getMode() == ModeType.ILGITO
+            && titleData.getMultiRecord().getTotalCount() == 100);
+        requirment.put(45, titleData -> titleData.getMode() == ModeType.ILGITO
             && titleData.getMultiRecord().getTotalCount() == 500);
     }
 

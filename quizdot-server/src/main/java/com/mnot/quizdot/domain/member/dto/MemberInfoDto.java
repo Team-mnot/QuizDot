@@ -49,7 +49,7 @@ public class MemberInfoDto {
     private int characterId;
 
     //캐릭터 리스트
-    private List<CharacterListDto> characterdListDtos;
+    private List<CharacterListDto> characterListDtos;
 
     //보유 포인트
     private int point;
@@ -80,7 +80,7 @@ public class MemberInfoDto {
         this.title = title;
         this.titleListDtos = titleListDtos;
         this.characterId = characterId;
-        this.characterdListDtos = characterListDtos;
+        this.characterListDtos = characterListDtos;
         this.point = point;
         this.level = level;
         this.exp = exp;
