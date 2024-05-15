@@ -189,11 +189,12 @@ public class SurvivalServiceImpl implements SurvivalService {
         // 생존자 중에서 정답을 맞힌 사람이 없는 경우
         // 생존자는 그대로 다음 문제로 넘어가되, 정답을 맞힌 탈락자는 추가로 부활시킨다
         if (redisTemplate.opsForZSet().count(surviveKey, 0, MAX_SCORE) == 0) {
-            Set<String> resurrections = redisTemplate.opsForZSet()
+            Set<TypedTuple<Integer>> resurrections = redisTemplate.opsForZSet()
                 .rangeByScoreWithScores(eliminatedKey, 0, MAX_SCORE);
-            Set<TypedTuple<String>> newRessurections = new HashSet<>();
-            for (String playerId : resurrections) {
+            Set<TypedTuple<Integer>> newRessurections = new HashSet<>();
+            for (TypedTuple<Integer> player : resurrections) {
                 // 부활 처리
+                Integer playerId = player.getValue();
                 Double originalScore = redisTemplate.opsForZSet().score(boardKey, playerId);
                 newRessurections.add(TypedTuple.of(playerId, originalScore * (-1)));
             }
