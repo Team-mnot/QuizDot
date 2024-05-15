@@ -10,6 +10,7 @@ export async function GetUserInfoApi(props: number): Promise<UserInfo | null> {
         headers: {
           'Content-Type': 'application/json',
         },
+        withCredentials: true,
       },
     );
     if (response.status === 200) {
@@ -115,7 +116,8 @@ export async function GetCharacterApi() {
 
   try {
     const response: AxiosResponse<Response> = await axios.post(
-      `${baseApi}//member/reward/random-pick/character`,
+      `${baseApi}/member/reward/random-pick/character`,
+      {},
       {
         headers: {
           'Content-Type': 'application/json',
@@ -127,6 +129,9 @@ export async function GetCharacterApi() {
       console.log('캐릭터 뽑기 성공');
       console.log(response);
     }
+    if (response.status === 400) {
+      window.alert('포인트가 부족합니다');
+    }
   } catch (error) {
     console.error('Error Get Character', error);
   }
@@ -137,7 +142,8 @@ export async function GetColerApi() {
 
   try {
     const response: AxiosResponse<Response> = await axios.post(
-      `${baseApi}//member/reward/random-pick/color`,
+      `${baseApi}/member/reward/random-pick/color`,
+      {},
       {
         headers: {
           'Content-Type': 'application/json',
@@ -148,6 +154,9 @@ export async function GetColerApi() {
     if (response.status === 200) {
       console.log('닉네임 색상 뽑기 성공');
       console.log(response);
+    }
+    if (response.status === 400) {
+      window.alert('포인트가 부족합니다');
     }
   } catch (error) {
     console.error('Error Get Color', error);

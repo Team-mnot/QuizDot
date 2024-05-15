@@ -16,10 +16,13 @@ export function MyPage(props: { id: number }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const accessToken = localStorage.getItem('accessToken');
         const userinfo = await GetUserInfoApi(props.id);
         if (userinfo) {
           setUserInfo(userinfo);
-          console.log(userInfo);
+        }
+        if (accessToken) {
+          localStorage.setItem('accessToken', accessToken!);
         }
       } catch (error) {
         console.error('Error Fetching UserInfo', error);
