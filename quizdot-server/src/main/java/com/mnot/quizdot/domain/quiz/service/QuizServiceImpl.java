@@ -131,7 +131,7 @@ public class QuizServiceImpl implements QuizService {
         redisUtil.modifyRoomState(roomKey, GameState.INPROGRESS);
 
         // 모든 플레이어에게 게임 시작을 알린다
-        messagingTemplate.convertAndSend("/sub/info/room/" + roomId,
+        messagingTemplate.convertAndSend("/sub/chat/room/" + roomId,
             MessageDto.of(SERVER_SENDER, MessageType.START));
     }
 
