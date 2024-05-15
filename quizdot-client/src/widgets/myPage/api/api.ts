@@ -128,6 +128,9 @@ export async function GetCharacterApi() {
       console.log('캐릭터 뽑기 성공');
       console.log(response);
     }
+    if (response.status === 400) {
+      window.alert('포인트가 부족합니다');
+    }
   } catch (error) {
     console.error('Error Get Character', error);
   }
@@ -149,6 +152,9 @@ export async function GetColerApi() {
     if (response.status === 200) {
       console.log('닉네임 색상 뽑기 성공');
       console.log(response);
+    }
+    if (response.status === 400) {
+      window.alert('포인트가 부족합니다');
     }
   } catch (error) {
     console.error('Error Get Color', error);
