@@ -56,7 +56,6 @@ public class CustomWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
         // 웹소켓 연결이 끊긴 사용자의 데이터 삭제
         String accessToken = (String) session.getAttributes().get("access");
         if (accessToken != null) {
-            log.info("연결 끊겼다 : {}", accessToken);
             redisUtil.deleteInactivePlayerData(String.valueOf(jwtUtil.getId(accessToken)));
         }
         // TODO : 나중에 살리기

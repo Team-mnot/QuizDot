@@ -161,7 +161,7 @@ public class SurvivalServiceImpl implements SurvivalService {
         messagingTemplate.convertAndSend(getGameDestination(roomId),
             MessageDto.of(SERVER_SENDER, "리워드 지급 및 결과 계산이 완료되었습니다.",
                 MessageType.REWARD, resultDtoList));
-
+        
         // 대기실 상태 변경 (INPROGRESS -> WAITING)
         Map<String, Integer> matchRooms = redisTemplate.opsForHash()
             .entries(getMatchRoomKey(roomId));
@@ -235,7 +235,6 @@ public class SurvivalServiceImpl implements SurvivalService {
 
         // 스테이지 결과 초기화
         redisTemplate.unlink(List.of(surviveKey, eliminatedKey));
-
         // 최종 스테이지 결과 리턴
         MessageType messageType = MessageType.STAGE_RESULT;
         Set<TypedTuple<String>> results = redisTemplate.opsForZSet()
