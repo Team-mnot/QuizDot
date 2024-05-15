@@ -29,7 +29,7 @@ const useRequestQuestion = () => {
           },
         },
       );
-      console.log('요청 성공인가?');
+      console.log('문제요청 성공');
       if (response.status !== 200) {
         throw new Error('axios 에러~! 문제 달라고 하기 실패 ㅠㅠ');
       }
