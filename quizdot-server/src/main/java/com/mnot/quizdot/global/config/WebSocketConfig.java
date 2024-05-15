@@ -43,6 +43,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
         registry.setApplicationDestinationPrefixes(("/pub/chat")) // 클라이언트→서버 PREFIX
             .enableSimpleBroker("/sub"); // 서버→클라이언트 PREFIX
+        // TODO : 나중에 살리기
 //            .setHeartbeatValue(new long[]{1000, 1000}) // 하트비트 1초로 설정
 //            .setTaskScheduler(taskScheduler); // 하트비트 시간 설정하기 위해서 스케줄러 추가
     }
@@ -67,7 +68,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             }
         });
     }
-
+// TODO : 나중에 살리기
 //    @Override
 //    public void configureClientInboundChannel(ChannelRegistration registration) {
 //        // 웹소켓 연결 시 인증 헤더를 전달하기 위해 인터셉터 등록
