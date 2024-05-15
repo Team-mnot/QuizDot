@@ -5,6 +5,7 @@ import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 import { baseApi } from '@/shared/apis';
 import { useNavigate } from 'react-router-dom';
 import jwtAxiosInstance from '@/shared/utils/jwtAxiosInstance';
+// import { RoomInfo } from './RoomInfo';
 
 interface Props {
   roomId: number;
@@ -64,7 +65,7 @@ export function SurvivalMatchBtn({ roomId, category }: Props) {
     matchTimer.current = null;
     try {
       const response = await axios.post(
-        `${baseApi}/survival/${roomId}/cancel?category=ECONOMY`,
+        `${baseApi}/survival/${roomId}/cancel?category=${category}`,
       );
       if (response.status === 200) {
         console.log(response.data.message);

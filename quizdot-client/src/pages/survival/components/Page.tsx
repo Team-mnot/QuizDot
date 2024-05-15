@@ -57,7 +57,7 @@ export function SurvivalPage() {
 
   useEffect(() => {
     if (roomInfo.hostId === userStore.id) {
-      requestQuestion(parseInt(roomId), category, 3, gameMode); // 방장만 호출하는rj
+      requestQuestion(parseInt(roomId), category, 3, gameMode); // 방장만 호출하는거
     }
   }, []);
 
@@ -90,6 +90,16 @@ export function SurvivalPage() {
       callbackMsg.msg.type == 'STAGE_RESULT'
     ) {
       console.log('결과결과');
+      console.log(callbackMsg.msg.data);
+      // setShowResult(true);
+      // setShowChatBox(true);
+      // setShowHint(false);
+    } else if (
+      callbackMsg.msg &&
+      callbackMsg.address == `info/game/${roomId}` &&
+      callbackMsg.msg.type == 'EXIT'
+    ) {
+      console.log('종료종료');
       console.log(callbackMsg.msg.data);
       // setShowResult(true);
       // setShowChatBox(true);

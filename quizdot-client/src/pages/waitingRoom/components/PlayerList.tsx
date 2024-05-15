@@ -30,10 +30,13 @@ export function PlayerList(props: { roomId: number; players: PlayersType }) {
         playersCount.current = Object.keys(players.current).length;
       }
     }
-  }, [callbackMsg, players]);
+  }, [callbackMsg]);
+
+  useEffect(() => {}, [players.current]);
 
   return (
     <div className="flex justify-between">
+      {Object.keys(players.current).length}
       <div>
         {players.current &&
           Object.entries(players.current)
