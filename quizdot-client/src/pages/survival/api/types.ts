@@ -35,3 +35,8 @@ export interface iQuizList {
     quizResList: iQuiz[];
   };
 }
+
+export interface GameResult {
+  score: number;
+  value: number;
+}

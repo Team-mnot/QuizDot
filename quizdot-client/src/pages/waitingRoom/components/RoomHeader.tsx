@@ -4,6 +4,7 @@ import { RoomInfoType } from '@/pages/lobby/api/types';
 import { MultiMatchBtn, SurvivalMatchBtn } from '.';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 import { useContext, useEffect, useState } from 'react';
+import { useUserStore } from '@/shared/stores/userStore/userStore';
 
 export function RoomHeader(props: {
   channelId: number;
@@ -11,7 +12,7 @@ export function RoomHeader(props: {
 }) {
   const { callbackMsg } = useContext(WebSocketContext);
   const [roomInfo, setRoomInfo] = useState<RoomInfoType>(props.roomInfo);
-
+  const userStore = useUserStore();
   useEffect(() => {
     if (
       callbackMsg.msg &&
@@ -33,17 +34,26 @@ export function RoomHeader(props: {
         </div>
       </div>
       <div>
-        <div className={'text-center'}>
-          {roomInfo.gameMode == 'NORMAL' ? (
-            <MultiMatchBtn
-              channelId={props.channelId}
-              roomId={roomInfo.roomId}
-              mode={roomInfo.gameMode}
-            />
-          ) : (
-            <SurvivalMatchBtn roomId={roomInfo.roomId} />
-          )}
-        </div>
+        {roomInfo.hostId === userStore.id ? (
+          <div className="flex justify-center">
+            {roomInfo.gameMode === 'NORMAL' ? (
+              <MultiMatchBtn
+                channelId={props.channelId}
+                roomId={roomInfo.roomId}
+                mode={roomInfo.gameMode}
+              />
+            ) : (
+              <SurvivalMatchBtn
+                roomId={roomInfo.roomId}
+                category={roomInfo.category}
+              />
+            )}
+          </div>
+        ) : (
+          <div className=" flex justify-center pt-10 text-3xl text-red-700">
+            호스트가 게임을 시작할때 까지 기다려주세요
+          </div>
+        )}
       </div>
     </div>
   );

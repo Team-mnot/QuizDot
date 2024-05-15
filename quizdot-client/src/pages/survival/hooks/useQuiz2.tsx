@@ -3,10 +3,6 @@
 import { useEffect, useState } from 'react';
 import useQuizStore from '../store';
 
-// 상위에서 웹소켓 이미 연결됐다고 가정할겁니다? 불만있으신가요? 에?
-// import { useWebSocket } from './websocketProvider'; // WebSocketProvider에서 제공하는 컨텍스트 훅 사용
-
-// useQuiz라는 customHook에서 이 3개 사용할거니께~
 export function useQuiz2() {
   const [loading, setLoading] = useState(true); // customHook 국밥
   const [error, setError] = useState<Error | string | null>(null); // 국밥. 사실 여기서 Error 타입은 안쓰고잇죠~ 에러메세지 렌더링 안할거라 ~
@@ -19,8 +15,9 @@ export function useQuiz2() {
     setCurrentQuiz,
   } = useQuizStore();
 
+  // TODO : 이거 문제 비었을 때 경우 고려 수정해야함
   useEffect(() => {
-    if (quizzes.length > 0) {
+    if (quizzes && quizzes.length > 0) {
       setLoading(false);
       setError(null);
     } else {
@@ -44,12 +41,9 @@ export function useQuiz2() {
   };
 
   // 퀴즈 제출 로직
-  const handleQuizSubmission = (answers: string[]) => {
-    console.log('Submitted answers:', answers);
+  const handleQuizSubmission = (answer: string[]) => {
+    console.log('내가 제출한 답 :', answer);
   };
-
-  // 언마운트 될 때 타이머 없애야합니다~ 아니면 언마운트 돼도 타이머 계속돌아간대요
-  // 그니까 좋은 말로 할 때 useEffect로 감시하다가 변하면 로직수행하고 return하면서 언마운트 하라고
 
   return {
     quizzes,

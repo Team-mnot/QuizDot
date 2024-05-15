@@ -2,7 +2,7 @@
 
 import { useQuiz2 } from '../hooks/useQuiz2';
 import { useState, useEffect } from 'react';
-import useIsSubmitAnswer from '../hooks/useIsSubmitAnswer';
+import useIsSubmitAnswer from '../hooks/useRequestQuestion';
 import useQuizStore from '../store';
 import { postQuizResult } from '../api/api';
 
@@ -27,7 +27,6 @@ export function QuizComponent({ roomId }: { roomId: number }) {
   const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false); // 사용자 입력을 저장할 상태
 
   const {
-    submitAnswer,
     loading: submitLoading,
     // error: submitError,
   } = useIsSubmitAnswer();
@@ -38,10 +37,8 @@ export function QuizComponent({ roomId }: { roomId: number }) {
     setResultMessage('제출 안하니? 🐦');
     setCurrentQuiz(currentQuiz);
     setShowChatBox(false);
-  }, [currentQuizIndex, quizzes, setCurrentQuiz]);
+  }, [currentQuizIndex, quizzes]);
 
-  // async 쓰지말까.. 어차피 정답 오답 내는건 데이터 보내는거 기다릴 필요 없긴한데
-  // 그래도 서버에 제출했다는 신호 주는거 확인은 해보자고 ~
   const handleAnswerSubmit = async () => {
     setIsAnswerSubmitted(true);
     if (currentQuiz) {
@@ -58,7 +55,7 @@ export function QuizComponent({ roomId }: { roomId: number }) {
       setShowChatBox(true);
       setUserAnswer('');
 
-      await submitAnswer(roomId, currentQuiz.id); // 이거 문제 제출했다고 알리는 함수 만들어놨던건데 안쓰이면 지워야징
+      // TODO : isCorrect를 그냥 1, -1 로 보냈어도 될것..같은데 이건 리팩토링으로 하자
       await postQuizResult(roomId, isCorrect); // API 호출
     }
   };
@@ -75,7 +72,7 @@ export function QuizComponent({ roomId }: { roomId: number }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowHint(true);
-    }, 3000);
+    }, 5000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -86,7 +83,7 @@ export function QuizComponent({ roomId }: { roomId: number }) {
       setShowChatBox(true);
       setShowResult(true);
       setShowHint(false);
-    }, 6000);
+    }, 10000);
 
     return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 해제
   }, []);

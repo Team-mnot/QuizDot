@@ -3,38 +3,22 @@
 import { useEffect } from 'react';
 import useQuizStore from '../store';
 import { useQuiz2 } from '../hooks/useQuiz2';
-import { useUserStore } from '@/shared/stores/userStore/userStore';
-import { Button } from '@/shared/ui';
-import { RoomInfoType } from '@/shared/apis/types';
 
-interface QuizResultComponentProps {
-  roomInfo: RoomInfoType;
-}
+// interface QuizResultComponentProps {
+//   roomInfo: RoomInfoType;
+// }
 
-export function QuizResultComponent({ roomInfo }: QuizResultComponentProps) {
+// TODO : 이거 필요없어. 왜냐? 결과만 띄워주거든 받아서 띄우면 끝임
+export function QuizResultComponent() {
   const { resultMessage, setShowResult, setShowCountDown } = useQuizStore();
   const { handleNextQuiz } = useQuiz2();
-  const userStore = useUserStore();
+
   useEffect(() => {
-    // handleNextQuiz();
-
+    handleNextQuiz();
     const timer = setTimeout(() => {
-      // setTimeOut에는 실행할 함수, 지연시간 2개 넣습니다잉 n초뒤에 ShowResult를 false로 만들겠단 소리죠~
       setShowResult(false);
-      //
-      {
-        roomInfo.hostId == userStore.id && (
-          <Button
-            value="초대 링크 생성"
-            className="w-[110px] text-[10px] text-red-700"
-            onClick={handleNextQuiz}
-          />
-        );
-      }
-      //
-
       setShowCountDown(true); // 카운트다운 페이지 가져와
-    }, 3000);
+    }, 5000);
     return () => clearTimeout(timer);
   }, []);
 
