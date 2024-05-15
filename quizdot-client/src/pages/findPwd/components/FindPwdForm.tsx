@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { IdCheckAPi } from '@/pages/signUp/api/api';
+import { IdCheckApi } from '@/pages/signUp/api/api';
 import { FindPwdApi } from '../api/api';
 import type { FindPwdProps } from '../api/types';
 
@@ -36,7 +36,7 @@ export function FindPwdForm() {
 
   // 폼 제출 함수
   const onSubmit: CustomSubmitHandler = async (data) => {
-    const idCheck = await IdCheckAPi(data.memberId);
+    const idCheck = await IdCheckApi(data.memberId);
     if (idCheck) {
       window.alert('존재하지 않는 아이디입니다');
       return;

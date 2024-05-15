@@ -13,6 +13,7 @@ import { GetColerApi } from '../api/api';
 export function MyPage(props: { id: number }) {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [selected, setSelected] = useState('Record');
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -45,14 +46,19 @@ export function MyPage(props: { id: number }) {
 
   if (userInfo) {
     return (
-      <div className="m-2 flex border bg-slate-400 p-2">
+      <div
+        className="m-2 flex border bg-slate-400 p-2"
+        style={{ width: '600px', height: '400px' }}
+      >
         {/* 왼쪽 */}
-        <div className="flex flex-col">
+        <div className="flex flex-col border">
           <div>{userInfo.characterId}</div>
           <span>{userInfo.title}</span>
           <div>
             <span>lv: {userInfo.level} </span>
-            <span>{userInfo.nickname}</span>
+            <span style={{ color: userInfo.nicknameColor }}>
+              {userInfo.nickname}
+            </span>
           </div>
           <span>경험치 : {userInfo.exp}</span>
           <span>보유 코인: {userInfo.point} </span>
@@ -60,7 +66,7 @@ export function MyPage(props: { id: number }) {
           <button onClick={handleGetCha}>캐릭터 뽑기</button>
         </div>
         {/* 오른쪽 */}
-        <div className="flex flex-col">
+        <div className="flex flex-col border">
           <div>
             <button
               className={`${selected === 'Record' ? 'bg-blue-500 font-bold text-white' : ''}`}
