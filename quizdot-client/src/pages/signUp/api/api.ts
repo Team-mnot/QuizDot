@@ -31,7 +31,7 @@ export async function SignUpApi(
   return 'fail';
 }
 
-export async function IdCheckAPi(props: string): Promise<boolean> {
+export async function IdCheckApi(props: string): Promise<boolean> {
   try {
     const response: AxiosResponse<Response> = await axios.get(
       `${baseApi}/member/check-id?id=${props}`,
@@ -47,7 +47,7 @@ export async function IdCheckAPi(props: string): Promise<boolean> {
   }
 }
 
-export async function NicknameCheckAPi(props: string): Promise<boolean> {
+export async function NicknameCheckApi(props: string): Promise<boolean> {
   try {
     const response: AxiosResponse<Response> = await axios.get(
       `${baseApi}/member/check-nickname?nickname=${props}`,
