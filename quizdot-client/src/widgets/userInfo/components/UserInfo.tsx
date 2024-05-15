@@ -19,7 +19,10 @@ export function UserInfo(props: { id: number }) {
   }, []);
 
   return (
-    <div className="flex border bg-slate-300">
+    <div
+      className="m-2 flex border bg-slate-400 p-2"
+      style={{ width: '600px', height: '400px' }}
+    >
       <div>
         <div>{userInfo?.characterId}</div>
         <span>{userInfo?.title}</span>
