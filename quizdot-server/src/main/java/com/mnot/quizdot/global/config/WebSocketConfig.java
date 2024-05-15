@@ -68,33 +68,33 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         });
     }
 
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        // 웹소켓 연결 시 인증 헤더를 전달하기 위해 인터셉터 등록
-        registration.interceptors(customChannelInterceptor());
-    }
-
-    @Bean
-    @Order(Ordered.HIGHEST_PRECEDENCE + 99)
-    public ChannelInterceptor customChannelInterceptor() {
-        // Channel Interceptor를 Spring Security보다 앞쪽 순서에 설정
-        return new ChannelInterceptor() {
-            @Override
-            public Message<?> preSend(Message<?> message, MessageChannel channel) {
-                StompHeaderAccessor accessor =
-                    MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-                if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-                    String accessToken = accessor.getFirstNativeHeader("access");
-                    if (accessToken != null) {
-                        log.info("access token 있다 : {}", accessToken);
-                        // Access token을 세션 속성에 저장
-                        accessor.getSessionAttributes().put("access", accessToken);
-                    } else {
-                        log.info("access token 없다");
-                    }
-                }
-                return message;
-            }
-        };
-    }
+//    @Override
+//    public void configureClientInboundChannel(ChannelRegistration registration) {
+//        // 웹소켓 연결 시 인증 헤더를 전달하기 위해 인터셉터 등록
+//        registration.interceptors(customChannelInterceptor());
+//    }
+//
+//    @Bean
+//    @Order(Ordered.HIGHEST_PRECEDENCE + 99)
+//    public ChannelInterceptor customChannelInterceptor() {
+//        // Channel Interceptor를 Spring Security보다 앞쪽 순서에 설정
+//        return new ChannelInterceptor() {
+//            @Override
+//            public Message<?> preSend(Message<?> message, MessageChannel channel) {
+//                StompHeaderAccessor accessor =
+//                    MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+//                if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+//                    String accessToken = accessor.getFirstNativeHeader("access");
+//                    if (accessToken != null) {
+//                        log.info("access token 있다 : {}", accessToken);
+//                        // Access token을 세션 속성에 저장
+//                        accessor.getSessionAttributes().put("access", accessToken);
+//                    } else {
+//                        log.info("access token 없다");
+//                    }
+//                }
+//                return message;
+//            }
+//        };
+//    }
 }
