@@ -11,7 +11,7 @@ import {
 } from '../constants';
 import { createRoomApi } from '../api/api';
 import { enterRoomApi } from '@/pages/waitingRoom/api/api';
-import { useGameStore } from '@/shared/stores/connectionStore/gameStore';
+import { useRoomStore } from '@/shared/stores/connectionStore/roomStore';
 
 export function RoomCreation({ channelId }: { channelId: number }) {
   const [title, setTitle] = useState<string>('테스트');
@@ -25,7 +25,7 @@ export function RoomCreation({ channelId }: { channelId: number }) {
 
   const [toastState, setToastState] = useState<boolean>(false);
   const router = useRouter();
-  const gameStore = useGameStore();
+  const roomStore = useRoomStore();
 
   useEffect(() => {
     if (mode === 'SURVIVAL') {
@@ -87,8 +87,8 @@ export function RoomCreation({ channelId }: { channelId: number }) {
     const response = await enterRoomApi(_roomId);
 
     if (response.status == 200) {
-      gameStore.fetchRoom(response.data.roomInfo);
-      gameStore.fetchPlayers(response.data.players);
+      roomStore.fetchRoom(response.data.roomInfo);
+      roomStore.fetchPlayers(response.data.players);
       router.routeTo(`/${_channelId}/${_roomId}/waiting`);
     }
   };

@@ -1,13 +1,15 @@
 import { useContext, useEffect, useRef } from 'react';
 import { Character } from '@/shared/ui/Character';
 
-import { useGameStore } from '@/shared/stores/connectionStore/gameStore';
+import { useRoomStore } from '@/shared/stores/connectionStore/roomStore';
 import { MessageDto } from '@/shared/apis/types';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
+import { useQuizSetStore } from '@/shared/stores/connectionStore/quizSetStore';
 
 export function Players({ roomId }: { roomId: number }) {
-  const gameStore = useGameStore();
-  const playersCount = useRef<number>(Object.keys(gameStore.players).length);
+  const roomStore = useRoomStore();
+  const quizSetStore = useQuizSetStore();
+  const playersCount = useRef<number>(Object.keys(roomStore.players).length);
 
   const { isReady, onSubscribeWithCallBack, onUnsubscribe } =
     useContext(WebSocketContext);
@@ -15,7 +17,7 @@ export function Players({ roomId }: { roomId: number }) {
   const callbackOfPlayers = async (message: MessageDto) => {
     console.log('PLAYERS: ', message);
     if (message.type == 'LEAVE') {
-      gameStore.leavedPlayer(message.data);
+      roomStore.leavedPlayer(message.data);
     }
   };
 
@@ -30,33 +32,47 @@ export function Players({ roomId }: { roomId: number }) {
   return (
     <div className="flex justify-between">
       <div>
-        {gameStore.players &&
-          Object.entries(gameStore.players)
+        {roomStore.players &&
+          Object.entries(roomStore.players)
             .slice(0, (playersCount.current + 1) / 2)
             .map(([key, player]) => (
-              <Character
-                key={key}
-                title={player.title}
-                nickname={player.nickname}
-                nicknameColor={player.nicknameColor}
-                level={player.level}
-                characterId={player.characterId}
-              />
+              <div key={key}>
+                <Character
+                  title={player.title}
+                  nickname={player.nickname}
+                  nicknameColor={player.nicknameColor}
+                  level={player.level}
+                  characterId={player.characterId}
+                />
+                <p>
+                  point:{' '}
+                  {quizSetStore.scores[Number(key)]
+                    ? quizSetStore.scores[Number(key)]
+                    : 0}
+                </p>
+              </div>
             ))}
       </div>
       <div>
-        {gameStore.players &&
-          Object.entries(gameStore.players)
+        {roomStore.players &&
+          Object.entries(roomStore.players)
             .slice((playersCount.current + 1) / 2, playersCount.current)
             .map(([key, player]) => (
-              <Character
-                key={key}
-                title={player.title}
-                nickname={player.nickname}
-                nicknameColor={player.nicknameColor}
-                level={player.level}
-                characterId={player.characterId}
-              />
+              <div key={key}>
+                <Character
+                  title={player.title}
+                  nickname={player.nickname}
+                  nicknameColor={player.nicknameColor}
+                  level={player.level}
+                  characterId={player.characterId}
+                />
+                <p>
+                  point:{' '}
+                  {quizSetStore.scores[Number(key)]
+                    ? quizSetStore.scores[Number(key)]
+                    : 0}
+                </p>
+              </div>
             ))}
       </div>
     </div>

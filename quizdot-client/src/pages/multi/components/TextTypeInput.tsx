@@ -17,8 +17,8 @@ export function TextTypeInput({
     handleSubmitPass();
   };
 
-  const submitAnswer = () => {
-    handleSubmitAnswer(answer);
+  const submitAnswer = (myAns: string) => {
+    handleSubmitAnswer(myAns);
     setAnswer('');
   };
 
@@ -31,11 +31,11 @@ export function TextTypeInput({
           placeholder="정답을 입력하세요"
           value={answer}
           onChange={inputAnswer}
-          onKeyDown={(e) => e.key === 'Enter' && submitAnswer}
+          onKeyDown={(e) => e.key === 'Enter' && submitAnswer(answer)}
         />
       </div>
       <div>
-        <Button className="h-12 w-20" value="패스" onClick={submitPass} />
+        <Button className="w-20 h-12" value="패스" onClick={submitPass} />
       </div>
     </div>
   );

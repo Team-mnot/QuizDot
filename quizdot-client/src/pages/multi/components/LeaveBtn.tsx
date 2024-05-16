@@ -12,7 +12,7 @@ export function LeaveBtn({
 }) {
   const router = useRouter();
 
-  const handleLeaveRoom = async () => {
+  const handleLeaveGame = async () => {
     // 퇴장 하시겠냐고 한 번은 묻는 게 좋을까?
     const response = await leaveRoomApi(roomId);
     if (response == 200) {
@@ -29,6 +29,6 @@ export function LeaveBtn({
   };
 
   return (
-    <Button className="w-[100px]" value="퇴장" onClick={handleLeaveRoom} />
+    <Button className="w-[100px]" value="퇴장" onClick={handleLeaveGame} />
   );
 }

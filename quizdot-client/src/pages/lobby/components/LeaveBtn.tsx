@@ -2,15 +2,17 @@ import { Button } from '@/shared/ui';
 import { useRouter } from '@/shared/hooks';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 import { useContext } from 'react';
+import { leaveLobbyApi } from '../api/api';
 
 export function LeaveBtn({ channelId }: { channelId: number }) {
   const router = useRouter();
   const { onUnsubscribe } = useContext(WebSocketContext);
 
-  const handleLeaveRoom = () => {
+  const handleLeaveLobby = async () => {
     onUnsubscribe(`chat/lobby/${channelId}`);
-    router.routeTo('/channel');
+    const response = await leaveLobbyApi(channelId);
+    if (response == 200) router.routeTo('/channel');
   };
 
-  return <Button value="채널로 이동" onClick={handleLeaveRoom} />;
+  return <Button value="채널로 이동" onClick={handleLeaveLobby} />;
 }

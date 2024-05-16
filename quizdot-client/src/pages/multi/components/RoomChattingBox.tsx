@@ -37,10 +37,10 @@ export function RoomChattingBox({ roomId }: { roomId: number }) {
   };
 
   useEffect(() => {
-    onSubscribeWithCallBack(`chat/room/${roomId}`, callback);
+    onSubscribeWithCallBack(`chat/game/${roomId}`, callback);
 
     return () => {
-      onUnsubscribe(`chat/room/${roomId}`);
+      onUnsubscribe(`chat/game/${roomId}`);
     };
   }, [isReady]);
 

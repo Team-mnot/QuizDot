@@ -2,7 +2,7 @@ import { RoomInfo } from './RoomInfo';
 import { LeaveBtn } from './LeaveBtn';
 import { MultiMatchBtn, SurvivalMatchBtn } from '.';
 import { useContext, useEffect } from 'react';
-import { useGameStore } from '@/shared/stores/connectionStore/gameStore';
+import { useRoomStore } from '@/shared/stores/connectionStore/roomStore';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 import { MessageDto } from '@/shared/apis/types';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
@@ -15,12 +15,12 @@ export function RoomHeader({
 }) {
   const { isReady, onSubscribeWithCallBack, onUnsubscribe } =
     useContext(WebSocketContext);
-  const gameStore = useGameStore();
+  const roomStore = useRoomStore();
 
   const userStore = useUserStore();
   const callbackOfInfo = async (message: MessageDto) => {
     if (message.type === 'MODIFY') {
-      gameStore.fetchRoom(message.data);
+      roomStore.fetchRoom(message.data);
     }
   };
 
@@ -32,26 +32,26 @@ export function RoomHeader({
     };
   }, [isReady]);
 
-  useEffect(() => {}, [gameStore.roomInfo]);
+  useEffect(() => {}, [roomStore.roomInfo]);
 
   return (
     <div>
-      {gameStore.roomInfo && (
+      {roomStore.roomInfo && (
         <div className="absolute left-[0px] top-[0px] w-full px-[50px] py-[20px]">
           <div className="flex justify-between">
-            <RoomInfo roomInfo={gameStore.roomInfo} channelId={channelId} />
+            <RoomInfo roomInfo={roomStore.roomInfo} channelId={channelId} />
             <LeaveBtn roomId={roomId} channelId={channelId} />
           </div>
 
           <div className="text-center">
-            {gameStore.roomInfo.hostId === userStore.id ? (
+            {roomStore.roomInfo.hostId === userStore.id ? (
               <div className="flex justify-center">
-                {gameStore.roomInfo.gameMode === 'NORMAL' ? (
+                {roomStore.roomInfo.gameMode === 'NORMAL' ? (
                   <MultiMatchBtn roomId={roomId} />
                 ) : (
                   <SurvivalMatchBtn
                     roomId={roomId}
-                    category={gameStore.roomInfo.category}
+                    category={roomStore.roomInfo.category}
                   />
                 )}
               </div>

@@ -5,9 +5,9 @@ import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 
 import { useRouter } from '@/shared/hooks';
 import { getQuizzes } from '@/shared/apis/commonApi';
-import { useGameStore } from '@/shared/stores/connectionStore/gameStore';
+import { useRoomStore } from '@/shared/stores/connectionStore/roomStore';
 import { MessageDto } from '@/shared/apis/types';
-
+import { useQuizSetStore } from '@/shared/stores/connectionStore/quizSetStore';
 export function RoomChattingBox({
   roomId,
   channelId,
@@ -20,8 +20,9 @@ export function RoomChattingBox({
   >([]);
 
   const router = useRouter();
+  const quizSetStore = useQuizSetStore();
   const userStore = useUserStore();
-  const gameStore = useGameStore();
+  const roomStore = useRoomStore();
   const { isReady, onSend, onSubscribeWithCallBack, onUnsubscribe } =
     useContext(WebSocketContext);
 
@@ -38,27 +39,28 @@ export function RoomChattingBox({
 
   //   입장하기 전에 문제를 받아서 이동
   const handleEnterRoomWithQuiz = async () => {
-    if (gameStore.roomInfo) {
+    if (roomStore.roomInfo) {
       await getQuizzes(
-        gameStore.roomInfo.roomId,
-        gameStore.roomInfo.category,
-        gameStore.roomInfo.maxQuestion,
-        gameStore.roomInfo.gameMode,
+        roomStore.roomInfo.roomId,
+        roomStore.roomInfo.category,
+        roomStore.roomInfo.maxQuestion,
+        roomStore.roomInfo.gameMode,
       );
     }
   };
 
   const callbackOfChat = async (message: MessageDto) => {
     // 게임 시작 요청이 성공함
-    if (message.type == 'START') {
-      if (!gameStore.roomInfo) return;
+    if (message.type == 'MULTI') {
+      if (!roomStore.roomInfo) return;
 
       const callbackOfQuiz = async (message: MessageDto) => {
-        router.routeToWithData(`/${channelId}/${roomId}/normal`, message.data);
+        quizSetStore.fetchQuizzes(message.data);
+        router.routeTo(`/${channelId}/${roomId}/normal`);
       };
 
       onSubscribeWithCallBack(`quiz/game/${roomId}`, callbackOfQuiz);
-      if (gameStore.roomInfo.hostId == userStore.id) handleEnterRoomWithQuiz();
+      if (roomStore.roomInfo.hostId == userStore.id) handleEnterRoomWithQuiz();
       //onUnsubscribe(`quiz/game/${roomId}`);
     }
 

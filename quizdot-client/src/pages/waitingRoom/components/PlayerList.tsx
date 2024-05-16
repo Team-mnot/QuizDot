@@ -3,7 +3,7 @@ import { useOpenModal } from '@/shared/hooks';
 import { useContext, useEffect, useState } from 'react';
 import { Character } from '@/shared/ui/Character';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
-import { useGameStore } from '@/shared/stores/connectionStore/gameStore';
+import { useRoomStore } from '@/shared/stores/connectionStore/roomStore';
 import { MessageDto } from '@/shared/apis/types';
 
 export function PlayerList({ roomId }: { roomId: number }) {
@@ -12,14 +12,14 @@ export function PlayerList({ roomId }: { roomId: number }) {
 
   const { isReady, onSubscribeWithCallBack, onUnsubscribe } =
     useContext(WebSocketContext);
-  const gameStore = useGameStore();
+  const roomStore = useRoomStore();
   const [playersCount, setPlayersCount] = useState<number>(
-    Object.keys(gameStore.players).length,
+    Object.keys(roomStore.players).length,
   );
 
   const callbackOfPlayers = async (message: MessageDto) => {
     if (message.type === 'ENTER') {
-      gameStore.enteredPlayer(message.data.id, {
+      roomStore.enteredPlayer(message.data.id, {
         level: message.data.level,
         nickname: message.data.nickname,
         nicknameColor: message.data.nicknameColor,
@@ -28,7 +28,7 @@ export function PlayerList({ roomId }: { roomId: number }) {
       });
       setPlayersCount(playersCount + 1);
     } else if (message.type === 'LEAVE') {
-      gameStore.leavedPlayer(message.data);
+      roomStore.leavedPlayer(message.data);
       setPlayersCount(playersCount - 1);
     }
   };
@@ -41,13 +41,13 @@ export function PlayerList({ roomId }: { roomId: number }) {
     };
   }, [isReady]);
 
-  useEffect(() => {}, [gameStore.players]);
+  useEffect(() => {}, [roomStore.players]);
 
   return (
     <div className="flex justify-between">
       <div>
-        {gameStore.players &&
-          Object.entries(gameStore.players)
+        {roomStore.players &&
+          Object.entries(roomStore.players)
             .slice(0, (playersCount + 1) / 2)
             .map(([key, player]) => (
               <div
@@ -68,8 +68,8 @@ export function PlayerList({ roomId }: { roomId: number }) {
             ))}
       </div>
       <div>
-        {gameStore.players &&
-          Object.entries(gameStore.players)
+        {roomStore.players &&
+          Object.entries(roomStore.players)
             .slice((playersCount + 1) / 2, playersCount)
             .map(([key, player]) => (
               <div

@@ -54,4 +54,15 @@ async function checkRoomPwdApi(
   return response.data.status;
 }
 
-export { createRoomApi, enterLobbyApi, checkRoomPwdApi };
+/*** 채널 로비 퇴장 ***/
+async function leaveLobbyApi(channelId: number): Promise<number> {
+  const response = await jwtAxiosInstance.get(
+    `${baseApi}/${url}/channel/exit?channelId=${channelId}`,
+  );
+
+  console.log(`[${response.data.status}] ${response.data.message}`);
+  if (response.data.status == 200) return response.data.status;
+  else throw response.data.errors;
+}
+
+export { createRoomApi, enterLobbyApi, checkRoomPwdApi, leaveLobbyApi };

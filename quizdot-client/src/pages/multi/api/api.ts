@@ -8,13 +8,14 @@ const url = 'multi';
 async function updateScoresApi(
   roomId: number,
   questionId: number,
-): Promise<number> {
+): Promise<boolean> {
   const response = await jwtAxiosInstance.post(
     `${baseApi}/${url}/score/${roomId}/${questionId}`,
   );
 
   console.log(`[${response.data.status}] ${response.data.message}`);
-  return response.data.status;
+  if (response.data.status == 200) return response.data.status;
+  else throw response.data.error;
 }
 
 /*** 멀티 모드 리워드 지급 및 결과 정보 제공 ***/

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { RoomInfoType } from '../api/types';
 import { Room, RoomCreation, RoomPwd } from '.';
 import { enterRoomApi } from '@/pages/waitingRoom/api/api';
-import { useGameStore } from '@/shared/stores/connectionStore/gameStore';
+import { useRoomStore } from '@/shared/stores/connectionStore/roomStore';
 
 export function RoomList({
   roomInfos,
@@ -24,7 +24,7 @@ export function RoomList({
     closeModal: closePwdModal,
   } = useOpenModal();
 
-  const gameStore = useGameStore();
+  const roomStore = useRoomStore();
   const router = useRouter();
   const [clickedRoom, setClickedRoom] = useState<number>(-1);
 
@@ -33,8 +33,9 @@ export function RoomList({
       const response = await enterRoomApi(roomId);
 
       if (response.status == 200) {
-        gameStore.fetchRoom(response.data.roomInfo);
-        gameStore.fetchPlayers(response.data.players);
+        roomStore.reset();
+        roomStore.fetchRoom(response.data.roomInfo);
+        roomStore.fetchPlayers(response.data.players);
         router.routeTo(`/${channelId}/${roomId}/waiting`);
       }
     } else {

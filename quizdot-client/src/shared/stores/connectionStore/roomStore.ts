@@ -2,12 +2,12 @@ import { RoomInfoType } from '@/pages/lobby/api/types';
 import {
   PlayerType,
   PlayersType,
-  ScoresType,
+  // ScoresType,
 } from '@/pages/waitingRoom/api/types';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-interface GameStore {
+interface RoomStore {
   roomInfo: RoomInfoType | null;
   fetchRoom: (roomInfo: RoomInfoType) => void;
   leaveRoom: () => void;
@@ -17,15 +17,15 @@ interface GameStore {
   enteredPlayer: (playerId: number, playerInfo: PlayerType) => void;
   leavedPlayer: (playerId: number) => void;
 
-  scores: ScoresType;
-  fetchScores: (playerId: number, score: number) => void;
-  clearScores: () => void;
+  // scores: ScoresType;
+  // fetchScores: (playerId: number, score: number) => void;
+  // clearScores: () => void;
 
   reset: () => void;
 }
 
-const useGameStore = create(
-  persist<GameStore>(
+const useRoomStore = create(
+  persist<RoomStore>(
     (set) => ({
       roomInfo: null,
       fetchRoom: (roomInfo: RoomInfoType) => {
@@ -51,24 +51,24 @@ const useGameStore = create(
         });
       },
 
-      scores: {},
-      fetchScores: (playerId: number, score: number) => {
-        set((state) => ({
-          scores: { ...state.scores, [playerId]: score },
-        }));
-      },
-      clearScores: () => {
-        set({ scores: {} });
-      },
+      // scores: {},
+      // fetchScores: (playerId: number, score: number) => {
+      //   set((state) => ({
+      //     scores: { ...state.scores, [playerId]: score },
+      //   }));
+      // },
+      // clearScores: () => {
+      //   set({ scores: {} });
+      // },
 
       reset: () => {
         set({ roomInfo: null, players: {} });
       },
     }),
     {
-      name: 'gameStorage',
+      name: 'roomStorage',
     },
   ),
 );
 
-export { useGameStore };
+export { useRoomStore };

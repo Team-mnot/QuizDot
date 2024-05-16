@@ -4,7 +4,7 @@ import { Toast } from '@/shared/ui/Toast';
 import { useRouter } from '@/shared/hooks';
 import { checkRoomPwdApi } from '../api/api';
 import { enterRoomApi } from '@/pages/waitingRoom/api/api';
-import { useGameStore } from '@/shared/stores/connectionStore/gameStore';
+import { useRoomStore } from '@/shared/stores/connectionStore/roomStore';
 
 export function RoomPwd({
   roomId,
@@ -16,7 +16,7 @@ export function RoomPwd({
   const [password, setPassword] = useState<string>('');
   const [toastState, setToastState] = useState<boolean>(false);
 
-  const gameStore = useGameStore();
+  const roomStore = useRoomStore();
   const router = useRouter();
 
   const changePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,8 +37,8 @@ export function RoomPwd({
     const response = await enterRoomApi(_roomId);
 
     if (response.status == 200) {
-      gameStore.fetchRoom(response.data.roomInfo);
-      gameStore.fetchPlayers(response.data.players);
+      roomStore.fetchRoom(response.data.roomInfo);
+      roomStore.fetchPlayers(response.data.players);
       router.routeTo(`/${_channelId}/${_roomId}/waiting`);
     }
   };
