@@ -42,6 +42,7 @@ public class MemberServiceImpl implements MemberService {
     //비밀번호 암호화
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    //TODO : 가챠 필요포인트 정하기
     private final static int claimPoint = 10000;
 
     @Override
@@ -196,6 +197,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberInfoDto getInfo(int memberId) {
+        //TODO : 일대일 모드
         Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
         MultiRecord normalRecord = multiRecordRepository.findByMemberIdAndMode(memberId,
@@ -280,8 +282,8 @@ public class MemberServiceImpl implements MemberService {
         }
 
         //TODO : 캐릭터 정해지면 바꿀것
-        //2부터 10까지
-        int pickCharacter = (int) (Math.random() * 9) + 2;
+        //2부터 13까지
+        int pickCharacter = (int) (Math.random() * 12) + 2;
         member.updatePoint(member.getPoint() - claimPoint);
         List<Integer> characterList = memberCharacterRepository.findCharacterIdsByMemberId(
             member.getId());
