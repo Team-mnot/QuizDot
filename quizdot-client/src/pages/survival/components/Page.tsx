@@ -115,6 +115,13 @@ export function SurvivalPage() {
     } else if (
       callbackMsg.msg &&
       callbackMsg.address == `info/game/${roomId}` &&
+      callbackMsg.msg.type == 'RESURRECT'
+    ) {
+      console.log('부활데이터');
+      console.log(callbackMsg.msg.data); // n명의 캐릭터가 부활했습니다!
+    } else if (
+      callbackMsg.msg &&
+      callbackMsg.address == `info/game/${roomId}` &&
       callbackMsg.msg.type == 'REWARD'
     ) {
       console.log('리워드');
