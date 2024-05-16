@@ -27,8 +27,9 @@ export function CountDown() {
 
   return (
     <div className="fixed left-0 right-0 top-10 mx-auto max-w-3xl">
-      <div className="flex justify-center">
+      <div className="flex flex-col items-center">
         <h1>{count}초 뒤 퀴즈 </h1>
+        <div>바로 입력 활성화되니 주의 !!</div>
       </div>
     </div>
   );

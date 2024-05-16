@@ -17,6 +17,8 @@ export function ChattingBox(props: ChattingBoxProps) {
     setInput('');
   };
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     // 메시지 상태가 변경될 때 마다 실행
     if (chatContainerRef.current) {
@@ -50,13 +52,14 @@ export function ChattingBox(props: ChattingBoxProps) {
         {/* 채팅 입력란 */}
         <input
           type="text"
+          ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
           className={
             'chat-input flex-grow rounded-l-md border border-gray-300 pl-4'
           }
-          placeholder="메시지를 입력하세요..."
+          placeholder="TAB 눌러서 입력창 활성화"
         />
 
         {/* 전송 버튼 */}

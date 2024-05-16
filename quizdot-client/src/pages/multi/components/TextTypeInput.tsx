@@ -35,7 +35,7 @@ export function TextTypeInput({
         />
       </div>
       <div>
-        <Button className="w-20 h-12" value="패스" onClick={submitPass} />
+        <Button className="h-12 w-20" value="패스" onClick={submitPass} />
       </div>
     </div>
   );

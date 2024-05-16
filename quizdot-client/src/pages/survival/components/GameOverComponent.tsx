@@ -19,7 +19,7 @@ export function GameOverComponent({ rewardData }: { rewardData: any[] }) {
   const roomStore = useRoomStore();
   const userStore = useUserStore();
   const { setIsGameOver, reset } = useQuizStore();
-  const [countdown, setCountdown] = useState(10); // 10초 카운트다운 초기값 설정
+  const [countdown, setCountdown] = useState(5); // 10초 카운트다운 초기값 설정
   const originRoomId = roomStore.roomInfo?.roomId
     ? roomStore.roomInfo.roomId
     : 0;
@@ -52,26 +52,26 @@ export function GameOverComponent({ rewardData }: { rewardData: any[] }) {
       <p className="mb-4">{countdown}초 뒤에 대기실로 이동합니다</p>{' '}
       {/* 카운트다운 메시지 */}
       <div className="overflow-x-auto">
-        <table className="min-w-full border reward-table">
+        <table className="reward-table min-w-full border">
           <thead className="">
             <tr>
-              <th className="px-8 py-2 border-b">Rank</th>
-              <th className="px-8 py-2 border-b">Nickname</th>
-              <th className="px-8 py-2 border-b">Score</th>
-              <th className="px-8 py-2 border-b">Level</th>
-              <th className="px-8 py-2 border-b">Points</th>
-              <th className="px-8 py-2 border-b">Current Exp</th>
+              <th className="border-b px-8 py-2">Rank</th>
+              <th className="border-b px-8 py-2">Nickname</th>
+              <th className="border-b px-8 py-2">Score</th>
+              <th className="border-b px-8 py-2">Level</th>
+              <th className="border-b px-8 py-2">Points</th>
+              <th className="border-b px-8 py-2">Current Exp</th>
             </tr>
           </thead>
           <tbody>
             {rewardData.map((player, index) => (
               <tr key={index} className="space-x-4">
-                <td className="px-8 py-2 border-b">{player.rank}</td>
-                <td className="px-8 py-2 border-b">{player.nickname}</td>
-                <td className="px-8 py-2 border-b">{player.score}</td>
-                <td className="px-8 py-2 border-b">{player.level}</td>
-                <td className="px-8 py-2 border-b">{player.point}</td>
-                <td className="px-8 py-2 border-b">{player.curExp}</td>
+                <td className="border-b px-8 py-2">{player.rank}</td>
+                <td className="border-b px-8 py-2">{player.nickname}</td>
+                <td className="border-b px-8 py-2">{player.score}</td>
+                <td className="border-b px-8 py-2">{player.level}</td>
+                <td className="border-b px-8 py-2">{player.point}</td>
+                <td className="border-b px-8 py-2">{player.curExp}</td>
               </tr>
             ))}
           </tbody>

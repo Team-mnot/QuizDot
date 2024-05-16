@@ -53,7 +53,7 @@ export function QuizResultComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
   }, [answerIndex]);
 
   return (
-    <div className="text-4lx fixed left-0 right-0 top-10 mx-auto flex h-44 max-w-3xl items-center justify-center rounded-xl bg-white p-4">
+    <div className="text-4lx fixed left-0 right-0 top-10 mx-auto flex h-44 max-w-3xl flex-col items-center justify-center rounded-xl bg-white p-4">
       <div className="flex justify-center text-4xl">{resultMessage}</div>
       <div>
         {currentAnswer.length > 0 && (
