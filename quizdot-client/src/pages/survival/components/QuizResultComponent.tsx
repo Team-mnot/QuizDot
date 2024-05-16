@@ -32,7 +32,7 @@ export function QuizResultComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
       getQuizResult(roomInfo.roomId); // 방장만 호출하는거
     }
     setAnswerIndex(currentQuizIndex);
-    handleNextQuiz(); // 각 개인이 갖고있는 퀴즈목록에서 다음으로 가자는거임
+    // handleNextQuiz(); // 각 개인이 갖고있는 퀴즈목록에서 다음으로 가자는거임
     const timer = setTimeout(() => {
       setShowResult(false);
       setShowCountDown(true); // 카운트다운 페이지 가져와
@@ -43,6 +43,12 @@ export function QuizResultComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
     }
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (answerIndex !== undefined) {
+      handleNextQuiz(); // 각 개인이 갖고있는 퀴즈목록에서 다음으로 가자는거임
+    }
+  }, [answerIndex, handleNextQuiz]);
 
   return (
     <div className="text-4lx fixed left-0 right-0 top-10 mx-auto flex h-44 max-w-3xl items-center justify-center rounded-xl bg-white p-4">
