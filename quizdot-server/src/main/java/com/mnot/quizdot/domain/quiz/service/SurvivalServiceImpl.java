@@ -43,6 +43,7 @@ public class SurvivalServiceImpl implements SurvivalService {
     private static final String GAME_DEFAULT_ID = "0520";
     private static final String MATCH_KEY = "match:";
     private static final String ROOM_CHAT_DESTINATION = "/sub/chat/room/";
+    private static final int MIN_MEMBER = 4;
 
     private final RedisTemplate redisTemplate;
     private final RedisUtil redisUtil;
@@ -267,7 +268,7 @@ public class SurvivalServiceImpl implements SurvivalService {
         int playerCount = redisUtil.getPlayers(playersKey).size();
 
         // 게임 시작 여부 확인
-        if (playerCount < 2) {
+        if (playerCount < MIN_MEMBER) {
             // 대기실 인원이 10명 미만이면, 매칭 등록 후 게임 시작 여부를 다시 확인한다
             redisTemplate.opsForHash().put(matchKey, strRoomId, playerCount);
 
@@ -277,7 +278,7 @@ public class SurvivalServiceImpl implements SurvivalService {
             log.info("[registMatchMaking] 카테고리의 매칭 큐 : {}명", totalPlayer);
 
             // 매칭 대기자가 10명 미만이면 기다린다
-            if (totalPlayer < 2) {
+            if (totalPlayer < MIN_MEMBER) {
                 messagingTemplate.convertAndSend(ROOM_CHAT_DESTINATION + roomId,
                     MessageDto.of(SERVER_SENDER, "최소 인원 수가 부족해 서바이벌 게임 매칭을 시작합니다.",
                         MessageType.CHAT));

@@ -136,10 +136,16 @@ public class QuizServiceImpl implements QuizService {
         // 대기실 상태 변경 (WAITING -> INPROGRESS)
         String roomKey = redisUtil.getRoomInfoKey(roomId);
         redisUtil.modifyRoomState(roomKey, GameState.INPROGRESS);
-
-        // 모든 플레이어에게 게임 시작을 알린다
-        messagingTemplate.convertAndSend("/sub/chat/room/" + roomId,
-            MessageDto.of(SERVER_SENDER, MessageType.MULTI));
+        switch (mode) {
+            case ILGITO:
+                messagingTemplate.convertAndSend("/sub/chat/room/" + roomId,
+                    MessageDto.of(SERVER_SENDER, MessageType.ILGITO));
+                break;
+            case NORMAL:
+                messagingTemplate.convertAndSend("/sub/chat/room/" + roomId,
+                    MessageDto.of(SERVER_SENDER, MessageType.MULTI));
+                break;
+        }
     }
 
     /**
