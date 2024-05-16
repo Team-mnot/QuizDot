@@ -1,28 +1,12 @@
-interface CharacterProps {
+/*** 캐릭터 타입 ***/
+interface CharacterType {
   imageUrl: string;
   title: string;
   nickname: string;
   score: number;
 }
 
-interface QuizSetProps {
-  quiz: QuizProps;
-  answer: AnswerProps;
-}
-
-interface QuizProps {
-  question: string;
-  category: string;
-}
-
-interface AnswerProps {
-  hint: string;
-  imageUrl: string;
-  type: string;
-  answer: string;
-  description: string;
-}
-
+/*** 게임 대기실에서 넘어온 방 정보 타입 ***/
 interface RoomInfoDto {
   title: string;
   public: boolean;
@@ -33,7 +17,8 @@ interface RoomInfoDto {
   maxQuestion: number;
 }
 
-interface QuizType {
+/*** 받아온 문제 세트 타입 ***/
+interface QuizSetType {
   id: number;
   question: string;
   hint: string;
@@ -44,11 +29,16 @@ interface QuizType {
   answers: string[];
 }
 
-export type {
-  CharacterProps,
-  QuizSetProps,
-  QuizProps,
-  AnswerProps,
-  RoomInfoDto,
-  QuizType,
-};
+/*** 플레이어 랭킹 타입 ***/
+interface RankType {
+  id: number;
+  level: number;
+  curLevel: number;
+  nickname: string;
+  rank: number;
+  score: number;
+  point: number;
+  curExp: number;
+}
+
+export type { CharacterType, RoomInfoDto, QuizSetType, RankType };

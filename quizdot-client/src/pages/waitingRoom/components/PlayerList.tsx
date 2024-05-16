@@ -1,43 +1,54 @@
 import { Modal } from '@/shared/ui';
 import { useOpenModal } from '@/shared/hooks';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Character } from '@/shared/ui/Character';
-
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
-import { PlayersType } from '@/pages/waitingRoom/api/types';
+import { useGameStore } from '@/shared/stores/connectionStore/gameStore';
+import { MessageDto } from '@/shared/apis/types';
 
-export function PlayerList(props: { roomId: number; players: PlayersType }) {
-  // useRef 를 써야 할까요?
-  const players = useRef<PlayersType>(props.players);
-  const playersCount = useRef<number>(Object.keys(players).length);
-
+export function PlayerList({ roomId }: { roomId: number }) {
   const { isOpenModal, clickModal, closeModal } = useOpenModal();
   const [clickedUserId, setClickedUserId] = useState<string>('');
 
-  // 로딩 때문에 깜빡거리는 문제 해결하기
-  const { callbackMsg } = useContext(WebSocketContext);
+  const { isReady, onSubscribeWithCallBack, onUnsubscribe } =
+    useContext(WebSocketContext);
+  const gameStore = useGameStore();
+  const [playersCount, setPlayersCount] = useState<number>(
+    Object.keys(gameStore.players).length,
+  );
+
+  const callbackOfPlayers = async (message: MessageDto) => {
+    if (message.type === 'ENTER') {
+      gameStore.enteredPlayer(message.data.id, {
+        level: message.data.level,
+        nickname: message.data.nickname,
+        nicknameColor: message.data.nicknameColor,
+        title: message.data.title,
+        characterId: message.data.characterId,
+      });
+      setPlayersCount(playersCount + 1);
+    } else if (message.type === 'LEAVE') {
+      gameStore.leavedPlayer(message.data);
+      setPlayersCount(playersCount - 1);
+    }
+  };
 
   useEffect(() => {
-    const msg = callbackMsg.msg;
-    const address = callbackMsg.address;
+    onSubscribeWithCallBack(`players/room/${roomId}`, callbackOfPlayers);
 
-    if (address == `players/room/${props.roomId}`) {
-      if (msg.type == 'ENTER') {
-        players.current[Object.keys(msg.data)[0]] = msg.data;
-        playersCount.current = Object.keys(players.current).length;
-      } else if (msg.type == 'LEAVE') {
-        delete players.current[msg.data];
-        playersCount.current = Object.keys(players.current).length;
-      }
-    }
-  }, [callbackMsg, players]);
+    return () => {
+      onUnsubscribe(`players/room/${roomId}`);
+    };
+  }, [isReady]);
+
+  useEffect(() => {}, [gameStore.players]);
 
   return (
     <div className="flex justify-between">
       <div>
-        {players.current &&
-          Object.entries(players.current)
-            .slice(0, (playersCount.current + 1) / 2)
+        {gameStore.players &&
+          Object.entries(gameStore.players)
+            .slice(0, (playersCount + 1) / 2)
             .map(([key, player]) => (
               <div
                 key={key}
@@ -57,9 +68,9 @@ export function PlayerList(props: { roomId: number; players: PlayersType }) {
             ))}
       </div>
       <div>
-        {players.current &&
-          Object.entries(players.current)
-            .slice((playersCount.current + 1) / 2, playersCount.current)
+        {gameStore.players &&
+          Object.entries(gameStore.players)
+            .slice((playersCount + 1) / 2, playersCount)
             .map(([key, player]) => (
               <div
                 key={key}

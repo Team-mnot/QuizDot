@@ -1,28 +1,41 @@
 import { Button, Input } from '@/shared/ui';
 import { useState } from 'react';
 
-export function TextTypeInput(props: { padding: string; size: string }) {
+export function TextTypeInput({
+  handleSubmitPass,
+  handleSubmitAnswer,
+}: {
+  handleSubmitPass: () => void;
+  handleSubmitAnswer: (answer: string) => void;
+}) {
   const [answer, setAnswer] = useState('');
-
   const inputAnswer = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAnswer(e.currentTarget.value);
   };
 
-  const passQuestion = () => {};
+  const submitPass = () => {
+    handleSubmitPass();
+  };
+
+  const submitAnswer = () => {
+    handleSubmitAnswer(answer);
+    setAnswer('');
+  };
 
   return (
-    <div className={`flex justify-between ${props.padding} ${props.size}`}>
+    <div className="flex h-24 w-[500px] justify-between py-20">
       <div>
         <Input
-          className={'h-12 w-72'}
+          className="h-12 w-72"
           type="text"
           placeholder="정답을 입력하세요"
           value={answer}
           onChange={inputAnswer}
+          onKeyDown={(e) => e.key === 'Enter' && submitAnswer}
         />
       </div>
       <div>
-        <Button className={'h-12 w-20'} value="패스" onClick={passQuestion} />
+        <Button className="h-12 w-20" value="패스" onClick={submitPass} />
       </div>
     </div>
   );

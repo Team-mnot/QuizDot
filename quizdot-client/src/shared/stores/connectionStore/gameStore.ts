@@ -1,35 +1,70 @@
+import { RoomInfoType } from '@/pages/lobby/api/types';
+import {
+  PlayerType,
+  PlayersType,
+  ScoresType,
+} from '@/pages/waitingRoom/api/types';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface GameStore {
-  channelId: number;
-  enterChannel: (channelId: number) => void;
-  leaveChannel: () => void;
-
-  roomId: number;
-  enterRoom: (roomId: number) => void;
+  roomInfo: RoomInfoType | null;
+  fetchRoom: (roomInfo: RoomInfoType) => void;
   leaveRoom: () => void;
+
+  players: PlayersType;
+  fetchPlayers: (players: PlayersType) => void;
+  enteredPlayer: (playerId: number, playerInfo: PlayerType) => void;
+  leavedPlayer: (playerId: number) => void;
+
+  scores: ScoresType;
+  fetchScores: (playerId: number, score: number) => void;
+  clearScores: () => void;
+
+  reset: () => void;
 }
 
 const useGameStore = create(
   persist<GameStore>(
     (set) => ({
-      channelId: 0,
-      enterChannel: (channelId: number) => {
-        set({ channelId: channelId });
-      },
-      leaveChannel: () => {
-        set({ channelId: 0 });
-      },
-      roomId: 0,
-      enterRoom: (roomId: number) => {
-        set({ roomId: roomId });
+      roomInfo: null,
+      fetchRoom: (roomInfo: RoomInfoType) => {
+        set({ roomInfo });
       },
       leaveRoom: () => {
-        set({ roomId: 0 });
+        set({ roomInfo: null });
+      },
+      players: {},
+      fetchPlayers: (players: PlayersType) => {
+        set({ players: players });
+      },
+      enteredPlayer: (playerId: number, playerInfo: PlayerType) => {
+        set((state) => ({
+          players: { ...state.players, [playerId]: playerInfo },
+        }));
+      },
+      leavedPlayer: (playerId: number) => {
+        set((state) => {
+          const newPlayers = { ...state.players };
+          delete newPlayers[playerId];
+          return { players: newPlayers };
+        });
+      },
+
+      scores: {},
+      fetchScores: (playerId: number, score: number) => {
+        set((state) => ({
+          scores: { ...state.scores, [playerId]: score },
+        }));
+      },
+      clearScores: () => {
+        set({ scores: {} });
+      },
+
+      reset: () => {
+        set({ roomInfo: null, players: {} });
       },
     }),
-
     {
       name: 'gameStorage',
     },

@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { ChattingBox } from '@/shared/ui/ChattingBox';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
+import { MessageDto } from '@/shared/apis/types';
 
 export function RoomChattingBox({ roomId }: { roomId: number }) {
   const [messages, setMessages] = useState<
@@ -9,8 +10,8 @@ export function RoomChattingBox({ roomId }: { roomId: number }) {
   >([]);
 
   const userStore = useUserStore();
-  const { onSend, callbackMsg } = useContext(WebSocketContext);
-  const [isView, setIsView] = useState<boolean>(true);
+  const { isReady, onSend, onSubscribeWithCallBack, onUnsubscribe } =
+    useContext(WebSocketContext);
 
   const handleSubmitMessage = (message: string) => {
     const chattingMessage = {
@@ -23,40 +24,25 @@ export function RoomChattingBox({ roomId }: { roomId: number }) {
     onSend(`room/${roomId}`, chattingMessage);
   };
 
-  //   콜백 시 해당 플레이어의 말풍선의 value 로도 설정 추가
-  //   잠깐 보이도록 하는 이벤트 발생 추가
-  //   채팅 영역 말고 캐릭터 영역에서 설정하면 된다
-  useEffect(() => {
-    if (
-      callbackMsg.msg &&
-      callbackMsg.address == `chat/room/${roomId}` &&
-      callbackMsg.msg.type == 'CHAT'
-    ) {
+  const callback = (message: MessageDto) => {
+    if (message.type == 'CHAT') {
       setMessages((msg) => [
         ...msg,
         {
-          nickname: callbackMsg.msg.sender,
-          content: callbackMsg.msg.text,
+          nickname: message.sender,
+          content: message.text,
         },
       ]);
     }
-    // else if (
-    //   callbackMsg.msg &&
-    //   callbackMsg.address == `chat/room/${roomId}` &&
-    //   callbackMsg.msg.type == 'CHAT'
-    // ) {
-    //   setIsView(false);
-    // }
+  };
 
-    // 빌드 오류 나서 넣음
-    setIsView(true);
-  }, [callbackMsg]);
+  useEffect(() => {
+    onSubscribeWithCallBack(`chat/room/${roomId}`, callback);
 
-  return (
-    <div>
-      {isView && (
-        <ChattingBox onSend={handleSubmitMessage} messages={messages} />
-      )}
-    </div>
-  );
+    return () => {
+      onUnsubscribe(`chat/room/${roomId}`);
+    };
+  }, [isReady]);
+
+  return <ChattingBox onSend={handleSubmitMessage} messages={messages} />;
 }

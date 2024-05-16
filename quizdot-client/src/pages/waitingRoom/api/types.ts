@@ -11,7 +11,7 @@ interface EnteringRoomType {
 
 /*** 플레이어 정보 해시 타입 ***/
 interface PlayersType {
-  [key: string]: PlayerType;
+  [id: number]: PlayerType;
 }
 
 /*** 플레이어 정보 타입 ***/
@@ -23,4 +23,15 @@ interface PlayerType {
   title: string;
 }
 
-export type { ModifyingRoomType, EnteringRoomType, PlayerType, PlayersType };
+/*** 플레이어 점수 정보 해시 타입 ***/
+interface ScoresType {
+  [id: number]: number;
+}
+
+export type {
+  ModifyingRoomType,
+  EnteringRoomType,
+  PlayerType,
+  PlayersType,
+  ScoresType,
+};

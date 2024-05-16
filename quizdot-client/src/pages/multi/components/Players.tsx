@@ -1,37 +1,37 @@
 import { useContext, useEffect, useRef } from 'react';
 import { Character } from '@/shared/ui/Character';
 
+import { useGameStore } from '@/shared/stores/connectionStore/gameStore';
+import { MessageDto } from '@/shared/apis/types';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
-import { PlayersType } from '@/pages/waitingRoom/api/types';
 
-export function PlayerList(props: { roomId: number; players: PlayersType }) {
-  // useRef 를 써야 할까요?
-  const players = useRef<PlayersType>(props.players);
-  const playersCount = useRef<number>(Object.keys(players).length);
+export function Players({ roomId }: { roomId: number }) {
+  const gameStore = useGameStore();
+  const playersCount = useRef<number>(Object.keys(gameStore.players).length);
 
-  // 로딩 때문에 깜빡거리는 문제 해결하기
-  const { callbackMsg } = useContext(WebSocketContext);
+  const { isReady, onSubscribeWithCallBack, onUnsubscribe } =
+    useContext(WebSocketContext);
+
+  const callbackOfPlayers = async (message: MessageDto) => {
+    console.log('PLAYERS: ', message);
+    if (message.type == 'LEAVE') {
+      gameStore.leavedPlayer(message.data);
+    }
+  };
 
   useEffect(() => {
-    const msg = callbackMsg.msg;
-    const address = callbackMsg.address;
+    onSubscribeWithCallBack(`players/room/${roomId}`, callbackOfPlayers);
 
-    if (address == `players/room/${props.roomId}`) {
-      if (msg.type == 'ENTER') {
-        players.current[Object.keys(msg.data)[0]] = msg.data;
-        playersCount.current = Object.keys(players.current).length;
-      } else if (msg.type == 'LEAVE') {
-        delete players.current[msg.data];
-        playersCount.current = Object.keys(players.current).length;
-      }
-    }
-  }, [callbackMsg, players]);
+    return () => {
+      onUnsubscribe(`players/room/${roomId}`);
+    };
+  }, [isReady]);
 
   return (
     <div className="flex justify-between">
       <div>
-        {players.current &&
-          Object.entries(players.current)
+        {gameStore.players &&
+          Object.entries(gameStore.players)
             .slice(0, (playersCount.current + 1) / 2)
             .map(([key, player]) => (
               <Character
@@ -45,8 +45,8 @@ export function PlayerList(props: { roomId: number; players: PlayersType }) {
             ))}
       </div>
       <div>
-        {players.current &&
-          Object.entries(players.current)
+        {gameStore.players &&
+          Object.entries(gameStore.players)
             .slice((playersCount.current + 1) / 2, playersCount.current)
             .map(([key, player]) => (
               <Character

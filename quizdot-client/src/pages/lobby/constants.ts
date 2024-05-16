@@ -36,9 +36,9 @@ const expList = {
 } as { [key: number]: number };
 
 const roomStateColors = {
-  INPROGRESS: 'grey',
-  WAITING: 'green',
-  MATCHING: 'red',
+  INPROGRESS: 'gray-300',
+  WAITING: 'green-300',
+  MATCHING: 'red-300',
 } as { [key: string]: string };
 
 export {
