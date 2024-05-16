@@ -62,21 +62,17 @@ export function ResetPwdForm(props: { id: string }) {
   // 비밀번호 입력
   const passwordChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    const alphanumericValue = inputValue.replace(/[^a-zA-Z0-9]/g, ''); // 영어와 숫자만 추출
-    const truncatedValue = alphanumericValue.slice(0, 20); // 최대 20자리까지만 유지
-    setPassword(truncatedValue);
+    setPassword(inputValue);
   };
 
   // 비밀번호 확인 입력
   const chkPasswordChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    const alphanumericValue = inputValue.replace(/[^a-zA-Z0-9]/g, ''); // 영어와 숫자만 추출
-    const truncatedValue = alphanumericValue.slice(0, 20); // 최대 20자리까지만 유지
-    setChkPassword(truncatedValue);
+    setChkPassword(inputValue);
     if (
-      truncatedValue.length >= 8 &&
-      passwordRegex.test(truncatedValue) &&
-      password === truncatedValue
+      inputValue.length >= 8 &&
+      passwordRegex.test(inputValue) &&
+      password === inputValue
     ) {
       setPasswordValid(true);
     } else {

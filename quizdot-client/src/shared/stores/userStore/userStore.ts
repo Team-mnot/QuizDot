@@ -12,6 +12,11 @@ interface UserState {
   exp: number;
   point: number;
   isLogin: boolean;
+  setTitle: (title: string) => void;
+  setNickname: (name: string) => void;
+  setNicknameColor: (color: string) => void;
+  setCharacterId: (id: number) => void;
+  setPoint: () => void;
   getData: (props: UserInfo) => void;
   resetData: () => void;
 }
@@ -28,6 +33,12 @@ const useUserStore = create(
       exp: 0,
       point: 0,
       isLogin: false,
+      setTitle: (title: string) => set({ title: title }),
+      setNickname: (name: string) => set({ nickname: name }),
+      setNicknameColor: (color: string) => set({ nicknameColor: color }),
+      setCharacterId: (id: number) => set({ characterId: id }),
+      setPoint: () =>
+        set((prevState) => ({ ...prevState, point: prevState.point - 10000 })),
       getData: (props: UserInfo) => {
         const { id, title, nickname, nicknameColor, level, exp, point } = props;
         set({

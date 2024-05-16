@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { IdCheckAPi } from '@/pages/signUp/api/api';
+import { IdCheckApi } from '@/pages/signUp/api/api';
 import { FindPwdApi } from '../api/api';
 import type { FindPwdProps } from '../api/types';
 
@@ -36,7 +36,7 @@ export function FindPwdForm() {
 
   // 폼 제출 함수
   const onSubmit: CustomSubmitHandler = async (data) => {
-    const idCheck = await IdCheckAPi(data.memberId);
+    const idCheck = await IdCheckApi(data.memberId);
     if (idCheck) {
       window.alert('존재하지 않는 아이디입니다');
       return;
@@ -57,10 +57,8 @@ export function FindPwdForm() {
   // 아이디 확인
   const idHandleChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    const alphanumericValue = inputValue.replace(/[^a-zA-Z0-9]/g, ''); // 영어와 숫자만 추출
-    const truncatedValue = alphanumericValue.slice(0, 20); // 최대 20자리까지만 유지
-    setMemberId(truncatedValue);
-    if (truncatedValue.length >= 6 && idRegex.test(truncatedValue)) {
+    setMemberId(inputValue);
+    if (inputValue.length >= 6 && idRegex.test(inputValue)) {
       setIdValid(true);
     } else {
       setIdValid(false);
@@ -70,10 +68,8 @@ export function FindPwdForm() {
   // 비밀번호 힌트 확인
   const hintHandleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    const numericValue = inputValue.replace(/\D/g, ''); // 숫자만 추출
-    const truncatedValue = numericValue.slice(0, 6); // 최대 6자리까지만 유지
-    setHint(truncatedValue);
-    if (hintRegex.test(truncatedValue)) {
+    setHint(inputValue);
+    if (hintRegex.test(inputValue)) {
       setHintValid(true);
     } else {
       setHintValid(false);

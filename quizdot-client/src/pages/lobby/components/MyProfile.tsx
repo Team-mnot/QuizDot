@@ -12,9 +12,10 @@ export function MyProfile() {
   return (
     <div className="px-[30px] py-[10px]">
       <div onClick={clickModal}>
-        <div className="w-[300px] rounded-lg border-2 bg-white p-[20px] shadow-md">
+        <div className="w-[320px] rounded-lg border-2 bg-white p-[20px] shadow-md">
           <div className="flex justify-between">
             <div className="rounded-lg border-2 bg-white p-[10px]">
+              {/* 유저 캐릭터 */}
               <img
                 src="/images/ikball.png"
                 alt=""
@@ -29,9 +30,9 @@ export function MyProfile() {
               >
                 <p>{userStore.title}</p>
               </div>
-              <div className="flex flex-grow p-[10px]">
+              <div className="flex flex-col p-[10px]">
                 <p>Lv.{userStore.level}&nbsp;&nbsp;</p>
-                <p className={`text-[${userStore.nicknameColor}]`}>
+                <p style={{ color: userStore.nicknameColor }}>
                   {userStore.nickname}
                 </p>
               </div>
@@ -41,7 +42,7 @@ export function MyProfile() {
                   alt=""
                   className="h-[23px] w-[23px]"
                 />
-                <p className="pl-2">{userStore.point}</p>
+                <p className="pl-2">{userStore.point.toLocaleString()}</p>
               </div>
             </div>
           </div>

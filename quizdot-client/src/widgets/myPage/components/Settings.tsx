@@ -1,12 +1,13 @@
-import { useState, ChangeEvent } from 'react';
+import { useState, useRef, ChangeEvent, KeyboardEvent } from 'react';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { ChangeNicknameApi, ChangePwdApi, CheckPwdApi } from '../api/api';
-import { userNicknameCheckApi } from '../api/api';
 import type { ChangePwdProps } from '../api/types';
+import { useUserStore } from '@/shared/stores/userStore/userStore';
 
 export function Settings() {
+  const store = useUserStore();
   // 유효성 조건
   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
   const nicknameRegex = /^[A-Za-z0-9가-힣]{2,8}$/;
@@ -36,13 +37,14 @@ export function Settings() {
   const [currentPwd, setCurrentPwd] = useState('');
   const [password, setPassword] = useState('');
   const [chkPassword, setChkPassword] = useState('');
-  // 중복 확인용 변수
-  const [checkNickname, setCheckNickname] = useState<boolean>(true);
   // 유효성 체크용 변수
   const [nicknameValid, setNicknameValid] = useState(false);
   const [passwordValid, setPasswordValid] = useState(false);
   // 비밀번호 표시 토글용 변수
   const [showPassword, setShowPassword] = useState(false);
+
+  // 엔터로 바로 제출용
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
 
   // 비밀번호 표시 토글 함수
   const togglePwdView = () => {
@@ -54,11 +56,32 @@ export function Settings() {
   // 닉네임 변경 제출
   const NicknameSubmit: CustomSubmitHandler = async (data) => {
     const { nickname } = data;
-    await ChangeNicknameApi(nickname);
+    const name = await ChangeNicknameApi(nickname as string);
+    if (name) {
+      store.setNickname(name);
+    }
+    setNickname('');
+    setNicknameValid(false);
   };
 
   // 비밀번호 변경 제출
   const PwdSubmit: CustomSubmitHandler = async (data) => {
+    if (!chkPassword) {
+      window.alert('올바르지 않은 비밀번호 형식입니다');
+      setCurrentPwd('');
+      setPassword('');
+      setChkPassword('');
+      setPasswordValid(false);
+      return;
+    }
+    if (!passwordValid) {
+      window.alert('비밀번호가 일치하지 않습니다');
+      setCurrentPwd('');
+      setPassword('');
+      setChkPassword('');
+      setPasswordValid(false);
+      return;
+    }
     const response = await CheckPwdApi(data.CurPwd);
     if (response) {
       const changePwdProps: ChangePwdProps = {
@@ -66,35 +89,35 @@ export function Settings() {
         chkPassword: data.chkPwd as string,
       };
       await ChangePwdApi(changePwdProps);
+    } else {
+      window.alert('현재 비밀번호가 틀립니다');
     }
+    setCurrentPwd('');
+    setPassword('');
+    setChkPassword('');
+    setPasswordValid(false);
   };
 
   // 현재 비밀번호 입력
   const CurrentPwdChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    const alphanumericValue = inputValue.replace(/[^a-zA-Z0-9]/g, ''); // 영어와 숫자만 추출
-    const truncatedValue = alphanumericValue.slice(0, 20); // 최대 20자리까지만 유지
-    setCurrentPwd(truncatedValue);
+    setCurrentPwd(inputValue);
   };
 
   // 새 비밀번호 입력
   const NewpwdChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    const alphanumericValue = inputValue.replace(/[^a-zA-Z0-9]/g, ''); // 영어와 숫자만 추출
-    const truncatedValue = alphanumericValue.slice(0, 20); // 최대 20자리까지만 유지
-    setPassword(truncatedValue);
+    setPassword(inputValue);
   };
 
   // 비밀번호 확인 입력
   const chkPwdChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    const alphanumericValue = inputValue.replace(/[^a-zA-Z0-9]/g, ''); // 영어와 숫자만 추출
-    const truncatedValue = alphanumericValue.slice(0, 20); // 최대 20자리까지만 유지
-    setChkPassword(truncatedValue);
+    setChkPassword(inputValue);
     if (
-      truncatedValue.length >= 8 &&
-      passwordRegex.test(truncatedValue) &&
-      password === truncatedValue
+      inputValue.length >= 8 &&
+      passwordRegex.test(inputValue) &&
+      password === inputValue
     ) {
       setPasswordValid(true);
     } else {
@@ -102,15 +125,11 @@ export function Settings() {
     }
   };
 
-  // 닉네임 확인
+  // 닉네임 입력
   const nicknameHandleChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    const alphanumericValue = inputValue.replace(/[^\w가-힣]/g, ''); // 영어, 숫자, 한글만 추출
-    const truncatedValue = alphanumericValue.slice(0, 8); // 최대 8자리까지만 유지
-    setNickname(truncatedValue);
-    const response = await userNicknameCheckApi(truncatedValue);
-    setCheckNickname(response);
-    if (nicknameRegex.test(truncatedValue)) {
+    setNickname(inputValue);
+    if (nicknameRegex.test(inputValue)) {
       setNicknameValid(true);
     } else {
       setNicknameValid(false);
@@ -118,13 +137,13 @@ export function Settings() {
   };
 
   return (
-    <div className="border p-2">
+    <div className="border p-2 shadow-md" style={{ height: '333px' }}>
       {/* 닉네임 */}
-      <span>닉네임</span>
+      <p className="pl-3 pt-6 text-xl">닉네임 변경</p>
       <form onSubmit={handleSubmitNickname(NicknameSubmit)}>
-        <div className="mb-1 mr-16 mt-2 rounded-lg bg-white p-2 px-3">
+        <div className="mb-1 ml-2 mr-10 mt-2 rounded-2xl border bg-white p-2 px-3 shadow-md">
           <input
-            className="focus:outline-none"
+            className="focus:outline-none "
             type="text"
             placeholder="닉네임"
             {...registerNickname('nickname')}
@@ -132,50 +151,48 @@ export function Settings() {
             maxLength={8}
             value={nickname}
             onChange={nicknameHandleChange}
+            onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                submitButtonRef.current?.focus();
+                handleSubmitNickname(NicknameSubmit)();
+              }
+            }}
           />
           {nicknameValid ? (
             <button
-              className="bg-white p-0 hover:border-transparent focus:outline-none "
+              className="bg-white p-0 pl-2 hover:border-transparent focus:outline-none "
               type="submit"
+              ref={submitButtonRef}
             >
               변경
             </button>
           ) : (
-            <button className="bg-white p-0 text-gray-400 hover:border-transparent focus:outline-none">
+            <button className="bg-white p-0 pl-2 text-gray-400 hover:border-transparent focus:outline-none">
               변경
             </button>
           )}
         </div>
-        <div className="pl-4">
-          {nickname.length < 2 && (
-            <span className="text-red-400">닉네임은 2~8자입니다</span>
-          )}
-          {checkNickname === false && (
-            <span className="text-red-500">이미 존재하는 닉네임입니다</span>
-          )}
-          {nickname.length >= 2 && checkNickname && (
-            <span className="text-green-600">사용 가능한 닉네임입니다</span>
-          )}
-        </div>
       </form>
-      <span>비밀번호</span>
+      <p className="pl-3 pt-3 text-xl">비밀번호 변경</p>
       {/* 현재 비밀번호 */}
       <form onSubmit={handleSubmitPwd(PwdSubmit)}>
         <div className="mb-1 mt-2 flex items-center">
           <div
-            className="flex justify-center rounded-lg bg-white"
+            className="ml-2 flex justify-center rounded-2xl border bg-white shadow-md"
             style={{ height: '40px' }}
           >
             <input
-              className="rounded-lg px-3 focus:outline-none"
+              className="mr-2 rounded-2xl px-3 focus:outline-none"
               type={showPassword ? 'text' : 'password'}
               placeholder="현재 비밀번호"
               {...registerPwd('CurPwd')}
               value={currentPwd}
               onChange={CurrentPwdChange}
+              autoComplete="current-password"
             />
             <button
-              className="bg-white px-3 hover:border-transparent focus:outline-none"
+              className="rounded-2xl bg-white pl-2 pr-4 hover:border-transparent focus:outline-none"
               type="button"
               onClick={togglePwdView}
               tabIndex={-1}
@@ -188,22 +205,23 @@ export function Settings() {
             </button>
           </div>
         </div>
-
-        <div className="mb-1 mt-6 flex items-center">
+        {/* 새 비밀번호 */}
+        <div className="mb-1 mt-2 flex items-center">
           <div
-            className="flex justify-center rounded-lg bg-white"
+            className="ml-2 flex justify-center rounded-2xl border bg-white shadow-md"
             style={{ height: '40px' }}
           >
             <input
-              className="rounded-lg px-3 focus:outline-none"
+              className="mr-2 rounded-2xl px-3 focus:outline-none "
               type={showPassword ? 'text' : 'password'}
               placeholder="새 비밀번호"
               {...registerPwd('NewPwd')}
               value={password}
               onChange={NewpwdChange}
+              autoComplete="new-password"
             />
             <button
-              className="bg-white px-3 hover:border-transparent focus:outline-none"
+              className="rounded-2xl bg-white pl-2 pr-4 hover:border-transparent focus:outline-none"
               type="button"
               onClick={togglePwdView}
               tabIndex={-1}
@@ -216,53 +234,43 @@ export function Settings() {
             </button>
           </div>
         </div>
-        <div className="pl-4">
-          {password.length < 8 || !passwordRegex.test(password) ? (
-            <span className="text-red-400">
-              비밀번호는 영어 + 숫자로 8~20자입니다
-            </span>
-          ) : (
-            <span className="text-green-600">올바른 비밀번호 형식입니다</span>
-          )}
-        </div>
         {/* 비밀번호 확인 */}
         <div className="mb-1 mt-2 flex items-center">
           <div
-            className="flex justify-center rounded-lg bg-white"
+            className="ml-2 flex justify-center rounded-2xl border bg-white shadow-md"
             style={{ height: '40px' }}
           >
             <input
-              className="rounded-lg px-3 focus:outline-none"
+              className="rounded-2xl px-3 focus:outline-none "
               type={showPassword ? 'text' : 'password'}
               placeholder="비밀번호 확인"
               {...registerPwd('chkPwd')}
               value={chkPassword}
               onChange={chkPwdChange}
+              autoComplete="new-password"
+              onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  submitButtonRef.current?.focus();
+                  handleSubmitPwd(PwdSubmit)();
+                }
+              }}
             />
 
             {currentPwd && passwordValid ? (
               <button
-                className="bg-white p-0 hover:border-transparent focus:outline-none "
+                className="rounded-2xl border bg-white p-0 pr-4 hover:border-transparent focus:outline-none "
                 type="submit"
+                ref={submitButtonRef}
               >
                 변경
               </button>
             ) : (
-              <button className="bg-white p-0 text-gray-400 hover:border-transparent focus:outline-none">
+              <button className="rounded-2xl border bg-white p-0 pr-4 text-gray-400 hover:border-transparent focus:outline-none">
                 변경
               </button>
             )}
           </div>
-        </div>
-        <div className="text-center">
-          {password !== '' && password !== chkPassword && chkPassword !== '' ? (
-            <span className="text-red-500">비밀번호가 일치하지 않습니다</span>
-          ) : (
-            <span>&nbsp;</span>
-          )}
-          {password !== '' && password === chkPassword && (
-            <span className="text-green-600">비밀번호가 일치합니다</span>
-          )}
         </div>
       </form>
     </div>
