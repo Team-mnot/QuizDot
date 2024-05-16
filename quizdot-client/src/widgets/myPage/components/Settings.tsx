@@ -140,9 +140,9 @@ export function Settings() {
   return (
     <div className="border p-2 shadow-md" style={{ height: '333px' }}>
       {/* 닉네임 */}
-      <p className="pl-3 pt-6 text-xl">닉네임 변경</p>
+      <p className="pl-7 pt-6 text-xl">닉네임 변경</p>
       <form onSubmit={handleSubmitNickname(NicknameSubmit)}>
-        <div className="mb-1 mt-2 flex items-center">
+        <div className="mb-1 mt-2 flex items-center pl-4">
           <div
             className="ml-2 flex justify-center rounded-2xl border bg-white shadow-md"
             style={{ height: '40px' }}
@@ -180,10 +180,10 @@ export function Settings() {
           </div>
         </div>
       </form>
-      <p className="pl-3 pt-3 text-xl">비밀번호 변경</p>
+      <p className="pl-7 pt-3 text-xl">비밀번호 변경</p>
       {/* 현재 비밀번호 */}
       <form onSubmit={handleSubmitPwd(PwdSubmit)}>
-        <div className="mb-1 mt-2 flex items-center">
+        <div className="mb-1 mt-2 flex items-center pl-4">
           <div
             className="ml-2 flex justify-center rounded-2xl border bg-white shadow-md"
             style={{ height: '40px' }}
@@ -212,7 +212,7 @@ export function Settings() {
           </div>
         </div>
         {/* 새 비밀번호 */}
-        <div className="mb-1 mt-2 flex items-center">
+        <div className="mb-1 mt-2 flex items-center pl-4">
           <div
             className="ml-2 flex justify-center rounded-2xl border bg-white shadow-md"
             style={{ height: '40px' }}
@@ -241,7 +241,7 @@ export function Settings() {
           </div>
         </div>
         {/* 비밀번호 확인 */}
-        <div className="mb-1 mt-2 flex items-center justify-between">
+        <div className="mb-1 mt-2 flex items-center justify-between px-4">
           <div
             className="ml-2 flex justify-center rounded-2xl border bg-white shadow-md"
             style={{ height: '40px' }}
