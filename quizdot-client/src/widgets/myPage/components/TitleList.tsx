@@ -1,6 +1,7 @@
 import type { Title } from '../api/types';
 import { ChangeTitleApi } from '../api/api';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
+import '../css/index.css';
 
 export function TitleList(titleInfo: { title: number; titleList: Title[] }) {
   const store = useUserStore();
@@ -14,22 +15,24 @@ export function TitleList(titleInfo: { title: number; titleList: Title[] }) {
 
   return (
     <div
-      className="scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 overflow-y-auto border p-2 shadow-md "
+      className="custom-scrollbar overflow-y-auto border p-2 shadow-md "
       style={{ height: '333px' }}
     >
-      <div className="flex justify-evenly">
-        <span>칭호명</span>
-        <span>획득조건</span>
-      </div>
       {titleInfo.titleList.map((title, id) => (
         <div
           key={id}
-          className={`flex justify-around ${title.get && 'bg-slate-200 hover:border-transparent hover:bg-gray-400 focus:outline-none active:bg-gray-300 '}`}
-          onClick={() => handleClick(title.id)}
+          className={`flex items-center justify-between pl-10 text-gray-400 ${title.get && ' text-black hover:border-transparent'}`}
         >
-          {/* 내가 가진 칭호면 표시, 현재 선택한 칭호면 표시 */}
-          <div>{title.title}</div>
-          <div>{title.requirement}</div>
+          <div className="flex items-center">
+            <div
+              className={`m-2 flex-none cursor-pointer rounded-lg border-2 bg-white p-1 px-6 text-center shadow-md ${title.get && 'hover:bg-gray-100 active:bg-gray-300'}`}
+              style={{ width: '220px' }}
+              onClick={() => handleClick(title.id)}
+            >
+              {title.title}
+            </div>
+          </div>
+          <div className="flex-grow pl-10 text-left">{title.requirement}</div>
         </div>
       ))}
     </div>
