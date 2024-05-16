@@ -132,7 +132,7 @@ public class QuizServiceImpl implements QuizService {
 
         // 모든 플레이어에게 게임 시작을 알린다
         messagingTemplate.convertAndSend("/sub/chat/room/" + roomId,
-            MessageDto.of(SERVER_SENDER, MessageType.START));
+            MessageDto.of(SERVER_SENDER, MessageType.MULTI));
     }
 
     /**
