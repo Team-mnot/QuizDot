@@ -13,6 +13,9 @@ import { CountDown } from './CountDown';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
 import { useParams, useLocation } from 'react-router-dom';
+import useRequestQuestion from '../hooks/useRequestQuestion';
+import jwtAxiosInstance from '@/shared/utils/jwtAxiosInstance';
+import { GameOverComponent } from './GameOverComponent';
 
 export function SurvivalPage() {
   const { roomId } = useParams() as {
@@ -25,7 +28,11 @@ export function SurvivalPage() {
   // const roomInfo = location.state.roomInfo; // state를 RoomInfoType으로 타입 캐스팅
   // const players = location.state.players;
   // 한방에 받아오기 ( 코드 있어보이게 )
-  const { players, roomInfo } = location.state || { players: [], roomInfo: {} };
+  const { players: playersObj, roomInfo } = location.state || {
+    players: {},
+    roomInfo: {},
+  };
+  const players = Object.keys(playersObj).map((key) => playersObj[key]);
 
   const {
     showChatBox,
@@ -36,25 +43,42 @@ export function SurvivalPage() {
     setShowCountDown,
     showCountDown,
     setQuizzes,
+    setIsGameOver,
+    isGameOver,
+    // quizzes,
   } = useQuizStore();
 
+  const { requestQuestion } = useRequestQuestion();
   const { onSend, onSubscribe, callbackMsg } = useContext(WebSocketContext);
   const [messages, setMessages] = useState<
     { nickname: string; content: string }[]
   >([]);
   const userStore = useUserStore();
+  const { category, gameMode, hostId } = roomInfo;
+
+  // console.log('내아디', roomInfo.hostId);
+  // console.log('방장아디', userStore.id);
+
+  useEffect(() => {
+    if (hostId === userStore.id) {
+      requestQuestion(parseInt(roomId), category, 3, gameMode); // 방장만 호출하는거
+    }
+  }, []);
 
   useEffect(() => {
     // 페이지가 로드될 때 body의 스타일을 설정합니다.
     document.body.style.backgroundImage = 'url(/images/SurvivalBackground.png)';
     document.body.style.backgroundSize = 'cover';
+    setShowCountDown(true);
 
-    // TODO : 나중에 Props로 넘기던가 어쩌구로 설정 바까라
+    // TODO : Unscribe는?
 
     onSubscribe(`chat/game/${roomId}`);
     onSubscribe(`quiz/game/${roomId}`); // 퀴즈 받을 구독 주소 임니다
-    setShowCountDown(true);
+    onSubscribe(`info/game/${roomId}`); // 게임하는 동안 알림 받을 주소
+  }, []);
 
+  useEffect(() => {
     if (
       callbackMsg.msg &&
       callbackMsg.address == `chat/game/${roomId}` &&
@@ -66,9 +90,41 @@ export function SurvivalPage() {
       ]);
     } else if (
       callbackMsg.msg &&
-      callbackMsg.address == `quiz/game/${roomId}` &&
+      callbackMsg.address == `info/game/${roomId}` &&
+      callbackMsg.msg.type == 'STAGE_RESULT'
+    ) {
+      console.log('결과결과');
+      console.log(callbackMsg.msg.data);
+      // setShowResult(true);
+      // setShowChatBox(true);
+      // setShowHint(false);
+    } else if (
+      callbackMsg.msg &&
+      callbackMsg.address == `info/game/${roomId}` &&
+      callbackMsg.msg.type == 'EXIT'
+    ) {
+      // TODO : 여기서 렌더링이 한번 더 되면서 초기화되는듯
+      if (roomInfo.hostId === userStore.id) {
+        console.log('방장');
+        jwtAxiosInstance
+          .post(`/survival/exit/${roomInfo.roomId}`, {})
+          .then((response) => {
+            console.log('Exit request successful:', response.data);
+          })
+          .catch((error) => {
+            console.error('Exit request failed:', error);
+          });
+      }
+      console.log(isGameOver);
+      setIsGameOver(true);
+      console.log(isGameOver);
+      console.log('종료호출');
+    } else if (
+      callbackMsg.msg &&
+      callbackMsg.address == `info/game/${roomId}` &&
       callbackMsg.msg.type == 'PASS'
     ) {
+      console.log('패스');
       setShowResult(true);
       setShowChatBox(true);
       setShowHint(false);
@@ -77,8 +133,9 @@ export function SurvivalPage() {
       callbackMsg.address == `quiz/game/${roomId}` &&
       callbackMsg.msg.type == 'QUIZ'
     ) {
-      setQuizzes(callbackMsg.msg.data.quizResList);
+      setQuizzes(callbackMsg.msg.data);
     }
+    // console.log(quizzes);
   }, [callbackMsg]);
 
   const handleSubmitMessage = (message: string) => {
@@ -93,12 +150,14 @@ export function SurvivalPage() {
 
   return (
     <div className={'flex h-full flex-col items-center justify-center'}>
-      {showCountDown ? (
+      {isGameOver ? (
+        <GameOverComponent />
+      ) : showCountDown ? (
         <CountDown />
       ) : showResult ? (
         <QuizResultComponent roomInfo={roomInfo} />
       ) : (
-        <QuizComponent roomId={Number(roomId)} />
+        <QuizComponent roomInfo={roomInfo} />
       )}
       <PlayerPreview players={players} />
       <ChattingBox onSend={handleSubmitMessage} messages={messages} />

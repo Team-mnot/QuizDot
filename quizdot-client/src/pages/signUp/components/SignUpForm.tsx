@@ -1,9 +1,9 @@
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, KeyboardEvent, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { SignUpApi, IdCheckAPi, NicknameCheckAPi } from '../api/api';
+import { SignUpApi, IdCheckApi, NicknameCheckApi } from '../api/api';
 import { LogInApi } from '@/pages/logIn/api/api';
 import type { SignUpProps } from '../api/types';
 import type { LogInProps } from '@/pages/logIn/api/types';
@@ -47,6 +47,9 @@ export function SignUpForm() {
   const [hintValid, setHintValid] = useState(false);
   const [nicknameValid, setNicknameValid] = useState(false);
 
+  // 엔터로 바로 제출용
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
+
   // 폼 제출 커스텀 핸들러
   type CustomSubmitHandler = SubmitHandler<FieldValues>;
 
@@ -89,7 +92,7 @@ export function SignUpForm() {
     const alphanumericValue = inputValue.replace(/[^a-zA-Z0-9]/g, ''); // 영어와 숫자만 추출
     const truncatedValue = alphanumericValue.slice(0, 20); // 최대 20자리까지만 유지
     setMemberId(truncatedValue);
-    const response = await IdCheckAPi(truncatedValue);
+    const response = await IdCheckApi(truncatedValue);
     setCheckId(response);
     if (
       response &&
@@ -146,7 +149,7 @@ export function SignUpForm() {
     const alphanumericValue = inputValue.replace(/[^\w가-힣]/g, ''); // 영어, 숫자, 한글만 추출
     const truncatedValue = alphanumericValue.slice(0, 8); // 최대 8자리까지만 유지
     setNickname(truncatedValue);
-    const response = await NicknameCheckAPi(truncatedValue);
+    const response = await NicknameCheckApi(truncatedValue);
     setCheckNickname(response);
     if (nicknameRegex.test(truncatedValue)) {
       setNicknameValid(true);
@@ -164,6 +167,7 @@ export function SignUpForm() {
           type="text"
           placeholder="아이디"
           {...register('memberId')}
+          autoFocus
           minLength={4}
           maxLength={20}
           onChange={idHandleChange}
@@ -284,8 +288,15 @@ export function SignUpForm() {
           {...register('nickname')}
           minLength={2}
           maxLength={8}
-          onChange={nicknameHandleChange}
           value={nickname}
+          onChange={nicknameHandleChange}
+          onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              submitButtonRef.current?.focus();
+              handleSubmit(onSubmit)();
+            }
+          }}
         />
       </div>
       <div className="text-center">
@@ -303,6 +314,7 @@ export function SignUpForm() {
       {idValid && passwordValid && hintValid && nicknameValid ? (
         <button
           type="submit"
+          ref={submitButtonRef}
           className="mt-6 w-full hover:border-transparent hover:bg-gray-200 focus:outline-none active:bg-gray-300"
         >
           Sign Up

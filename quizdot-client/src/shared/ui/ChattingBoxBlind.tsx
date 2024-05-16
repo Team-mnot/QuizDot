@@ -12,7 +12,7 @@ export function ChattingBoxBlind() {
           'chat-messages mb-2 flex h-48 items-center justify-center overflow-auto text-4xl text-white'
         }
       >
-        히히 정답 제출 전까지 채팅 못봐 ㅋㅋ
+        정답제출후 채팅
       </div>
     </div>
   );

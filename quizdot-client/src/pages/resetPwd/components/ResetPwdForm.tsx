@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from 'react';
+import { useState, useRef, ChangeEvent, KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -30,6 +30,10 @@ export function ResetPwdForm(props: { id: string }) {
   // 유효성 체크용 변수
   const [passwordValid, setPasswordValid] = useState(false);
 
+  // 엔터로 바로 제출용
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
+
+  // 폼 제출 커스텀 핸들러
   type CustomSubmitHandler = SubmitHandler<FieldValues>;
 
   // 폼 제출 함수
@@ -90,8 +94,9 @@ export function ResetPwdForm(props: { id: string }) {
           <input
             className="rounded-lg px-3 focus:outline-none"
             type={showPassword ? 'text' : 'password'}
-            placeholder="비밀번호"
+            placeholder="새 비밀번호"
             {...register('password')}
+            autoFocus
             value={password}
             onChange={passwordChange}
           />
@@ -131,6 +136,13 @@ export function ResetPwdForm(props: { id: string }) {
             {...register('passwordChk')}
             value={chkPassword}
             onChange={chkPasswordChange}
+            onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                submitButtonRef.current?.focus();
+                handleSubmit(onSubmit)();
+              }
+            }}
           />
           <button
             className="bg-white px-3 hover:border-transparent focus:outline-none"
@@ -161,6 +173,7 @@ export function ResetPwdForm(props: { id: string }) {
         <button
           className="mt-6 w-full hover:border-transparent hover:bg-gray-200 focus:outline-none active:bg-gray-300"
           type="submit"
+          ref={submitButtonRef}
         >
           비밀번호 재설정
         </button>

@@ -1,8 +1,8 @@
 import { useOpenModal } from '@/shared/hooks';
 import { Modal, Progress } from '@/shared/ui';
+import { MyPage } from '@/widgets/myPage';
 
 import { useUserStore } from '@/shared/stores/userStore/userStore';
-import { expList } from '../constants';
 
 export function MyProfile() {
   const { isOpenModal, clickModal, closeModal } = useOpenModal();
@@ -48,16 +48,16 @@ export function MyProfile() {
           <Progress
             size="w-full"
             color="yellow"
-            label={`${userStore.exp}/${expList[userStore.level]}`}
+            label={`${userStore.exp}/1000`}
             currentValue={userStore.exp}
-            maxValue={expList[userStore.level]}
+            maxValue={1000}
             padding="pt-[20px]"
           />
         </div>
       </div>
 
       <Modal isOpen={isOpenModal} onClose={closeModal}>
-        <div>마이페이지</div>
+        <MyPage id={userStore.id} />
       </Modal>
     </div>
   );

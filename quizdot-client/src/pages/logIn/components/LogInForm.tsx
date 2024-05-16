@@ -1,10 +1,10 @@
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, KeyboardEvent, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { LogInApi } from '../api/api';
-import { IdCheckAPi } from '@/pages/signUp/api/api';
+import { IdCheckApi } from '@/pages/signUp/api/api';
 import type { LogInProps } from '../api/types';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
 
@@ -32,8 +32,13 @@ export function LogInForm() {
   const [idValid, setIdValid] = useState(false);
   const [passwordValid, setPasswordValid] = useState(false);
 
+  // 엔터로 바로 제출용
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
+
+  // 폼 제출 커스텀 핸들러
   type CustomSubmitHandler = SubmitHandler<FieldValues>;
 
+  // 폼 제출 함수
   const onSubmit: CustomSubmitHandler = async (data) => {
     // 존재하지 않는 아이디일 때
     if (checkId) {
@@ -64,7 +69,7 @@ export function LogInForm() {
     const alphanumericValue = inputValue.replace(/[^a-zA-Z0-9]/g, ''); // 영어와 숫자만 추출
     const truncatedValue = alphanumericValue.slice(0, 20); // 최대 20자리까지만 유지
     setMemberId(truncatedValue);
-    const response = await IdCheckAPi(truncatedValue);
+    const response = await IdCheckApi(truncatedValue);
     setCheckId(response);
     if (truncatedValue.length >= 6 && idRegex.test(truncatedValue)) {
       setIdValid(true);
@@ -114,6 +119,7 @@ export function LogInForm() {
           type="text"
           placeholder="아이디"
           {...register('memberId')}
+          autoFocus
           minLength={4}
           maxLength={20}
           onChange={idHandleChange}
@@ -132,6 +138,13 @@ export function LogInForm() {
             {...register('password')}
             value={password}
             onChange={passwordChange}
+            onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                submitButtonRef.current?.focus();
+                handleSubmit(onSubmit)();
+              }
+            }}
           />
           <button
             className="bg-white px-3 hover:border-transparent focus:outline-none"
@@ -150,6 +163,7 @@ export function LogInForm() {
       {idValid && passwordValid ? (
         <button
           type="submit"
+          ref={submitButtonRef}
           className="mt-6 w-full hover:border-transparent hover:bg-gray-200 focus:outline-none active:bg-gray-300"
         >
           Log In

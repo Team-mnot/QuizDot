@@ -7,15 +7,23 @@ import { CharacterList } from './CharacterList';
 import { TitleList } from './TitleList';
 import { Settings } from './Settings';
 
+import { GetCharacterApi } from '../api/api';
+import { GetColerApi } from '../api/api';
+
 export function MyPage(props: { id: number }) {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [selected, setSelected] = useState('Record');
+
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const accessToken = localStorage.getItem('accessToken');
         const userinfo = await GetUserInfoApi(props.id);
         if (userinfo) {
           setUserInfo(userinfo);
+        }
+        if (accessToken) {
+          localStorage.setItem('accessToken', accessToken!);
         }
       } catch (error) {
         console.error('Error Fetching UserInfo', error);
@@ -24,27 +32,41 @@ export function MyPage(props: { id: number }) {
     fetchData();
   }, []);
 
+  const handleGetCha = () => {
+    GetCharacterApi();
+  };
+
+  const handleGetCol = () => {
+    GetColerApi();
+  };
+
   const handleClick = (props: string) => {
     setSelected(props);
   };
+
   if (userInfo) {
     return (
-      <div className="m-2 flex border bg-slate-400 p-2">
+      <div
+        className="m-2 flex border bg-slate-400 p-2"
+        style={{ width: '600px', height: '400px' }}
+      >
         {/* 왼쪽 */}
-        <div className="flex flex-col">
+        <div className="flex flex-col border">
           <div>{userInfo.characterId}</div>
           <span>{userInfo.title}</span>
           <div>
             <span>lv: {userInfo.level} </span>
-            <span>{userInfo.nickname}</span>
+            <span style={{ color: userInfo.nicknameColor }}>
+              {userInfo.nickname}
+            </span>
           </div>
           <span>경험치 : {userInfo.exp}</span>
           <span>보유 코인: {userInfo.point} </span>
-          <button>닉네임 색상 뽑기</button>
-          <button>캐릭터 뽑기</button>
+          <button onClick={handleGetCol}>닉네임 색상 뽑기</button>
+          <button onClick={handleGetCha}>캐릭터 뽑기</button>
         </div>
         {/* 오른쪽 */}
-        <div className="flex flex-col">
+        <div className="flex flex-col border">
           <div>
             <button
               className={`${selected === 'Record' ? 'bg-blue-500 font-bold text-white' : ''}`}
@@ -72,11 +94,11 @@ export function MyPage(props: { id: number }) {
             </button>
           </div>
           <div>
-            {selected === 'Record' && <Record userInfo={userInfo!} />}
+            {selected === 'Record' && <Record userInfo={userInfo} />}
             {selected === 'CharacterList' && (
               <CharacterList
-                characterId={userInfo!.characterId}
-                characterList={userInfo!.characterListDtos}
+                characterId={userInfo.characterId}
+                characterList={userInfo.characterListDtos}
               />
             )}
             {selected === 'TitleList' && (

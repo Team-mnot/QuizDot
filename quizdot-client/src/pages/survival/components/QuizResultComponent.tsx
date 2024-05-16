@@ -3,38 +3,37 @@
 import { useEffect } from 'react';
 import useQuizStore from '../store';
 import { useQuiz2 } from '../hooks/useQuiz2';
-import { useUserStore } from '@/shared/stores/userStore/userStore';
-import { Button } from '@/shared/ui';
 import { RoomInfoType } from '@/shared/apis/types';
+import { useUserStore } from '@/shared/stores/userStore/userStore';
+import { getQuizResult } from '../api/api';
+// interface QuizResultComponentProps {
+//   roomInfo: RoomInfoType;
+// }
 
-interface QuizResultComponentProps {
-  roomInfo: RoomInfoType;
-}
+export function QuizResultComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
+  const { resultMessage, setShowResult, setShowCountDown, isGameOver } =
+    useQuizStore();
+  const { handleNextQuiz } = useQuiz2(
+    roomInfo.roomId,
+    roomInfo.category,
+    roomInfo.gameMode,
+  );
 
-export function QuizResultComponent({ roomInfo }: QuizResultComponentProps) {
-  const { resultMessage, setShowResult, setShowCountDown } = useQuizStore();
-  const { handleNextQuiz } = useQuiz2();
   const userStore = useUserStore();
+
   useEffect(() => {
-    // handleNextQuiz();
-
+    if (roomInfo.hostId === userStore.id) {
+      getQuizResult(roomInfo.roomId); // 방장만 호출하는거
+    }
+    handleNextQuiz(); // 각 개인이 갖고있는 퀴즈목록에서 다음으로 가자는거임
     const timer = setTimeout(() => {
-      // setTimeOut에는 실행할 함수, 지연시간 2개 넣습니다잉 n초뒤에 ShowResult를 false로 만들겠단 소리죠~
       setShowResult(false);
-      //
-      {
-        roomInfo.hostId == userStore.id && (
-          <Button
-            value="초대 링크 생성"
-            className="w-[110px] text-[10px] text-red-700"
-            onClick={handleNextQuiz}
-          />
-        );
-      }
-      //
-
       setShowCountDown(true); // 카운트다운 페이지 가져와
-    }, 3000);
+    }, 5000);
+
+    if (isGameOver) {
+      clearTimeout(timer);
+    }
     return () => clearTimeout(timer);
   }, []);
 

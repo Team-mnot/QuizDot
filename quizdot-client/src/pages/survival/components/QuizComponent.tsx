@@ -2,11 +2,12 @@
 
 import { useQuiz2 } from '../hooks/useQuiz2';
 import { useState, useEffect } from 'react';
-import useIsSubmitAnswer from '../hooks/useIsSubmitAnswer';
+import requestQuestion from '../hooks/useRequestQuestion';
 import useQuizStore from '../store';
 import { postQuizResult } from '../api/api';
+import { RoomInfoType } from '@/shared/apis/types';
 
-export function QuizComponent({ roomId }: { roomId: number }) {
+export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
   const {
     setShowChatBox,
     // resultMessage,
@@ -16,34 +17,38 @@ export function QuizComponent({ roomId }: { roomId: number }) {
     setCurrentQuiz,
     currentQuizIndex,
     currentQuiz,
-    isCorrect,
+    // isCorrect,
     setIsCorrect,
     showHint,
     setShowHint,
   } = useQuizStore();
 
-  const { loading, error } = useQuiz2(); // 수정: useQuiz2에서 필요한 데이터를 가져오도록 함
+  // TODO : useQuiz에 handleNextQuiz 넣을 필요 없는데 나중에 분리합시다
+  const { loading, error } = useQuiz2(
+    roomInfo.roomId,
+    roomInfo.category,
+    roomInfo.gameMode,
+  );
   const [userAnswer, setUserAnswer] = useState(''); // 사용자 입력을 저장할 상태
   const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false); // 사용자 입력을 저장할 상태
 
   const {
-    submitAnswer,
     loading: submitLoading,
     // error: submitError,
-  } = useIsSubmitAnswer();
+  } = requestQuestion();
 
   useEffect(() => {
     const currentQuiz = quizzes[currentQuizIndex] || null;
     setIsCorrect(false);
-    setResultMessage('제출 안하니? 🐦');
+    setResultMessage('제출 안함');
     setCurrentQuiz(currentQuiz);
     setShowChatBox(false);
-  }, [currentQuizIndex, quizzes, setCurrentQuiz]);
+  }, [currentQuizIndex, quizzes]);
 
-  // async 쓰지말까.. 어차피 정답 오답 내는건 데이터 보내는거 기다릴 필요 없긴한데
-  // 그래도 서버에 제출했다는 신호 주는거 확인은 해보자고 ~
   const handleAnswerSubmit = async () => {
     setIsAnswerSubmitted(true);
+    let answerIsCorrect = false;
+
     if (currentQuiz) {
       if (
         userAnswer.trim() === '' ||
@@ -52,14 +57,15 @@ export function QuizComponent({ roomId }: { roomId: number }) {
         setResultMessage('오답 😿');
       } else {
         setResultMessage('정답! 🐣');
-        setIsCorrect(true);
+        answerIsCorrect = true;
       }
 
       setShowChatBox(true);
       setUserAnswer('');
+      setIsCorrect(answerIsCorrect);
 
-      await submitAnswer(roomId, currentQuiz.id); // 이거 문제 제출했다고 알리는 함수 만들어놨던건데 안쓰이면 지워야징
-      await postQuizResult(roomId, isCorrect); // API 호출
+      // TODO : isCorrect를 그냥 1, -1 로 보냈어도 될것..같은데 이건 리팩토링으로 하자
+      await postQuizResult(roomInfo.roomId, answerIsCorrect); // API 호출
     }
   };
 
@@ -75,7 +81,7 @@ export function QuizComponent({ roomId }: { roomId: number }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowHint(true);
-    }, 3000);
+    }, 10000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -86,7 +92,7 @@ export function QuizComponent({ roomId }: { roomId: number }) {
       setShowChatBox(true);
       setShowResult(true);
       setShowHint(false);
-    }, 6000);
+    }, 20000);
 
     return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 해제
   }, []);
