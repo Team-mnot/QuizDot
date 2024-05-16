@@ -11,13 +11,7 @@ import {
 } from '@/pages/lobby/constants';
 import { ModifyingRoomType } from '../api/types';
 
-export function RoomModification({
-  channelId,
-  roomInfo,
-}: {
-  channelId: number;
-  roomInfo: RoomInfoType;
-}) {
+export function RoomModification({ roomInfo }: { roomInfo: RoomInfoType }) {
   const [title, setTitle] = useState<string>(roomInfo.title);
   const [open, setOpen] = useState<number>(roomInfo.open ? 1 : 0);
   const [password, setPassword] = useState<string>(roomInfo.password);
@@ -81,9 +75,10 @@ export function RoomModification({
       maxQuestion: maxQuestion,
     };
 
-    const response = await modifyRoomApi(channelId, modifyingRoomInfo);
+    console.log(modifyingRoomInfo);
+    const response = await modifyRoomApi(roomInfo.roomId, modifyingRoomInfo);
 
-    if (response == 201) {
+    if (response == 200) {
       setToastMessage('방 정보를 변경했습니다.');
       setToastState(true);
     } else {

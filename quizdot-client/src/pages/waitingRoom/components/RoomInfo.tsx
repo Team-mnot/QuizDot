@@ -6,13 +6,7 @@ import { useOpenModal } from '@/shared/hooks';
 import { RoomModification } from './RoomModification';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
 
-export function RoomInfo({
-  channelId,
-  roomInfo,
-}: {
-  channelId: number;
-  roomInfo: RoomInfoType;
-}) {
+export function RoomInfo({ roomInfo }: { roomInfo: RoomInfoType }) {
   const [toastState, setToastState] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>('');
   const [inviteLink, setInviteLink] = useState<string | null>(
@@ -107,7 +101,7 @@ export function RoomInfo({
         )}
       </div>
       <Modal isOpen={isOpenModificationModal} onClose={closeModificationModal}>
-        <RoomModification roomInfo={roomInfo} channelId={channelId} />
+        <RoomModification roomInfo={roomInfo} />
       </Modal>
 
       {toastState === true ? (

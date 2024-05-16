@@ -39,7 +39,7 @@ export function RoomHeader({
       {roomStore.roomInfo && (
         <div className="absolute left-[0px] top-[0px] w-full px-[50px] py-[20px]">
           <div className="flex justify-between">
-            <RoomInfo roomInfo={roomStore.roomInfo} channelId={channelId} />
+            <RoomInfo roomInfo={roomStore.roomInfo} />
             <LeaveBtn roomId={roomId} channelId={channelId} />
           </div>
 
