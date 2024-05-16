@@ -161,7 +161,7 @@ public class SurvivalServiceImpl implements SurvivalService {
         messagingTemplate.convertAndSend(getGameDestination(roomId),
             MessageDto.of(SERVER_SENDER, "리워드 지급 및 결과 계산이 완료되었습니다.",
                 MessageType.REWARD, resultDtoList));
-        
+
         // 대기실 상태 변경 (INPROGRESS -> WAITING)
         Map<String, Integer> matchRooms = redisTemplate.opsForHash()
             .entries(getMatchRoomKey(roomId));
@@ -329,7 +329,7 @@ public class SurvivalServiceImpl implements SurvivalService {
             // 임시 게임 대기실 ID, 게임 플레이어 정보를 메세지로 전송
             messagingTemplate.convertAndSend(
                 ROOM_CHAT_DESTINATION + matchRoomId,
-                MessageDto.of(SERVER_SENDER, "매칭을 완료했습니다. 게임을 시작합니다 ♪(´▽｀)", MessageType.START,
+                MessageDto.of(SERVER_SENDER, "매칭을 완료했습니다. 게임을 시작합니다 ♪(´▽｀)", MessageType.SURVIVAL,
                     new RoomEnterRes(matchPlayers, gameRoomInfoDto)));
         });
 
