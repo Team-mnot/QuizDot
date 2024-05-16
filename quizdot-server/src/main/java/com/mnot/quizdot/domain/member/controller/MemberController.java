@@ -196,8 +196,8 @@ public class MemberController {
     public ResponseEntity<ResultResponse> modifyTitle(
         @AuthenticationPrincipal CustomMemberDetail customMemberDetail,
         @PathVariable("title_id") int titleId) {
-        memberService.modifyTitle(customMemberDetail, titleId);
-        return ResponseEntity.ok(ResultResponse.of(200, "칭호를 변경했습니다."));
+        return ResponseEntity.ok(ResultResponse.of(200, "칭호를 변경했습니다.",
+            memberService.modifyTitle(customMemberDetail, titleId)));
     }
 
     /**

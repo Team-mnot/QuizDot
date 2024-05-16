@@ -16,4 +16,6 @@ public interface TitleRepository extends JpaRepository<Title, Integer> {
             + "WHERE mt.member.id = :memberId")
     List<TitleListDto> findAllTitlesByMemberId(int memberId);
 
+    @Query("Select t.title FROM Title t WHERE t.id= :id")
+    String findTitleById(int id);
 }

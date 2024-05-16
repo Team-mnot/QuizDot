@@ -259,7 +259,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void modifyTitle(CustomMemberDetail customMemberDetail, int titleId) {
+    public String modifyTitle(CustomMemberDetail customMemberDetail, int titleId) {
         Member member = memberRepository.findByMemberId(customMemberDetail.getUsername())
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
         if (!memberTitleRepository.existsByTitleIdAndMemberIdAndIsGetTrue(
@@ -268,6 +268,7 @@ public class MemberServiceImpl implements MemberService {
             throw new BusinessException(ErrorCode.LOCK_TITLE_ERROR);
         }
         member.updateTitleId(titleId);
+        return titleRepository.findTitleById(titleId);
     }
 
     @Override
