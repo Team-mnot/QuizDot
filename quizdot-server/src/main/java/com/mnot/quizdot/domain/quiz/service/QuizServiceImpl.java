@@ -6,11 +6,16 @@ import com.mnot.quizdot.domain.quiz.dto.MessageDto;
 import com.mnot.quizdot.domain.quiz.dto.MessageType;
 import com.mnot.quizdot.domain.quiz.dto.QuizParam;
 import com.mnot.quizdot.domain.quiz.dto.QuizRes;
+import com.mnot.quizdot.domain.quiz.entity.Answer;
 import com.mnot.quizdot.domain.quiz.entity.CategoryType;
+import com.mnot.quizdot.domain.quiz.entity.Quiz;
 import com.mnot.quizdot.domain.quiz.repository.QuizRepository;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import com.mnot.quizdot.global.util.RedisUtil;
+import com.mnot.quizdot.global.util.S3Util;
+import com.mnot.quizdot.global.util.S3Util.Directory;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +29,7 @@ import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +42,7 @@ public class QuizServiceImpl implements QuizService {
     private final QuizRepository quizRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final RedisUtil redisUtil;
+    private final S3Util s3Util;
 
     /**
      * 문제 리스트 조회 (중복 출제를 방지하기 위해 퀴즈 목록을 REDIS에서 관리)
@@ -191,5 +198,27 @@ public class QuizServiceImpl implements QuizService {
             default:
                 return 0.0;
         }
+    }
+
+    /**
+     * 퀴즈와 정답을 DB에 업로드
+     */
+    @Transactional
+    public List<String> uploadQuizImage(List<MultipartFile> imageFiles) {
+        List<String> urlList = new ArrayList<>();
+        String imageUrl = "";
+        // S3에 이미지 업로드
+        for(MultipartFile imageFile : imageFiles) {
+            if(imageFile != null && !imageFile.isEmpty()) {
+                // 이미지 파일인지 검사
+                String contentType = imageFile.getContentType();
+                if(contentType == null || !contentType.startsWith("image/")) {
+                    throw new BusinessException(ErrorCode.IS_NOT_IMAGE);
+                }
+                imageUrl = s3Util.uploadFile(imageFile, Directory.QUIZ);
+            }
+            urlList.add(imageUrl);
+        }
+        return urlList;
     }
 }

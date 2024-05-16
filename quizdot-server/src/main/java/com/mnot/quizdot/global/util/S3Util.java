@@ -62,8 +62,8 @@ public class S3Util {
     // 파일명을 생성하는 메소드
     public String makeFileName(String directory, String fileName) {
         // 파일명 중복을 방지하기 위해 현재 시간 반영
-        String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HHmmSS"));
-        return directory + time + "_" + fileName;
+//        String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HHmmSS"));
+        return directory + fileName;
     }
 
     public void deleteFile(String url, Directory directory) {
