@@ -12,12 +12,12 @@ export function InvitingLinkPage() {
   const router = useRouter();
   const roomStore = useRoomStore();
 
-  //
-
   // 초대 링크로 게임 대기실 입장
   const enterRoomWithLink = async () => {
     if (localStorage.getItem('accessToken')) {
       const response = await enterRoomWithLinkApi(link);
+
+      console.log(response);
 
       if (response.status == 200) {
         roomStore.fetchRoom(response.data.roomInfo);
@@ -25,7 +25,7 @@ export function InvitingLinkPage() {
 
         if (roomStore.roomInfo && roomStore.players)
           router.routeTo(
-            `/${roomStore.roomInfo?.roomId % 1000}/${roomStore.roomInfo?.roomId}/waiting`,
+            `/${roomStore.roomInfo.roomId % 1000}/${roomStore.roomInfo.roomId}/waiting`,
           );
         // 일대일 모드 추가 예정
       } else {
