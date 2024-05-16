@@ -3,7 +3,7 @@
 import { useQuiz2 } from '../hooks/useQuiz2';
 import { useState, useEffect } from 'react';
 import requestQuestion from '../hooks/useRequestQuestion';
-import useQuizStore from '../store';
+import { useQuizStore } from '../store';
 import { postQuizResult } from '../api/api';
 import { RoomInfoType } from '@/shared/apis/types';
 
@@ -46,14 +46,21 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
   }, [currentQuizIndex, quizzes]);
 
   const handleAnswerSubmit = async () => {
+    if (userAnswer.trim() === '') {
+      setResultMessage('정답을 입력하세요.');
+      return;
+    }
+
     setIsAnswerSubmitted(true);
     let answerIsCorrect = false;
 
     if (currentQuiz) {
-      if (
-        userAnswer.trim() === '' ||
-        !currentQuiz.answers.includes(userAnswer.trim())
-      ) {
+      const sanitizedUserAnswer = userAnswer.replace(/\s/g, '');
+      const sanitizedCorrectAnswers = currentQuiz.answers.map((answer) =>
+        answer.replace(/\s/g, ''),
+      );
+
+      if (!sanitizedCorrectAnswers.includes(sanitizedUserAnswer)) {
         setResultMessage('오답 😿');
       } else {
         setResultMessage('정답! 🐣');
@@ -64,7 +71,6 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
       setUserAnswer('');
       setIsCorrect(answerIsCorrect);
 
-      // TODO : isCorrect를 그냥 1, -1 로 보냈어도 될것..같은데 이건 리팩토링으로 하자
       await postQuizResult(roomInfo.roomId, answerIsCorrect); // API 호출
     }
   };
@@ -111,13 +117,15 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
         <div key={currentQuiz.id}>
           <h2>{currentQuiz.question}</h2>
           <p>{currentQuiz.description}</p>
-          {/* <p>Category: {currentQuiz.category}</p> */}
           {/* <p>Type: {currentQuiz.questionType}</p> */}
           {/* <p>Answers: {currentQuiz.answers.join(', ')}</p> */}
         </div>
       </div>
+      <div className=" fixed left-0 right-0 top-56 mx-auto max-w-3xl">
+        Category: {currentQuiz.category}
+      </div>
       {showHint && (
-        <div className="fixed left-0 right-0 top-56 mx-auto max-w-3xl">
+        <div className="fixed left-0 right-0 top-64 mx-auto max-w-3xl">
           초성힌트: {currentQuiz.hint}
         </div>
       )}
@@ -140,7 +148,7 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
                 value={userAnswer}
                 onChange={(e) => setUserAnswer(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="정답을~ 적어줘요~"
+                placeholder="정답 입력"
                 className="w-5/6 pl-10"
               />
               <button onClick={handleAnswerSubmit} disabled={submitLoading}>

@@ -6,8 +6,8 @@ import { PlayerType } from '@/shared/apis/types';
 
 interface PlayerInSurvivalModeProps extends PlayerType {
   position: { top: number; left: number };
-  // isAlive: boolean;
-  // isRevive: boolean;
+  isAlive: boolean;
+  isRevive: boolean;
 }
 
 export function PlayerInSurvivalModeComponent({
@@ -17,10 +17,10 @@ export function PlayerInSurvivalModeComponent({
   title,
   characterId,
   position,
-  // isAlive,
-  // isRevive,
+  isAlive,
+  isRevive,
 }: PlayerInSurvivalModeProps) {
-  // const displayCharacterId = isAlive ? characterId : 0;
+  const displayCharacterId = isAlive ? characterId : 25;
 
   return (
     <div
@@ -37,8 +37,8 @@ export function PlayerInSurvivalModeComponent({
         className="relative z-10" // characterImageUrl의 z-index를 설정합니다.
       >
         <Character
-          // characterId={displayCharacterId}
-          characterId={characterId}
+          characterId={displayCharacterId}
+          // characterId={characterId}
           title={title}
           nickname={nickname}
           nicknameColor={nicknameColor} // 색상 전달
@@ -47,13 +47,13 @@ export function PlayerInSurvivalModeComponent({
       </div>
 
       {/* 부활하면 머리에 링 씌워주려고요 ~ */}
-      {/* {isRevive && (
+      {isRevive && (
         <img
           src="/images/halo.png"
           alt="Revived"
           className={'h-30 w-30 absolute -top-5 z-0 '}
         />
-      )} */}
+      )}
     </div>
   );
 }

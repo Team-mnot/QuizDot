@@ -44,22 +44,20 @@ export function RoomHeader({
           </div>
 
           <div className="text-center">
-            {roomStore.roomInfo.hostId === userStore.id ? (
-              <div className="flex justify-center">
-                {roomStore.roomInfo.gameMode === 'NORMAL' ? (
-                  <MultiMatchBtn roomId={roomId} />
-                ) : (
-                  <SurvivalMatchBtn
-                    roomId={roomId}
-                    category={roomStore.roomInfo.category}
-                  />
-                )}
-              </div>
-            ) : (
-              <div className="flex justify-center pt-10 text-3xl text-red-700 ">
-                호스트가 게임을 시작할때 까지 기다려주세요
-              </div>
-            )}
+            <div className="flex justify-center">
+              {roomStore.roomInfo.gameMode === 'NORMAL' ? (
+                <MultiMatchBtn
+                  roomId={roomId}
+                  visible={roomStore.roomInfo.hostId === userStore.id}
+                />
+              ) : (
+                <SurvivalMatchBtn
+                  roomId={roomId}
+                  category={roomStore.roomInfo.category}
+                  visible={roomStore.roomInfo.hostId === userStore.id}
+                />
+              )}
+            </div>
           </div>
         </div>
       )}

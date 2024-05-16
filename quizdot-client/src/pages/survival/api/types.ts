@@ -9,6 +9,7 @@ export interface Player {
 }
 
 export interface PlayerInSurvivalMode extends Player {
+  id: number; // 추가된 부분
   position: {
     top: number;
     left: number;
