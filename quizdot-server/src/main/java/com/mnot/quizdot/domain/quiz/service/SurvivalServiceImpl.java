@@ -189,11 +189,12 @@ public class SurvivalServiceImpl implements SurvivalService {
         // 생존자 중에서 정답을 맞힌 사람이 없는 경우
         // 생존자는 그대로 다음 문제로 넘어가되, 정답을 맞힌 탈락자는 추가로 부활시킨다
         if (redisTemplate.opsForZSet().count(surviveKey, 0, MAX_SCORE) == 0) {
-            Set<String> resurrections = redisTemplate.opsForZSet()
+            Set<TypedTuple<Integer>> resurrections = redisTemplate.opsForZSet()
                 .rangeByScoreWithScores(eliminatedKey, 0, MAX_SCORE);
-            Set<TypedTuple<String>> newRessurections = new HashSet<>();
-            for (String playerId : resurrections) {
+            Set<TypedTuple<Integer>> newRessurections = new HashSet<>();
+            for (TypedTuple<Integer> player : resurrections) {
                 // 부활 처리
+                Integer playerId = player.getValue();
                 Double originalScore = redisTemplate.opsForZSet().score(boardKey, playerId);
                 newRessurections.add(TypedTuple.of(playerId, originalScore * (-1)));
             }
@@ -234,7 +235,6 @@ public class SurvivalServiceImpl implements SurvivalService {
 
         // 스테이지 결과 초기화
         redisTemplate.unlink(List.of(surviveKey, eliminatedKey));
-
         // 최종 스테이지 결과 리턴
         MessageType messageType = MessageType.STAGE_RESULT;
         Set<TypedTuple<String>> results = redisTemplate.opsForZSet()
@@ -329,7 +329,7 @@ public class SurvivalServiceImpl implements SurvivalService {
             // 임시 게임 대기실 ID, 게임 플레이어 정보를 메세지로 전송
             messagingTemplate.convertAndSend(
                 ROOM_CHAT_DESTINATION + matchRoomId,
-                MessageDto.of(SERVER_SENDER, "매칭을 완료했습니다. 게임을 시작합니다 ♪(´▽｀)", MessageType.START,
+                MessageDto.of(SERVER_SENDER, "매칭을 완료했습니다. 게임을 시작합니다 ♪(´▽｀)", MessageType.SURVIVAL,
                     new RoomEnterRes(matchPlayers, gameRoomInfoDto)));
         });
 

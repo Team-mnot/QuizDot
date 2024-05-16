@@ -58,9 +58,9 @@ public class CustomWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
         String accessToken = (String) session.getAttributes().get("access");
         if (accessToken != null) {
             sessionUtil.deleteInactivePlayerData(String.valueOf(jwtUtil.getId(accessToken)));
-        }
-//        else {
+        } else {
+            log.info("헤더 없는데?");
 //            throw new BusinessException(ErrorCode.HTTP_HEADER_INVALID);
-//        }
+        }
     }
 }
