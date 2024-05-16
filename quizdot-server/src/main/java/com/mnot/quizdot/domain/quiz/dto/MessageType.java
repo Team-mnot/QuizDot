@@ -15,5 +15,6 @@ public enum MessageType {
     REWARD, //결과에 따른 리워드 지급
     TILE, //칭호가 해금이 되었음을 알림
     SUBMIT, //유저가 문제를 선택함
-    SURVIVAL //서바이벌 모드 게임 시작
+    SURVIVAL, //서바이벌 모드 게임 시작
+    MULTI //멀티 모드 게임 시작
 }
