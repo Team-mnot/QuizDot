@@ -7,3 +7,5 @@ export { RoomInfo } from './RoomInfo';
 export { RoomModification } from './RoomModification';
 export { RoomChattingBox } from './RoomChattingBox';
 export { PlayerList } from './PlayerList';
+
+export { RoomFetchData } from './RoomFetchData';

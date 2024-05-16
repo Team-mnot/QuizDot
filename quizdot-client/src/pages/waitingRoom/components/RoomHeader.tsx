@@ -1,60 +1,68 @@
 import { RoomInfo } from './RoomInfo';
 import { LeaveBtn } from './LeaveBtn';
-import { RoomInfoType } from '@/pages/lobby/api/types';
 import { MultiMatchBtn, SurvivalMatchBtn } from '.';
+import { useContext, useEffect } from 'react';
+import { useGameStore } from '@/shared/stores/connectionStore/gameStore';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
-import { useContext, useEffect, useState } from 'react';
+import { MessageDto } from '@/shared/apis/types';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
-
-export function RoomHeader(props: {
+export function RoomHeader({
+  roomId,
+  channelId,
+}: {
+  roomId: number;
   channelId: number;
-  roomInfo: RoomInfoType;
 }) {
-  const { callbackMsg } = useContext(WebSocketContext);
-  const [roomInfo, setRoomInfo] = useState<RoomInfoType>(props.roomInfo);
+  const { isReady, onSubscribeWithCallBack, onUnsubscribe } =
+    useContext(WebSocketContext);
+  const gameStore = useGameStore();
+
   const userStore = useUserStore();
-  useEffect(() => {
-    if (
-      callbackMsg.msg &&
-      callbackMsg.address == `info/room/${roomInfo.roomId}` &&
-      callbackMsg.msg.type == 'MODIFY'
-    ) {
-      setRoomInfo(callbackMsg.msg.data as RoomInfoType);
+  const callbackOfInfo = async (message: MessageDto) => {
+    if (message.type === 'MODIFY') {
+      gameStore.fetchRoom(message.data);
     }
-  }, [roomInfo, callbackMsg]);
+  };
+
+  useEffect(() => {
+    onSubscribeWithCallBack(`info/room/${roomId}`, callbackOfInfo);
+
+    return () => {
+      onUnsubscribe(`info/room/${roomId}`);
+    };
+  }, [isReady]);
+
+  useEffect(() => {}, [gameStore.roomInfo]);
 
   return (
-    <div className="absolute left-[0px] top-[0px] w-full px-[50px] py-[20px]">
-      <div className="flex justify-between">
-        <div>
-          <RoomInfo roomInfo={roomInfo} channelId={props.channelId} />
-        </div>
-        <div>
-          <LeaveBtn roomId={roomInfo.roomId} channelId={props.channelId} />
-        </div>
-      </div>
-      <div>
-        {roomInfo.hostId === userStore.id ? (
-          <div className="flex justify-center">
-            {roomInfo.gameMode === 'NORMAL' ? (
-              <MultiMatchBtn
-                channelId={props.channelId}
-                roomId={roomInfo.roomId}
-                mode={roomInfo.gameMode}
-              />
+    <div>
+      {gameStore.roomInfo && (
+        <div className="absolute left-[0px] top-[0px] w-full px-[50px] py-[20px]">
+          <div className="flex justify-between">
+            <RoomInfo roomInfo={gameStore.roomInfo} channelId={channelId} />
+            <LeaveBtn roomId={roomId} channelId={channelId} />
+          </div>
+
+          <div className="text-center">
+            {gameStore.roomInfo.hostId === userStore.id ? (
+              <div className="flex justify-center">
+                {gameStore.roomInfo.gameMode === 'NORMAL' ? (
+                  <MultiMatchBtn roomId={roomId} />
+                ) : (
+                  <SurvivalMatchBtn
+                    roomId={roomId}
+                    category={gameStore.roomInfo.category}
+                  />
+                )}
+              </div>
             ) : (
-              <SurvivalMatchBtn
-                roomId={roomInfo.roomId}
-                category={roomInfo.category}
-              />
+              <div className="flex justify-center pt-10 text-3xl text-red-700 ">
+                호스트가 게임을 시작할때 까지 기다려주세요
+              </div>
             )}
           </div>
-        ) : (
-          <div className=" flex justify-center pt-10 text-3xl text-red-700">
-            호스트가 게임을 시작할때 까지 기다려주세요
-          </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

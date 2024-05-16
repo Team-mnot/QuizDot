@@ -1,25 +1,11 @@
 import { startGameApi } from '@/shared/apis/commonApi';
-import { useRouter } from '@/shared/hooks';
 import { Button } from '@/shared/ui';
-import { modeList } from '../constants';
 
-export function MultiMatchBtn({
-  channelId,
-  roomId,
-  mode,
-}: {
-  channelId: number;
-  roomId: number;
-  mode: string;
-}) {
-  const router = useRouter();
-
+export function MultiMatchBtn({ roomId }: { roomId: number }) {
   const handleStartGame = async () => {
-    const response = await startGameApi(roomId, mode);
+    const response = await startGameApi(roomId, 'NORMAL');
 
-    if (response == 200) {
-      router.routeTo(`/${channelId}/${roomId}/${modeList[mode]}`);
-    } else console.log('[멀티 게임 입장 실패]');
+    if (response != 200) console.error('[멀티 게임 입장 실패]');
   };
 
   return (
