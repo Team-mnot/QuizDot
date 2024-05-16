@@ -46,14 +46,21 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
   }, [currentQuizIndex, quizzes]);
 
   const handleAnswerSubmit = async () => {
+    if (userAnswer.trim() === '') {
+      setResultMessage('정답을 입력하세요.');
+      return;
+    }
+
     setIsAnswerSubmitted(true);
     let answerIsCorrect = false;
 
     if (currentQuiz) {
-      if (
-        userAnswer.trim() === '' ||
-        !currentQuiz.answers.includes(userAnswer.trim())
-      ) {
+      const sanitizedUserAnswer = userAnswer.replace(/\s/g, '');
+      const sanitizedCorrectAnswers = currentQuiz.answers.map((answer) =>
+        answer.replace(/\s/g, ''),
+      );
+
+      if (!sanitizedCorrectAnswers.includes(sanitizedUserAnswer)) {
         setResultMessage('오답 😿');
       } else {
         setResultMessage('정답! 🐣');
@@ -64,7 +71,6 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
       setUserAnswer('');
       setIsCorrect(answerIsCorrect);
 
-      // TODO : isCorrect를 그냥 1, -1 로 보냈어도 될것..같은데 이건 리팩토링으로 하자
       await postQuizResult(roomInfo.roomId, answerIsCorrect); // API 호출
     }
   };

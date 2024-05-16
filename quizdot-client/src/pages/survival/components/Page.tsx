@@ -46,7 +46,6 @@ export function SurvivalPage() {
     setIsGameOver,
     isGameOver,
     // quizzes,
-    reset,
   } = useQuizStore();
 
   const { players, setPlayers, updatePlayerStatus } = usePlayerStore();
@@ -64,25 +63,6 @@ export function SurvivalPage() {
   // console.log('방장아디', userStore.id);
 
   useEffect(() => {
-    const players = Object.keys(playersObj).map((key) => playersObj[key]);
-    setPlayers(
-      players.map((player, index) => ({
-        ...player,
-        position: predefinedPositions[index]?.position || { top: 0, left: 0 },
-        isAlive: true,
-        isRevive: false,
-      })),
-    );
-  }, []);
-
-  useEffect(() => {
-    reset();
-    if (hostId === userStore.id) {
-      requestQuestion(parseInt(roomId), category, 3, gameMode); // 방장만 호출하는거
-    }
-  }, []);
-
-  useEffect(() => {
     // 페이지가 로드될 때 body의 스타일을 설정합니다.
     document.body.style.backgroundImage = 'url(/images/SurvivalBackground.png)';
     document.body.style.backgroundSize = 'cover';
@@ -93,6 +73,20 @@ export function SurvivalPage() {
     onSubscribe(`chat/game/${roomId}`);
     onSubscribe(`quiz/game/${roomId}`); // 퀴즈 받을 구독 주소 임니다
     onSubscribe(`info/game/${roomId}`); // 게임하는 동안 알림 받을 주소
+
+    if (hostId === userStore.id) {
+      requestQuestion(parseInt(roomId), category, 3, gameMode); // 방장만 호출하는거
+    }
+
+    const players = Object.keys(playersObj).map((key) => playersObj[key]);
+    setPlayers(
+      players.map((player, index) => ({
+        ...player,
+        position: predefinedPositions[index]?.position || { top: 0, left: 0 },
+        isAlive: true,
+        isRevive: false,
+      })),
+    );
   }, []);
 
   useEffect(() => {

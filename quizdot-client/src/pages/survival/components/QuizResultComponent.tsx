@@ -27,6 +27,7 @@ export function QuizResultComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
 
   const userStore = useUserStore();
   const [answerIndex, setAnswerIndex] = useState<number>();
+  const [currentAnswer, setCurrentAnswer] = useState<string[]>([]);
   useEffect(() => {
     if (roomInfo.hostId === userStore.id) {
       getQuizResult(roomInfo.roomId); // 방장만 호출하는거
@@ -46,16 +47,17 @@ export function QuizResultComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
 
   useEffect(() => {
     if (answerIndex !== undefined) {
+      setCurrentAnswer(quizzes[answerIndex].answers);
       handleNextQuiz(); // 각 개인이 갖고있는 퀴즈목록에서 다음으로 가자는거임
     }
-  }, [answerIndex, handleNextQuiz]);
+  }, [answerIndex]);
 
   return (
     <div className="text-4lx fixed left-0 right-0 top-10 mx-auto flex h-44 max-w-3xl items-center justify-center rounded-xl bg-white p-4">
       <div className="flex justify-center text-4xl">{resultMessage}</div>
       <div>
-        {answerIndex !== undefined && (
-          <div>Answers: {quizzes[answerIndex].answers.join(', ')}</div>
+        {currentAnswer.length > 0 && (
+          <div>Answers: {currentAnswer.join(', ')}</div>
         )}{' '}
       </div>
     </div>

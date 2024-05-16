@@ -18,7 +18,7 @@ export function GameOverComponent({ rewardData }: { rewardData: any[] }) {
 
   const gameStore = useGameStore();
   const userStore = useUserStore();
-  const { setIsGameOver } = useQuizStore();
+  const { setIsGameOver, reset } = useQuizStore();
   const [countdown, setCountdown] = useState(10); // 10초 카운트다운 초기값 설정
   const originRoomId = gameStore.roomInfo?.roomId
     ? gameStore.roomInfo.roomId
@@ -35,7 +35,8 @@ export function GameOverComponent({ rewardData }: { rewardData: any[] }) {
     const timeout = setTimeout(() => {
       navigate(`/${originChannelId}/${gameStore.roomInfo?.roomId}/waiting`);
       setIsGameOver(false); // 다시 false 해놔야 다음게임때 문제 X
-    }, 10000);
+      reset();
+    }, 5000);
 
     return () => {
       clearInterval(timer); // 컴포넌트 언마운트 시 타이머 해제
