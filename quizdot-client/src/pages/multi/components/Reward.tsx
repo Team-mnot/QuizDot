@@ -47,14 +47,14 @@ export function Reward({
     onSubscribeWithCallBack(
       `info/game/${roomId}/title/${userStore.id}`,
       (message: MessageDto) => {
-        console.log(message);
         if (message.type == 'TITLE') {
+          console.log(message);
         }
       },
     );
 
     return () => {
-      onUnsubscribe(`chat/room/${roomId}`);
+      onUnsubscribe(`info/game/${roomId}/title/${userStore.id}`);
     };
   }, [isReady]);
 
@@ -76,7 +76,7 @@ export function Reward({
   }, []);
 
   return (
-    <div>
+    <div className="flex h-[500px] w-[500px] flex-col justify-between rounded-md border-r-2 bg-white p-4 py-5 shadow-md">
       <Button
         className="w-[100px]"
         value={`${updateCount} 초 후 대기실로 이동`}
