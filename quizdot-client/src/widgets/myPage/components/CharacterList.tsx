@@ -16,7 +16,10 @@ export function CharacterList(chaInfo: {
   };
 
   return (
-    <div className="scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 max-h-80 overflow-y-auto ">
+    <div
+      className="scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 overflow-y-auto border p-2 shadow-md "
+      style={{ height: '333px' }}
+    >
       {chaInfo.characterList
         .sort((a, b) => a.id - b.id)
         .map((character, id) => (
