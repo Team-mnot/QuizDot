@@ -1,11 +1,17 @@
 import type { Title } from '../api/types';
 import { ChangeTitleApi } from '../api/api';
-
-const handleClick = (props: number) => {
-  ChangeTitleApi(props);
-};
+import { useUserStore } from '@/shared/stores/userStore/userStore';
 
 export function TitleList(titleInfo: { title: number; titleList: Title[] }) {
+  const store = useUserStore();
+
+  const handleClick = async (props: number) => {
+    const title = await ChangeTitleApi(props);
+    if (title) {
+      store.setTitle(title);
+    }
+  };
+
   return (
     <div className="scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 max-h-80 overflow-y-auto ">
       <div className="flex justify-evenly">

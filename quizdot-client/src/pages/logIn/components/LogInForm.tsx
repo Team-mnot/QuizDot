@@ -28,7 +28,6 @@ export function LogInForm() {
   const [memberId, setMemberId] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState(false);
-  const [checkId, setCheckId] = useState<boolean>(true);
   const [idValid, setIdValid] = useState(false);
   const [passwordValid, setPasswordValid] = useState(false);
 
@@ -41,7 +40,8 @@ export function LogInForm() {
   // 폼 제출 함수
   const onSubmit: CustomSubmitHandler = async (data) => {
     // 존재하지 않는 아이디일 때
-    if (checkId) {
+    const response = await IdCheckApi(memberId);
+    if (response) {
       window.alert('존재하지 않는 아이디입니다');
       return;
     }
@@ -66,12 +66,8 @@ export function LogInForm() {
 
   const idHandleChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    const alphanumericValue = inputValue.replace(/[^a-zA-Z0-9]/g, ''); // 영어와 숫자만 추출
-    const truncatedValue = alphanumericValue.slice(0, 20); // 최대 20자리까지만 유지
-    setMemberId(truncatedValue);
-    const response = await IdCheckApi(truncatedValue);
-    setCheckId(response);
-    if (truncatedValue.length >= 6 && idRegex.test(truncatedValue)) {
+    setMemberId(inputValue);
+    if (inputValue.length >= 6 && idRegex.test(inputValue)) {
       setIdValid(true);
     } else {
       setIdValid(false);
@@ -81,10 +77,8 @@ export function LogInForm() {
   // 비밀번호 입력
   const passwordChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    const alphanumericValue = inputValue.replace(/[^a-zA-Z0-9]/g, ''); // 영어와 숫자만 추출
-    const truncatedValue = alphanumericValue.slice(0, 20); // 최대 20자리까지만 유지
-    setPassword(truncatedValue);
-    if (truncatedValue.length >= 8 && passwordRegex.test(truncatedValue)) {
+    setPassword(inputValue);
+    if (inputValue.length >= 8 && passwordRegex.test(inputValue)) {
       setPasswordValid(true);
     } else {
       setPasswordValid(false);
