@@ -89,16 +89,12 @@ export function SignUpForm() {
   // 아이디 입력 및 중복 체크
   const idHandleChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    const alphanumericValue = inputValue.replace(/[^a-zA-Z0-9]/g, ''); // 영어와 숫자만 추출
-    const truncatedValue = alphanumericValue.slice(0, 20); // 최대 20자리까지만 유지
-    setMemberId(truncatedValue);
-    const response = await IdCheckApi(truncatedValue);
+    setMemberId(inputValue);
+    console.log(memberId);
+    const response = await IdCheckApi(inputValue);
+    console.log(response);
     setCheckId(response);
-    if (
-      response &&
-      truncatedValue.length >= 6 &&
-      idRegex.test(truncatedValue)
-    ) {
+    if (response && inputValue.length >= 6 && idRegex.test(inputValue)) {
       setIdValid(true);
     } else {
       setIdValid(false);
@@ -108,21 +104,17 @@ export function SignUpForm() {
   // 비밀번호 입력
   const passwordChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    const alphanumericValue = inputValue.replace(/[^a-zA-Z0-9]/g, ''); // 영어와 숫자만 추출
-    const truncatedValue = alphanumericValue.slice(0, 20); // 최대 20자리까지만 유지
-    setPassword(truncatedValue);
+    setPassword(inputValue);
   };
 
   // 비밀번호 확인 입력
   const chkPasswordChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    const alphanumericValue = inputValue.replace(/[^a-zA-Z0-9]/g, ''); // 영어와 숫자만 추출
-    const truncatedValue = alphanumericValue.slice(0, 20); // 최대 20자리까지만 유지
-    setChkPassword(truncatedValue);
+    setChkPassword(inputValue);
     if (
-      truncatedValue.length >= 8 &&
-      passwordRegex.test(truncatedValue) &&
-      password === truncatedValue
+      inputValue.length >= 8 &&
+      passwordRegex.test(inputValue) &&
+      password === inputValue
     ) {
       setPasswordValid(true);
     } else {
@@ -133,10 +125,8 @@ export function SignUpForm() {
   // 비밀번호 힌트 확인
   const hintHandleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    const numericValue = inputValue.replace(/\D/g, ''); // 숫자만 추출
-    const truncatedValue = numericValue.slice(0, 6); // 최대 6자리까지만 유지
-    setHint(truncatedValue);
-    if (hintRegex.test(truncatedValue)) {
+    setHint(inputValue);
+    if (hintRegex.test(inputValue)) {
       setHintValid(true);
     } else {
       setHintValid(false);
@@ -146,12 +136,10 @@ export function SignUpForm() {
   // 닉네임 확인
   const nicknameHandleChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    const alphanumericValue = inputValue.replace(/[^\w가-힣]/g, ''); // 영어, 숫자, 한글만 추출
-    const truncatedValue = alphanumericValue.slice(0, 8); // 최대 8자리까지만 유지
-    setNickname(truncatedValue);
-    const response = await NicknameCheckApi(truncatedValue);
+    setNickname(inputValue);
+    const response = await NicknameCheckApi(inputValue);
     setCheckNickname(response);
-    if (nicknameRegex.test(truncatedValue)) {
+    if (nicknameRegex.test(inputValue)) {
       setNicknameValid(true);
     } else {
       setNicknameValid(false);

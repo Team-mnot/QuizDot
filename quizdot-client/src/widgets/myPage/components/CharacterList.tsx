@@ -1,14 +1,20 @@
 import type { Character } from '../api/types';
 import { ChangeCharacterApi } from '../api/api';
-
-const handleClick = (props: number) => {
-  ChangeCharacterApi(props);
-};
+import { useUserStore } from '@/shared/stores/userStore/userStore';
 
 export function CharacterList(chaInfo: {
   characterId: number;
   characterList: Character[];
 }) {
+  const store = useUserStore();
+
+  const handleClick = async (props: number) => {
+    const id = await ChangeCharacterApi(props);
+    if (id) {
+      store.setCharacterId(id);
+    }
+  };
+
   return (
     <div className="scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 max-h-80 overflow-y-auto ">
       {chaInfo.characterList
