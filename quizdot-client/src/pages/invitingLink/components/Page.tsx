@@ -17,16 +17,18 @@ export function InvitingLinkPage() {
     if (localStorage.getItem('accessToken')) {
       const response = await enterRoomWithLinkApi(link);
 
-      console.log(response);
+      console.log('받아온 데이터:', response);
+      console.log('스토어 저장 전 상태 :', roomStore.roomInfo);
 
       if (response.status == 200) {
         roomStore.fetchRoom(response.data.roomInfo);
         roomStore.fetchPlayers(response.data.players);
 
-        if (roomStore.roomInfo && roomStore.players)
-          router.routeTo(
-            `/${roomStore.roomInfo.roomId % 1000}/${roomStore.roomInfo.roomId}/waiting`,
-          );
+        console.log('스토어 저장 후 상태 :', roomStore.roomInfo);
+
+        router.routeTo(
+          `/${response.data.roomInfo.roomId % 1000}/${response.data.roomInfo.roomId}/waiting`,
+        );
         // 일대일 모드 추가 예정
       } else {
         router.routeTo('/login');
