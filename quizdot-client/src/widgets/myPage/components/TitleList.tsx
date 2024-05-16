@@ -13,7 +13,10 @@ export function TitleList(titleInfo: { title: number; titleList: Title[] }) {
   };
 
   return (
-    <div className="scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 max-h-80 overflow-y-auto ">
+    <div
+      className="scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 overflow-y-auto border p-2 shadow-md "
+      style={{ height: '333px' }}
+    >
       <div className="flex justify-evenly">
         <span>칭호명</span>
         <span>획득조건</span>

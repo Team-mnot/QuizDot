@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { ChangeNicknameApi, ChangePwdApi, CheckPwdApi } from '../api/api';
 import type { ChangePwdProps } from '../api/types';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
+import { WithdrawalButton } from '@/shared/components/WithDrawalButton';
 
 export function Settings() {
   const store = useUserStore();
@@ -141,37 +142,42 @@ export function Settings() {
       {/* 닉네임 */}
       <p className="pl-3 pt-6 text-xl">닉네임 변경</p>
       <form onSubmit={handleSubmitNickname(NicknameSubmit)}>
-        <div className="mb-1 ml-2 mr-10 mt-2 rounded-2xl border bg-white p-2 px-3 shadow-md">
-          <input
-            className="focus:outline-none "
-            type="text"
-            placeholder="닉네임"
-            {...registerNickname('nickname')}
-            minLength={2}
-            maxLength={8}
-            value={nickname}
-            onChange={nicknameHandleChange}
-            onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                submitButtonRef.current?.focus();
-                handleSubmitNickname(NicknameSubmit)();
-              }
-            }}
-          />
-          {nicknameValid ? (
-            <button
-              className="bg-white p-0 pl-2 hover:border-transparent focus:outline-none "
-              type="submit"
-              ref={submitButtonRef}
-            >
-              변경
-            </button>
-          ) : (
-            <button className="bg-white p-0 pl-2 text-gray-400 hover:border-transparent focus:outline-none">
-              변경
-            </button>
-          )}
+        <div className="mb-1 mt-2 flex items-center">
+          <div
+            className="ml-2 flex justify-center rounded-2xl border bg-white shadow-md"
+            style={{ height: '40px' }}
+          >
+            <input
+              className="rounded-2xl px-3 focus:outline-none "
+              type="text"
+              placeholder="닉네임"
+              {...registerNickname('nickname')}
+              minLength={2}
+              maxLength={8}
+              value={nickname}
+              onChange={nicknameHandleChange}
+              onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  submitButtonRef.current?.focus();
+                  handleSubmitNickname(NicknameSubmit)();
+                }
+              }}
+            />
+            {nicknameValid ? (
+              <button
+                className="rounded-2xl border bg-white p-0 pr-4 hover:border-transparent focus:outline-none "
+                type="submit"
+                ref={submitButtonRef}
+              >
+                변경
+              </button>
+            ) : (
+              <button className="rounded-2xl border bg-white p-0 pr-4 text-gray-400 hover:border-transparent focus:outline-none">
+                변경
+              </button>
+            )}
+          </div>
         </div>
       </form>
       <p className="pl-3 pt-3 text-xl">비밀번호 변경</p>
@@ -235,7 +241,7 @@ export function Settings() {
           </div>
         </div>
         {/* 비밀번호 확인 */}
-        <div className="mb-1 mt-2 flex items-center">
+        <div className="mb-1 mt-2 flex items-center justify-between">
           <div
             className="ml-2 flex justify-center rounded-2xl border bg-white shadow-md"
             style={{ height: '40px' }}
@@ -256,7 +262,6 @@ export function Settings() {
                 }
               }}
             />
-
             {currentPwd && passwordValid ? (
               <button
                 className="rounded-2xl border bg-white p-0 pr-4 hover:border-transparent focus:outline-none "
@@ -271,6 +276,7 @@ export function Settings() {
               </button>
             )}
           </div>
+          <WithdrawalButton />
         </div>
       </form>
     </div>
