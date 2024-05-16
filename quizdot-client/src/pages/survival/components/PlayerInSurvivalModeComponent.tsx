@@ -20,7 +20,7 @@ export function PlayerInSurvivalModeComponent({
   isAlive,
   isRevive,
 }: PlayerInSurvivalModeProps) {
-  const displayCharacterId = isAlive ? characterId : 0;
+  const displayCharacterId = isAlive ? characterId : 25;
 
   return (
     <div

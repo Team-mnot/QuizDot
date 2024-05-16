@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 // import { enterRoomApi } from '@/pages/waitingRoom/api/api';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
 // import jwtAxiosInstance from '@/shared/utils/jwtAxiosInstance';
+import { useGameStore } from '@/shared/stores/connectionStore/gameStore';
+import { useQuizStore } from '../store';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function GameOverComponent({ rewardData }: { rewardData: any[] }) {
@@ -14,9 +16,14 @@ export function GameOverComponent({ rewardData }: { rewardData: any[] }) {
     roomId: string;
   };
 
+  const gameStore = useGameStore();
   const userStore = useUserStore();
-  const originRoomId = Math.floor(parseInt(roomId) / 10000);
+  const { setIsGameOver } = useQuizStore();
   const [countdown, setCountdown] = useState(10); // 10초 카운트다운 초기값 설정
+  const originRoomId = gameStore.roomInfo?.roomId
+    ? gameStore.roomInfo.roomId
+    : 0;
+  const originChannelId = Math.floor(originRoomId / 1000); // 1000으로 나눈 몫의 정수 부분만 가져옴
 
   useEffect(() => {
     // 1초마다 카운트다운 감소
@@ -26,14 +33,15 @@ export function GameOverComponent({ rewardData }: { rewardData: any[] }) {
 
     // 10초 후 대기실로 이동
     const timeout = setTimeout(() => {
-      navigate(`/${channelId}/${originRoomId}/waiting`);
+      navigate(`/${originChannelId}/${gameStore.roomInfo?.roomId}/waiting`);
+      setIsGameOver(false); // 다시 false 해놔야 다음게임때 문제 X
     }, 10000);
 
     return () => {
       clearInterval(timer); // 컴포넌트 언마운트 시 타이머 해제
       clearTimeout(timeout);
     };
-  }, [userStore.id, roomId, navigate, channelId, originRoomId]);
+  }, [userStore.id, roomId, navigate, channelId]);
 
   // TODO : navigate 할 때 , 버튼 눌러서 갈건지 10초뒤에 보낼건지
 

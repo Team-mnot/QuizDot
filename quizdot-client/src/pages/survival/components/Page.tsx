@@ -1,9 +1,9 @@
 // src/pages/survival/components/Page.tsx
 
 import { useEffect, useState, useContext } from 'react';
-import useQuizStore from '../store';
+import { usePlayerStore, useQuizStore } from '../store';
 
-import { PlayerPreview } from './PlayerPreview';
+import { PlayerPreview, predefinedPositions } from './PlayerPreview';
 // import { ChattingBox } from '@/shared/ui/ChattingBox';
 import { ChattingBox } from '@/shared/ui/ChattingBox';
 import { ChattingBoxBlind } from '@/shared/ui/ChattingBoxBlind';
@@ -28,11 +28,11 @@ export function SurvivalPage() {
   // const roomInfo = location.state.roomInfo; // state를 RoomInfoType으로 타입 캐스팅
   // const players = location.state.players;
   // 한방에 받아오기 ( 코드 있어보이게 )
+
   const { players: playersObj, roomInfo } = location.state || {
     players: {},
     roomInfo: {},
   };
-  const players = Object.keys(playersObj).map((key) => playersObj[key]);
 
   const {
     showChatBox,
@@ -46,8 +46,10 @@ export function SurvivalPage() {
     setIsGameOver,
     isGameOver,
     // quizzes,
+    reset,
   } = useQuizStore();
 
+  const { players, setPlayers, updatePlayerStatus } = usePlayerStore();
   const { requestQuestion } = useRequestQuestion();
   const { onSend, onSubscribe, callbackMsg } = useContext(WebSocketContext);
   const [messages, setMessages] = useState<
@@ -62,6 +64,19 @@ export function SurvivalPage() {
   // console.log('방장아디', userStore.id);
 
   useEffect(() => {
+    const players = Object.keys(playersObj).map((key) => playersObj[key]);
+    setPlayers(
+      players.map((player, index) => ({
+        ...player,
+        position: predefinedPositions[index]?.position || { top: 0, left: 0 },
+        isAlive: true,
+        isRevive: false,
+      })),
+    );
+  }, []);
+
+  useEffect(() => {
+    reset();
     if (hostId === userStore.id) {
       requestQuestion(parseInt(roomId), category, 3, gameMode); // 방장만 호출하는거
     }
@@ -95,8 +110,14 @@ export function SurvivalPage() {
       callbackMsg.address == `info/game/${roomId}` &&
       callbackMsg.msg.type == 'STAGE_RESULT'
     ) {
-      console.log('결과결과');
+      console.log('매 스테이지 결과');
       console.log(callbackMsg.msg.data);
+      callbackMsg.msg.data.forEach(
+        (result: { score: number; value: number }) => {
+          updatePlayerStatus(result.value, result.score > 0);
+        },
+      );
+      console.log('플레이어상태', players);
     } else if (
       callbackMsg.msg &&
       callbackMsg.address == `info/game/${roomId}` &&
@@ -124,7 +145,7 @@ export function SurvivalPage() {
       }
       setTimeout(() => {
         setIsGameOver(true);
-        console.log(isGameOver);
+        console.log('isGameOver', isGameOver);
       }, 4500);
       console.log('종료호출');
     } else if (
@@ -167,7 +188,7 @@ export function SurvivalPage() {
       ) : (
         <QuizComponent roomInfo={roomInfo} />
       )}
-      <PlayerPreview players={players} />
+      <PlayerPreview />
       <ChattingBox onSend={handleSubmitMessage} messages={messages} />
       {!showChatBox ? <ChattingBoxBlind /> : null}
     </div>

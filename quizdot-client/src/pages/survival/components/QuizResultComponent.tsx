@@ -1,7 +1,7 @@
 //src/pages/survival/components/QuizResultComponent.tsx
 
 import { useEffect, useState } from 'react';
-import useQuizStore from '../store';
+import { useQuizStore } from '../store';
 import { useQuiz2 } from '../hooks/useQuiz2';
 import { RoomInfoType } from '@/shared/apis/types';
 import { useUserStore } from '@/shared/stores/userStore/userStore';

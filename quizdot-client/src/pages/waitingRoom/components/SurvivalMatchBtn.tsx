@@ -10,9 +10,10 @@ import jwtAxiosInstance from '@/shared/utils/jwtAxiosInstance';
 interface Props {
   roomId: number;
   category: string;
+  visible: boolean;
 }
 
-export function SurvivalMatchBtn({ roomId, category }: Props) {
+export function SurvivalMatchBtn({ roomId, category, visible }: Props) {
   // const matchStatus = useRef<number>(0);
   // const [matchCount, setMatchCount] = useState<number>(0);
   const { isReady, callbackMsg } = useContext(WebSocketContext);
@@ -22,10 +23,11 @@ export function SurvivalMatchBtn({ roomId, category }: Props) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log(callbackMsg.msg.data);
     if (
       callbackMsg.msg &&
       callbackMsg.address == `chat/room/${roomId}` &&
-      callbackMsg.msg.type == 'START'
+      callbackMsg.msg.type == 'SURVIVAL'
     ) {
       matchTimer.current = null;
       setMatchStatus(2);
@@ -85,14 +87,14 @@ export function SurvivalMatchBtn({ roomId, category }: Props) {
 
   return (
     <div>
-      {matchStatus == 0 && (
+      {matchStatus == 0 && visible && (
         <Button
           className="w-[300px] text-5xl"
           value="매칭 시작"
           onClick={handleMatchGame}
         />
       )}
-      {matchStatus == 1 && (
+      {matchStatus == 1 && visible && (
         <div>
           <Button
             className="w-[300px] text-5xl"

@@ -1,7 +1,7 @@
 // src/pages/survival/hooks/useQuiz2.tsx
 
 import { useEffect, useState } from 'react';
-import useQuizStore from '../store';
+import { useQuizStore } from '../store';
 import useRequestQuestion from './useRequestQuestion';
 
 export function useQuiz2(roomId: number, category: string, gameMode: string) {

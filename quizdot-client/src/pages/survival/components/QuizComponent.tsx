@@ -3,7 +3,7 @@
 import { useQuiz2 } from '../hooks/useQuiz2';
 import { useState, useEffect } from 'react';
 import requestQuestion from '../hooks/useRequestQuestion';
-import useQuizStore from '../store';
+import { useQuizStore } from '../store';
 import { postQuizResult } from '../api/api';
 import { RoomInfoType } from '@/shared/apis/types';
 

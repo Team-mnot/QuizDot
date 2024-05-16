@@ -1,11 +1,11 @@
 // src/pages/survival/components/CharacterPreview.tsx
 
 // import { getPlayerData } from '../api/api';
-import { PlayerType } from '@/shared/apis/types';
 import { PlayerInSurvivalModeComponent } from './PlayerInSurvivalModeComponent';
+import { usePlayerStore } from '../store';
 
 // 미리 지정된 위치 정보
-const predefinedPositions = [
+export const predefinedPositions = [
   { id: 'grid-item-1', position: { top: 20, left: 10 } },
   { id: 'grid-item-2', position: { top: 20, left: 20 } },
   { id: 'grid-item-3', position: { top: 50, left: 30 } },
@@ -26,26 +26,22 @@ const predefinedPositions = [
   { id: 'grid-item-18', position: { top: 0, left: 0 } },
 ];
 
-interface PlayerPreviewProps {
-  players: PlayerType[];
-}
-
-export function PlayerPreview({ players }: PlayerPreviewProps) {
-  console.log('유저', players);
+export function PlayerPreview() {
+  const players = usePlayerStore((state) => state.players);
 
   return (
     <div>
       {players.map((player, index) => (
         <PlayerInSurvivalModeComponent
           key={index}
-          characterId={player.characterId} // character 객체의 characterId 속성 참조
+          characterId={player.characterId}
           title={player.title}
           nickname={player.nickname}
-          nicknameColor={player.nicknameColor} // nicknameColor 추가
-          level={player.level} // level 추가
-          position={predefinedPositions[index]?.position} // 미리 지정된 위치 정보 사용
-          isAlive={true}
-          isRevive={false}
+          nicknameColor={player.nicknameColor}
+          level={player.level}
+          position={predefinedPositions[index]?.position}
+          isAlive={player.isAlive}
+          isRevive={player.isRevive}
         />
       ))}
     </div>

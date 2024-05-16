@@ -1,7 +1,7 @@
 // src/pages/survival/components/CountDown.tsx
 
 import { useEffect, useState } from 'react';
-import useQuizStore from '../store';
+import { useQuizStore } from '../store';
 
 export function CountDown() {
   const [count, setCount] = useState(3); // 카운트다운 시간 설정
