@@ -1,7 +1,7 @@
 //src/pages/survival/components/QuizComponent.tsx
 
 import { useQuiz2 } from '../hooks/useQuiz2';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import requestQuestion from '../hooks/useRequestQuestion';
 import { useQuizStore } from '../store';
 import { postQuizResult } from '../api/api';
@@ -36,6 +36,8 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
     loading: submitLoading,
     // error: submitError,
   } = requestQuestion();
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const currentQuiz = quizzes[currentQuizIndex] || null;
@@ -82,6 +84,16 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
       handleAnswerSubmit();
     }
   };
+
+  // 입력 창에 포커스 설정
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   // 힌트 몇초뒤에 띄울까?
   useEffect(() => {
@@ -145,6 +157,7 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
             <div className="flex justify-between">
               <input
                 type="text"
+                ref={inputRef}
                 value={userAnswer}
                 onChange={(e) => setUserAnswer(e.target.value)}
                 onKeyPress={handleKeyPress}
