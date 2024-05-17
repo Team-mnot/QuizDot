@@ -6,16 +6,13 @@ import com.mnot.quizdot.domain.quiz.dto.MessageDto;
 import com.mnot.quizdot.domain.quiz.dto.MessageType;
 import com.mnot.quizdot.domain.quiz.dto.QuizParam;
 import com.mnot.quizdot.domain.quiz.dto.QuizRes;
-import com.mnot.quizdot.domain.quiz.entity.Answer;
 import com.mnot.quizdot.domain.quiz.entity.CategoryType;
-import com.mnot.quizdot.domain.quiz.entity.Quiz;
 import com.mnot.quizdot.domain.quiz.repository.QuizRepository;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
 import com.mnot.quizdot.global.util.RedisUtil;
 import com.mnot.quizdot.global.util.S3Util;
 import com.mnot.quizdot.global.util.S3Util.Directory;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -110,7 +107,7 @@ public class QuizServiceImpl implements QuizService {
 
         if (passPeople == totalPeople) {
             // 모든 유저가 PASS 버튼을 눌렀다면
-            messagingTemplate.convertAndSend("/sub/chat/game/" + roomId,
+            messagingTemplate.convertAndSend("/sub/info/game/" + roomId,
                 MessageDto.of(SERVER_SENDER, "모든 유저의 동의 하에 문제가 패스되었습니다.", MessageType.PASS,
                     System.currentTimeMillis()));
         } else {
@@ -214,11 +211,11 @@ public class QuizServiceImpl implements QuizService {
         List<String> urlList = new ArrayList<>();
         String imageUrl = "";
         // S3에 이미지 업로드
-        for(MultipartFile imageFile : imageFiles) {
-            if(imageFile != null && !imageFile.isEmpty()) {
+        for (MultipartFile imageFile : imageFiles) {
+            if (imageFile != null && !imageFile.isEmpty()) {
                 // 이미지 파일인지 검사
                 String contentType = imageFile.getContentType();
-                if(contentType == null || !contentType.startsWith("image/")) {
+                if (contentType == null || !contentType.startsWith("image/")) {
                     throw new BusinessException(ErrorCode.IS_NOT_IMAGE);
                 }
                 imageUrl = s3Util.uploadFile(imageFile, Directory.QUIZ);
