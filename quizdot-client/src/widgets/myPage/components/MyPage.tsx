@@ -74,7 +74,7 @@ export function MyPage(props: { id: number }) {
   };
 
   return (
-    <div className="m-2 flex p-2" style={{ width: '600px', height: '400px' }}>
+    <div className="m-2 flex p-2" style={{ width: '800px', height: '400px' }}>
       {/* 왼쪽 */}
       <div
         className="mr-4 flex flex-col items-center"
@@ -117,28 +117,33 @@ export function MyPage(props: { id: number }) {
         </button>
       </div>
       {/* 오른쪽 */}
-      <div className="flex flex-col" style={{ width: '400px' }}>
-        <div className="flex justify-around gap-0">
+      <div className="flex flex-col" style={{ width: '600px' }}>
+        <div className="flex justify-around gap-0 rounded-tl-2xl rounded-tr-2xl border border-b-0 shadow-sm">
           <button
-            className={`flex-grow rounded-none rounded-tl-2xl hover:border-transparent focus:outline-none ${selected === 'Record' ? 'bg-blue-500 font-bold text-white' : 'hover:bg-gray-200 active:bg-gray-300'}`}
+            className={`flex-grow rounded-none rounded-tl-2xl hover:border-transparent focus:outline-none ${selected === 'Record' ? 'bg-gray-100 font-bold' : 'bg-white hover:bg-gray-100 active:bg-gray-300'}`}
             onClick={() => handleClick('Record')}
           >
             전적
           </button>
+          <div className="border-l"></div>
           <button
-            className={`flex-grow rounded-none hover:border-transparent focus:outline-none ${selected === 'CharacterList' ? 'bg-blue-500 font-bold text-white' : 'hover:bg-gray-200 active:bg-gray-300'}`}
+            className={`flex-grow rounded-none border hover:border-transparent focus:outline-none ${selected === 'CharacterList' ? 'bg-gray-100 font-bold' : 'bg-white hover:bg-gray-100 active:bg-gray-300'}`}
             onClick={() => handleClick('CharacterList')}
           >
             캐릭터
           </button>
+          <div className="border-l"></div>
+
           <button
-            className={`flex-grow rounded-none hover:border-transparent focus:outline-none ${selected === 'TitleList' ? 'bg-blue-500 font-bold text-white' : 'hover:bg-gray-200 active:bg-gray-300'}`}
+            className={`flex-grow rounded-none hover:border-transparent focus:outline-none ${selected === 'TitleList' ? 'bg-gray-100 font-bold' : 'bg-white hover:bg-gray-100 active:bg-gray-300'}`}
             onClick={() => handleClick('TitleList')}
           >
             칭호
           </button>
+          <div className="border-l"></div>
+
           <button
-            className={`flex-grow rounded-none rounded-tr-2xl hover:border-transparent focus:outline-none ${selected === 'Settings' ? 'bg-blue-500 font-bold text-white' : 'hover:bg-gray-200 active:bg-gray-300'}`}
+            className={`flex-grow rounded-none rounded-tr-2xl hover:border-transparent focus:outline-none ${selected === 'Settings' ? ' bg-gray-100 font-bold ' : 'bg-white hover:bg-gray-100 active:bg-gray-300'}`}
             onClick={() => handleClick('Settings')}
           >
             설정

@@ -50,7 +50,7 @@ export function Reward({
       `info/game/${roomId}/title/${userStore.id}`,
       (message: MessageDto) => {
         if (message.type == 'TITLE') {
-          console.log('칭호 해금!!', message);
+          console.log(message);
         }
       },
     );
@@ -91,57 +91,56 @@ export function Reward({
       />
       <div>
         <table>
-          <tbody>
-            <tr className={'text-center'}>
-              <td>
-                <p>랭킹</p>
-              </td>
-              <td>
-                <p>닉네임</p>
-              </td>
-              <td>
-                <p>점수</p>
-              </td>
-              <td>
-                <p>코인</p>
-              </td>
-              <td>
-                <p>경험치</p>
-              </td>
-            </tr>
-            {ranks &&
-              ranks.map((rank) => (
-                <tr className={'h-[50px] w-[500px] text-center'} key={rank.id}>
-                  <td>
-                    <p>{rank.rank}</p>
-                  </td>
-                  <td>
-                    <p>
-                      Lv.{rank.curLevel} {rank.nickname}
-                    </p>
-                  </td>
-                  <td>
-                    <p>{rank.point}</p>
-                  </td>
-                  <td>
-                    <p>{rank.point}</p>
-                  </td>
-                  <td>
-                    <p>{rank.curExp}</p>
-                  </td>
-                  <td>
-                    <Progress
-                      color="yellow"
-                      currentValue={5000}
-                      maxValue={10000}
-                      label={`${rank.curExp}/1000`}
-                      padding=""
-                      size="w-48"
-                    />
-                  </td>
-                </tr>
-              ))}
-          </tbody>
+          <tr className={'text-center'}>
+            <td>
+              <p>랭킹</p>
+            </td>
+            <td>
+              <p>닉네임</p>
+            </td>
+            <td>
+              <p>점수</p>
+            </td>
+            <td>
+              <p>코인</p>
+            </td>
+            <td>
+              <p>경험치</p>
+            </td>
+          </tr>
+
+          {ranks &&
+            ranks.map((rank) => (
+              <tr className={'h-[50px] w-[500px] text-center'} key={rank.id}>
+                <td>
+                  <p>{rank.rank}</p>
+                </td>
+                <td>
+                  <p>
+                    Lv.{rank.curLevel} {rank.nickname}
+                  </p>
+                </td>
+                <td>
+                  <p>{rank.point}</p>
+                </td>
+                <td>
+                  <p>{rank.point}</p>
+                </td>
+                <td>
+                  <p>{rank.curExp}</p>
+                </td>
+                <td>
+                  <Progress
+                    color="yellow"
+                    currentValue={5000}
+                    maxValue={10000}
+                    label={`${rank.curExp}/1000`}
+                    padding=""
+                    size="w-48"
+                  />
+                </td>
+              </tr>
+            ))}
         </table>
       </div>
     </div>

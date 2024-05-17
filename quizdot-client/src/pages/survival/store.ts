@@ -14,9 +14,18 @@ const usePlayerStore = create<PlayerStore>((set) => ({
   setPlayers: (players: PlayerInSurvivalMode[]) => set({ players }),
   updatePlayerStatus: (playerId, isAlive) => {
     set((state) => {
-      const updatedPlayers = state.players.map((player) =>
-        player.id === playerId ? { ...player, isAlive } : player,
-      );
+      const updatedPlayers = state.players.map((player) => {
+        if (player.id === playerId) {
+          // 이전 isAlive 상태를 저장
+          const wasAlive = player.isAlive;
+          // isRevive 상태를 결정
+          const isRevive =
+            wasAlive === false && isAlive === true ? true : false;
+          // isAlive와 isRevive 업데이트
+          return { ...player, isAlive, isRevive: wasAlive ? false : isRevive };
+        }
+        return player;
+      });
       return { players: updatedPlayers };
     });
   },

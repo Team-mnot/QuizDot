@@ -38,7 +38,7 @@ export function LobbyContent({ channelId }: { channelId: number }) {
             <OnlineUserList activeUsers={lobby.activeUsers} />
             <RoomList roomInfos={lobby.roomInfos} channelId={lobby.channelId} />
           </div>
-          <div className={'flex'}>
+          <div className="flex">
             <MyProfile />
             <LobbyChattingBox channelId={lobby.channelId} />
           </div>

@@ -43,6 +43,8 @@ export function LogInForm() {
     const response = await IdCheckApi(memberId);
     if (response) {
       window.alert('존재하지 않는 아이디입니다');
+      setMemberId('');
+      setPassword('');
       return;
     }
     const logInProps: LogInProps = {
@@ -57,6 +59,8 @@ export function LogInForm() {
     } else {
       window.alert('비밀번호가 일치하지 않습니다');
     }
+    setMemberId('');
+    setPassword('');
   };
 
   // 비밀번호 표시 토글 함수

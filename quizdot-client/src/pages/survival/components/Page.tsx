@@ -4,7 +4,6 @@ import { useEffect, useState, useContext } from 'react';
 import { usePlayerStore, useQuizStore } from '../store';
 
 import { PlayerPreview, predefinedPositions } from './PlayerPreview';
-// import { ChattingBox } from '@/shared/ui/ChattingBox';
 import { ChattingBox } from '@/shared/ui/ChattingBox';
 import { ChattingBoxBlind } from '@/shared/ui/ChattingBoxBlind';
 import { QuizComponent } from './QuizComponent';
@@ -112,6 +111,13 @@ export function SurvivalPage() {
         },
       );
       console.log('플레이어상태', players);
+    } else if (
+      callbackMsg.msg &&
+      callbackMsg.address == `info/game/${roomId}` &&
+      callbackMsg.msg.type == 'RESURRECT'
+    ) {
+      console.log('부활데이터');
+      console.log(callbackMsg.msg.data); // n명의 캐릭터가 부활했습니다!
     } else if (
       callbackMsg.msg &&
       callbackMsg.address == `info/game/${roomId}` &&

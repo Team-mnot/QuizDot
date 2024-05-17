@@ -12,7 +12,7 @@ export function MyProfile() {
   return (
     <div className="px-[30px] py-[10px]">
       <div onClick={clickModal}>
-        <div className="w-[320px] rounded-lg border-2 bg-white p-[20px] shadow-md">
+        <div className="w-[370px] rounded-lg border-2 bg-white p-[20px] shadow-md">
           <div className="flex justify-between">
             <div className="rounded-lg border-2 bg-white p-[10px]">
               {/* 유저 캐릭터 */}
@@ -22,7 +22,7 @@ export function MyProfile() {
                 className="h-[100px] w-[100px]"
               />
             </div>
-            <div className="flex w-[150px] flex-col px-[10px]">
+            <div className="flex w-[200px] flex-col px-[10px]">
               <div
                 className={
                   'flex-none rounded-lg border-2 bg-white text-center shadow-md'

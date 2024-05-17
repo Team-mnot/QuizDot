@@ -30,7 +30,7 @@ export function RoomCreation({ channelId }: { channelId: number }) {
   useEffect(() => {
     if (mode === 'SURVIVAL') {
       setFixedMaxPeople(18);
-    } else if (mode === 'ONETOONE') {
+    } else if (mode === 'ILGITO') {
       setFixedMaxPeople(2);
     }
   }, [mode, open]);

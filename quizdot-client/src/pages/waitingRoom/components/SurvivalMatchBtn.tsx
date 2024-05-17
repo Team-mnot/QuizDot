@@ -1,6 +1,5 @@
 import { Button } from '@/shared/ui';
 import { useEffect, useRef, useState, useContext } from 'react';
-import axios from 'axios';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 import { baseApi } from '@/shared/apis';
 import { useNavigate } from 'react-router-dom';
@@ -66,24 +65,30 @@ export function SurvivalMatchBtn({ roomId, category, visible }: Props) {
     if (matchTimer.current) clearInterval(matchTimer.current);
     matchTimer.current = null;
     try {
-      const response = await axios.post(
-        `${baseApi}/survival/${roomId}/cancel?category=${category}`,
+      const response = await jwtAxiosInstance.post(
+        `${baseApi}/survival/match/${roomId}/cancel?category=${category}`,
       );
       if (response.status === 200) {
+        setMatchStatus(0);
+        setMatchCount(0);
         console.log(response.data.message);
       }
     } catch (error) {
       console.error('Error cancelling match:', error);
     }
-    setMatchStatus(0);
-    setMatchCount(0);
   };
 
   useEffect(() => {
     // 5 분 이상이 되면 자동 매칭 취소
-    setMatchCount(0);
-    if (matchCount / 60 == 5) handleCancelGame();
-  }, []);
+    if (matchStatus === 1 && matchCount / 60 >= 5) {
+      handleCancelGame();
+    }
+    return () => {
+      if (matchCount === 1) {
+        handleCancelGame;
+      }
+    };
+  }, [matchCount, matchStatus]);
 
   return (
     <div>

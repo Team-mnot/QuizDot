@@ -36,7 +36,7 @@ export function OnlineUserList({
         <div className="p-[20px] text-center">
           <Button value="접속 유저 리스트" />
         </div>
-        <div className="scrollbar-hide h-[260px] max-h-[260px] overflow-y-scroll">
+        <div className="custom-scrollbar h-[260px] max-h-[260px] overflow-y-scroll">
           {activeUsers.map((user) => (
             <OnlineUser
               key={user.id}

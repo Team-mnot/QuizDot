@@ -13,13 +13,14 @@ export function LeaveBtn({
   const router = useRouter();
 
   const handleLeaveGame = async () => {
-    // 퇴장 하시겠냐고 한 번은 묻는 게 좋을까?
-    const response = await leaveRoomApi(roomId);
-    if (response == 200) {
-      handleEnterLobby();
-    } else console.log('[로비 입장 실패]');
+    const confirmation = window.confirm('정말 방에서 나가시겠습니까?');
+    if (confirmation) {
+      const response = await leaveRoomApi(roomId);
+      if (response == 200) {
+        handleEnterLobby();
+      } else console.log('[로비 입장 실패]');
+    }
   };
-
   const handleEnterLobby = async () => {
     const response = await enterLobbyApi(channelId);
 

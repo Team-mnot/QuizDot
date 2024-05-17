@@ -1,7 +1,7 @@
 import { Button } from '@/shared/ui';
-import { leaveRoomApi } from '../api/api';
 import { useRouter } from '@/shared/hooks';
 import { enterLobbyApi } from '@/pages/lobby/api/api';
+import { leaveRoomApi } from '@/pages/waitingRoom/api/api';
 
 export function LeaveBtn({
   roomId,
@@ -12,7 +12,7 @@ export function LeaveBtn({
 }) {
   const router = useRouter();
 
-  const handleLeaveRoom = async () => {
+  const handleLeaveGame = async () => {
     const confirmation = window.confirm('정말 방에서 나가시겠습니까?');
     if (confirmation) {
       const response = await leaveRoomApi(roomId);
@@ -31,6 +31,6 @@ export function LeaveBtn({
   };
 
   return (
-    <Button className="w-[100px]" value="퇴장" onClick={handleLeaveRoom} />
+    <Button className="w-[100px]" value="퇴장" onClick={handleLeaveGame} />
   );
 }

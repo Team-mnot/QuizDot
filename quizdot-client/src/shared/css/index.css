@@ -1,0 +1,8 @@
+.custom-scrollbar::-webkit-scrollbar {
+  height: 20px;
+  background-color: transparent;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: lightgray;
+}
