@@ -94,9 +94,8 @@ public class MemberController {
     @Operation(summary = "회원 탈퇴")
     public ResponseEntity<ResultResponse> deleteMember(
         HttpServletResponse response,
-        @AuthenticationPrincipal CustomMemberDetail customMemberDetail,
-        @RequestParam int channelId) {
-        memberService.deleteMember(customMemberDetail, channelId);
+        @AuthenticationPrincipal CustomMemberDetail customMemberDetail) {
+        memberService.deleteMember(customMemberDetail);
 
         // refresh 토큰을 Cookie에서 삭제
         deleteCookie("refresh", response);
