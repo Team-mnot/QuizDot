@@ -3,7 +3,7 @@ const openList = { 1: '공개', 0: '비공개' } as { [key: number]: string };
 const modeList = {
   NORMAL: '일반 모드',
   SURVIVAL: '서바이벌 모드',
-  ONETOONE: '일대일 모드',
+  ILGITO: '일대일 모드',
 } as { [key: string]: string };
 
 const maxPeopleList = {
