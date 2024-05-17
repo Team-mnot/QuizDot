@@ -9,6 +9,7 @@ import { ChannelPage } from '@/pages/channel';
 import { LobbyPage } from '@/pages/lobby';
 import { MultiPage } from '@/pages/multi';
 import { SurvivalPage } from '@/pages/survival';
+import { IlgitoPage } from '@/pages/ilgito';
 import { WaitingRoomPage } from '@/pages/waitingRoom';
 import { InvitingLinkPage } from '@/pages/invitingLink';
 
@@ -52,6 +53,10 @@ export const router = createBrowserRouter([
   {
     path: '/:channelId/:roomId/survival',
     element: <SurvivalPage />,
+  },
+  {
+    path: '/:channelId/:roomId/ilgito',
+    element: <IlgitoPage />,
   },
   {
     path: '/invite',

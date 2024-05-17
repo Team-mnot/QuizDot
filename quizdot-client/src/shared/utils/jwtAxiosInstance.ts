@@ -17,6 +17,7 @@ const refresh = async () => {
   return response;
 };
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const beforeRes = async (response: AxiosResponse): Promise<any> => {
   const data = response.data;
 
@@ -40,6 +41,7 @@ const beforeRes = async (response: AxiosResponse): Promise<any> => {
   }
   return response;
 };
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 jwtAxiosInstance.interceptors.response.use(beforeRes, function (error) {
   return Promise.reject(error);

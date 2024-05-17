@@ -4,7 +4,6 @@ import { useEffect, useState, useContext } from 'react';
 import { usePlayerStore, useQuizStore } from '../store';
 
 import { PlayerPreview, predefinedPositions } from './PlayerPreview';
-// import { ChattingBox } from '@/shared/ui/ChattingBox';
 import { ChattingBox } from '@/shared/ui/ChattingBox';
 import { ChattingBoxBlind } from '@/shared/ui/ChattingBoxBlind';
 import { QuizComponent } from './QuizComponent';

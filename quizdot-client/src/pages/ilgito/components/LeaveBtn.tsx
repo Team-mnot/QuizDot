@@ -21,6 +21,7 @@ export function LeaveBtn({
       } else console.log('[로비 입장 실패]');
     }
   };
+
   const handleEnterLobby = async () => {
     const response = await enterLobbyApi(channelId);
 
