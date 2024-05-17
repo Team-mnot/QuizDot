@@ -30,29 +30,34 @@ public class SessionUtil {
         int roomId = getRoomIdFromPlayers(memberId);
         log.info("웹소켓 세션 끊김. 유저 게임 정보 제거 시작");
         // 동시접속자 정보 제거
+        log.info("roomId: "+roomId);
         boolean isOnlyLobby = deleteInactivePlayer(memberId, roomId);
         if(isOnlyLobby) {
-            // 유저가 방을 생성하지 않고 로비에만 있다 나간 경우, 데이터 다 정리됨
+            // 유저가 방을 생성하지 않고 로비에만 있다 나간 경우
             return;
         }
 
         // 점수 정보 제거
         String boardKey = redisUtil.getBoardKey(roomId);
         redisTemplate.opsForZSet().remove(boardKey, Integer.parseInt(memberId));
+//        log.info("유저 점수 정보 제거");
 
         // 패스 정보 제거
         deletePass(memberId, roomId);
+//        log.info("유저 패스 정보 제거");
 
         // 서바이벌 생존자 정보 제거
         String surviveKey = String.format("rooms:%d:survivors", roomId);
         boolean removedFromSurvive = redisTemplate.opsForZSet()
             .remove(surviveKey, Integer.parseInt(memberId)) > 0;
+//        log.info("서바이벌 생존자 정보 제거");
 
         // 서바이벌 탈락자 정보 제거
         if (!removedFromSurvive) {
             String eliminatedKey = String.format("rooms:%d:eliminated", roomId);
             redisTemplate.opsForZSet().remove(eliminatedKey, Integer.parseInt(memberId));
         }
+//        log.info("서바이벌 탈락자 정보 제거");
 
         // 매칭중인 경우, 정보 제거
         try {
@@ -62,15 +67,18 @@ public class SessionUtil {
         } catch (Exception e) {
             log.error("매칭 정보 제거를 실패하였습니다.");
         }
+//        log.info("매칭 정보 제거");
 
         // 플레이어 정보 제거
         try {
             roomService.leaveRoom(roomId, memberId);
+//            log.info("방의 플레이어 정보 제거");
         } catch(BusinessException e) {
             log.error("BusinessException: {}", e.getMessage());
         } catch(Exception e) {
             log.error("Exception: {}", e.getMessage());
         }
+
     }
 
     public int getRoomIdFromPlayers(String memberId) {
