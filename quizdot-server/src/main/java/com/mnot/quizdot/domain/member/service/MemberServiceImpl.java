@@ -16,9 +16,11 @@ import com.mnot.quizdot.domain.member.repository.MemberCharacterRepository;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
 import com.mnot.quizdot.domain.member.repository.MemberTitleRepository;
 import com.mnot.quizdot.domain.member.repository.MultiRecordRepository;
+import com.mnot.quizdot.domain.member.repository.RefreshTokenRedisRepository;
 import com.mnot.quizdot.domain.member.repository.TitleRepository;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
+import com.mnot.quizdot.global.util.RedisUtil;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +41,9 @@ public class MemberServiceImpl implements MemberService {
     private final MemberTitleRepository memberTitleRepository;
     private final CharacterRepository characterRepository;
     private final MemberCharacterRepository memberCharacterRepository;
+    private final RedisUtil redisUtil;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
+
     //비밀번호 암호화
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -125,7 +130,8 @@ public class MemberServiceImpl implements MemberService {
 
 
     @Override
-    public void deleteMember(@AuthenticationPrincipal CustomMemberDetail customMemberDetail) {
+    public void deleteMember(@AuthenticationPrincipal CustomMemberDetail customMemberDetail,
+        int channelId) {
         log.info("회원 탈퇴 : START");
         //Id로 조회해서 없으면 에러 발생
         if (!memberRepository.existsByMemberId(customMemberDetail.getUsername())) {
@@ -133,9 +139,10 @@ public class MemberServiceImpl implements MemberService {
         }
         //존재하면 삭제하고 종료
         memberRepository.deleteByMemberId(customMemberDetail.getUsername());
-
+        //redis에서 refreshToken, lobby 삭제
+        redisUtil.deleteInactivePlayer(String.valueOf(customMemberDetail.getId()), 0);
+        refreshTokenRedisRepository.deleteById(customMemberDetail.getUsername());
         log.info("회원 탈퇴 : COMPLETE");
-        return;
     }
 
     @Override
