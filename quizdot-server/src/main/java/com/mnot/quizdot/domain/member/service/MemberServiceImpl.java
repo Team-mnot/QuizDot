@@ -130,8 +130,7 @@ public class MemberServiceImpl implements MemberService {
 
 
     @Override
-    public void deleteMember(@AuthenticationPrincipal CustomMemberDetail customMemberDetail,
-        int channelId) {
+    public void deleteMember(@AuthenticationPrincipal CustomMemberDetail customMemberDetail) {
         log.info("회원 탈퇴 : START");
         //Id로 조회해서 없으면 에러 발생
         if (!memberRepository.existsByMemberId(customMemberDetail.getUsername())) {

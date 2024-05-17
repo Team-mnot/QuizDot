@@ -14,7 +14,7 @@ public interface MemberService {
     boolean checkId(String id);
 
     //회원 탈퇴
-    void deleteMember(CustomMemberDetail member, int channelId);
+    void deleteMember(CustomMemberDetail member);
 
     //비밀번호 힌트 체크
     void chkHint(String memberId, String hint);
