@@ -7,13 +7,12 @@ export function WithdrawalButton() {
   const store = useUserStore();
   const navi = useNavigate();
   const handleWithDrawal = async () => {
-    const confirmation = window.confirm('정말 탈퇴하시겠습니까?');
-    if (confirmation) {
-      const response = await WithdrawalApi();
-      if (response) {
-        store.resetData();
-        navi('/login');
-      }
+    window.alert('정말 탈퇴하시겠습니까?');
+    const response = await WithdrawalApi();
+    if (response) {
+      store.resetData();
+
+      navi('/login');
     }
   };
 
