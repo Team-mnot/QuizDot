@@ -9,7 +9,7 @@ export function LogOutButton() {
   const handleLogOut = async () => {
     const response = await LogOutApi();
 
-    if (response === 'success') {
+    if (response) {
       store.resetData();
       // Check: 로그아웃되면 토큰이랑 알아서 사라지는지? 로컬 스토리지는 내가 비워야 하나
       console.log('로그아웃됨');
