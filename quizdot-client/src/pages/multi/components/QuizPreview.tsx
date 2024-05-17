@@ -120,7 +120,7 @@ export function QuizPreview({
       setUpdateCount(0);
     }
     // 게임이 끝나서 보상을 받아야 할 경우
-    else if ((message.type = 'REWARD')) {
+    else if (message.type == 'REWARD') {
       // 결과 모달을 보여줌
       resultRewards.current = message.data;
       quizSetStore.clearScores();
