@@ -21,7 +21,7 @@ export function RoomChattingBox({ roomId }: { roomId: number }) {
       data: null,
     };
 
-    onSend(`room/${roomId}`, chattingMessage);
+    onSend(`game/${roomId}`, chattingMessage);
   };
 
   const callback = (message: MessageDto) => {

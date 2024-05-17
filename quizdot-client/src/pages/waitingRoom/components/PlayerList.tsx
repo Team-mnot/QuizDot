@@ -26,10 +26,14 @@ export function PlayerList({ roomId }: { roomId: number }) {
         title: message.data.title,
         characterId: message.data.characterId,
       });
-      setPlayersCount(playersCount + 1);
+      setPlayersCount((prevCnt) => {
+        return prevCnt + 1;
+      });
     } else if (message.type === 'LEAVE') {
       roomStore.leavedPlayer(message.data);
-      setPlayersCount(playersCount - 1);
+      setPlayersCount((prevCnt) => {
+        return prevCnt - 1;
+      });
     }
   };
 

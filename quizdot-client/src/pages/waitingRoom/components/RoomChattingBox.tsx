@@ -56,11 +56,14 @@ export function RoomChattingBox({
 
       const callbackOfQuiz = async (message: MessageDto) => {
         quizSetStore.fetchQuizzes(message.data);
+
+        onUnsubscribe(`quiz/game/${roomId}`);
         router.routeTo(`/${channelId}/${roomId}/normal`);
       };
 
       onSubscribeWithCallBack(`quiz/game/${roomId}`, callbackOfQuiz);
       if (roomStore.roomInfo.hostId == userStore.id) handleEnterRoomWithQuiz();
+
       //onUnsubscribe(`quiz/game/${roomId}`);
     }
 
