@@ -39,6 +39,8 @@ export function FindPwdForm() {
     const idCheck = await IdCheckApi(data.memberId);
     if (idCheck) {
       window.alert('존재하지 않는 아이디입니다');
+      setMemberId('');
+      setHint('');
       return;
     }
     const props: FindPwdProps = {
@@ -48,10 +50,14 @@ export function FindPwdForm() {
     const response = await FindPwdApi(props);
     if (!response) {
       window.alert('힌트가 일치하지 않습니다');
+      setMemberId('');
+      setHint('');
       return;
     } else {
       navi('/reset-pwd', { state: { memberId: data.memberId } });
     }
+    setMemberId('');
+    setHint('');
   };
 
   // 아이디 확인

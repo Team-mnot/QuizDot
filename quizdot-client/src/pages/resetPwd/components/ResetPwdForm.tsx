@@ -52,6 +52,8 @@ export function ResetPwdForm(props: { id: string }) {
       window.alert('비밀번호가 변경되었습니다');
       navi('/login');
     }
+    setPassword('');
+    setChkPassword('');
   };
 
   // 비밀번호 표시 토글 함수
