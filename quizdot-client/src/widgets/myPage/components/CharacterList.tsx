@@ -1,7 +1,7 @@
 import type { Character } from '../api/types';
 import { ChangeCharacterApi } from '../api/api';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
-import '../css/index.css';
+import '@/shared/css/index.css';
 
 export function CharacterList(chaInfo: {
   characterId: number;

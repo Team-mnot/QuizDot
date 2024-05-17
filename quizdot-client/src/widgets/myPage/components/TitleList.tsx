@@ -1,7 +1,7 @@
 import type { Title } from '../api/types';
 import { ChangeTitleApi } from '../api/api';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
-import '../css/index.css';
+import '@/shared/css/index.css';
 
 export function TitleList(titleInfo: { title: number; titleList: Title[] }) {
   const store = useUserStore();
