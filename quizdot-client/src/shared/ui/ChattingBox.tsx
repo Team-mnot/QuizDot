@@ -48,8 +48,8 @@ export function ChattingBox(props: ChattingBoxProps) {
       >
         {props.messages.map((message, index) => (
           <div key={index} className={'chat-message flex break-words text-sm '}>
-            <div className={'min-w-max pr-[80px]'}>{message.nickname}</div>
-            <div className={''}>{message.content}</div>
+            <div className={'mr-1 min-w-28 max-w-28'}>{message.nickname}</div>
+            <div className={''}>:&nbsp;&nbsp;{message.content}</div>
           </div>
         ))}
       </div>

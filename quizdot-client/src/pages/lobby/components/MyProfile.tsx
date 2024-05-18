@@ -10,8 +10,11 @@ export function MyProfile() {
   const userStore = useUserStore();
 
   return (
-    <div className="cursor-pointer px-[30px] py-[10px]">
-      <div onClick={clickModal}>
+    <div className="px-[30px] py-[10px] ">
+      <div
+        className="cursor-pointer rounded-lg hover:bg-gray-200 active:bg-gray-500"
+        onClick={clickModal}
+      >
         <div className="w-[370px] rounded-lg border-2 bg-white bg-opacity-90 p-[20px] shadow-md">
           <div className="flex justify-between">
             <div

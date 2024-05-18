@@ -180,7 +180,11 @@ export function RoomCreation({ channelId }: { channelId: number }) {
       </div>
 
       <div className="p-[30px]">
-        <Button className="w-full" value="방 생성" onClick={handleCreateRoom} />
+        <Button
+          className="w-full hover:border-transparent hover:bg-slate-200 focus:outline-none active:bg-slate-300"
+          value="방 생성"
+          onClick={handleCreateRoom}
+        />
       </div>
 
       {toastState === true ? (

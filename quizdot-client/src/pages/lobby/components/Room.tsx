@@ -11,7 +11,7 @@ export function Room({
   return (
     <div className="cursor-pointer px-[20px] py-[10px]">
       <div
-        className={`h-[110px] w-[450px] rounded-lg border-2 bg-white p-[20px] shadow-md text-${roomStateColors[roomInfo.state]}`}
+        className={`border- h-[110px] w-[450px] rounded-lg p-[20px] shadow-md ${roomStateColors[roomInfo.state]}`}
         onClick={() => handleEnterRoom(roomInfo.roomId, roomInfo.open)}
       >
         <div className="flex h-full">
@@ -32,6 +32,7 @@ export function Room({
               </p>
             )}
             <p className="flex-none">{roomInfo.maxQuestion}&nbsp;문제</p>
+            <p>{roomInfo.state}</p>
           </div>
           <div className="flex flex-col text-right">
             <p className="flex-grow">{roomInfo.gameMode}</p>

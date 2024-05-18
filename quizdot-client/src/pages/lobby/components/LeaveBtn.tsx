@@ -1,4 +1,3 @@
-import { Button } from '@/shared/ui';
 import { useRouter } from '@/shared/hooks';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 import { useContext } from 'react';
@@ -14,5 +13,12 @@ export function LeaveBtn({ channelId }: { channelId: number }) {
     if (response == 200) router.routeTo('/channel');
   };
 
-  return <Button value="채널 선택" onClick={handleLeaveLobby} />;
+  return (
+    <div
+      onClick={handleLeaveLobby}
+      className="text-border custom-blinking custom-btn-transparent mr-4 flex cursor-pointer items-center text-stone-400"
+    >
+      채널 선택
+    </div>
+  );
 }

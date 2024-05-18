@@ -30,9 +30,9 @@ const maxQuestionList = { 30: 30, 20: 20, 10: 10 } as {
 };
 
 const roomStateColors = {
-  INPROGRESS: 'gray-300',
-  WAITING: 'green-300',
-  MATCHING: 'red-300',
+  INPROGRESS: 'bg-slate-400',
+  WAITING: 'bg-white hover:bg-gray-200 active:bg-gray-300',
+  MATCHING: 'bg-red-200',
 } as { [key: string]: string };
 
 export {
