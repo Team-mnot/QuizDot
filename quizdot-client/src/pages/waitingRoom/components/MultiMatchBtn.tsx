@@ -1,17 +1,18 @@
 import { startGameApi } from '@/shared/apis/commonApi';
 import { Button } from '@/shared/ui';
-
 export function MultiMatchBtn({
   roomId,
+  mode,
   visible,
 }: {
   roomId: number;
+  mode: string;
   visible: boolean;
 }) {
   const handleStartGame = async () => {
-    const response = await startGameApi(roomId, 'NORMAL');
+    const response = await startGameApi(roomId, mode);
 
-    if (response != 200) console.error('[멀티 게임 입장 실패]');
+    if (response != 200) console.error(`[${mode} 게임 입장 실패]`);
   };
 
   return (

@@ -5,6 +5,13 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface QuizSetStore {
+  gameState: boolean;
+  setGameState: (state: boolean) => void;
+
+  quiz: QuizSetType;
+  fetchQuiz: (quiz: QuizSetType) => void;
+  clearQuiz: () => void;
+
   quizzes: QuizSetType[];
   fetchQuizzes: (quizzes: QuizSetType[]) => void;
   clearQuizzes: () => void;
@@ -19,6 +26,36 @@ interface QuizSetStore {
 const useQuizSetStore = create(
   persist<QuizSetStore>(
     (set) => ({
+      gameState: false,
+      setGameState: (state: boolean) => set({ gameState: state }),
+      quiz: {
+        id: 0,
+        question: '',
+        hint: '',
+        imagePath: '',
+        category: '',
+        questionType: '',
+        description: '',
+        answers: [],
+      },
+      fetchQuiz: (quiz: QuizSetType) => {
+        set({ quiz: quiz });
+      },
+      clearQuiz: () => {
+        set({
+          quiz: {
+            id: 0,
+            question: '',
+            hint: '',
+            imagePath: '',
+            category: '',
+            questionType: '',
+            description: '',
+            answers: [],
+          },
+        });
+      },
+
       quizzes: [],
       fetchQuizzes: (quizzes: QuizSetType[]) => {
         set({ quizzes: quizzes });

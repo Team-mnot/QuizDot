@@ -63,8 +63,16 @@ export function RoomChattingBox({
 
       onSubscribeWithCallBack(`quiz/game/${roomId}`, callbackOfQuiz);
       if (roomStore.roomInfo.hostId == userStore.id) handleEnterRoomWithQuiz();
+    }
 
-      //onUnsubscribe(`quiz/game/${roomId}`);
+    // 게임 시작 요청이 성공함
+    else if (message.type == 'ILGITO') {
+      if (!roomStore.roomInfo) {
+        return;
+      }
+      console.log('게임 시작할 것');
+      quizSetStore.setGameState(true);
+      router.routeTo(`/${channelId}/${roomId}/ilgito`);
     }
 
     // 플레이어들의 채팅을 받음
@@ -87,6 +95,10 @@ export function RoomChattingBox({
       onUnsubscribe(`chat/room/${roomId}`);
     };
   }, [isReady]);
+
+  useEffect(() => {
+    quizSetStore.reset();
+  }, []);
 
   return <ChattingBox onSend={handleSubmitMessage} messages={messages} />;
 }

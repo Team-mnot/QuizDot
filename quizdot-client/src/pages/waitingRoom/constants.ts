@@ -1,7 +1,7 @@
 const modeList = {
   normal: 'NORMAL',
   survival: 'SURVIVAL',
-  onotoone: 'ONETOONE',
+  ilgito: 'ILGITO',
 } as { [key: string]: string };
 
 export { modeList };

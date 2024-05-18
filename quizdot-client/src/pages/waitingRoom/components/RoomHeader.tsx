@@ -45,15 +45,16 @@ export function RoomHeader({
 
           <div className="text-center">
             <div className="flex justify-center">
-              {roomStore.roomInfo.gameMode === 'NORMAL' ? (
-                <MultiMatchBtn
-                  roomId={roomId}
-                  visible={roomStore.roomInfo.hostId === userStore.id}
-                />
-              ) : (
+              {roomStore.roomInfo.gameMode === 'SURVIVAL' ? (
                 <SurvivalMatchBtn
                   roomId={roomId}
                   category={roomStore.roomInfo.category}
+                  visible={roomStore.roomInfo.hostId === userStore.id}
+                />
+              ) : (
+                <MultiMatchBtn
+                  roomId={roomId}
+                  mode={roomStore.roomInfo.gameMode}
                   visible={roomStore.roomInfo.hostId === userStore.id}
                 />
               )}
