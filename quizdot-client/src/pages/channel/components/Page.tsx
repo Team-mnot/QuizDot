@@ -3,12 +3,12 @@ import { ChannelContent, ChannelHeader } from '.';
 
 export function ChannelPage() {
   useEffect(() => {
-    document.body.style.backgroundImage = 'url(/images/main_bg.png)';
+    document.body.style.backgroundImage = 'url(/images/LobbyBackground.png)';
     document.body.style.backgroundSize = 'cover';
   }, []);
 
   return (
-    <div className={'h-screen w-screen'}>
+    <div className="w-screen h-screen">
       <ChannelHeader />
       <ChannelContent />
     </div>

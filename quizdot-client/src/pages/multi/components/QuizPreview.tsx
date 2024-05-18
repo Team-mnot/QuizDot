@@ -262,7 +262,11 @@ export function QuizPreview({
           )}
         <RoomChattingBox
           roomId={roomId}
-          visible={isSubmitAnswer.current || isCorrectAnswer.current}
+          visible={
+            isSubmitAnswer.current ||
+            isCorrectAnswer.current ||
+            isShowAnswer.current
+          }
         />
       </div>
       <Modal isOpen={isOpenRewardModal} onClose={closeRewardModal}>
