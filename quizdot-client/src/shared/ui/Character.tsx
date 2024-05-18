@@ -12,7 +12,7 @@ export function Character({
   return (
     <div className={'m-2 flex w-36 flex-col items-center rounded-lg p-2'}>
       <img
-        src={`/images/${characterId}.png`}
+        src={`/images/${characterId}.gif`}
         alt={nickname}
         className={'mb-2 h-20 w-20 rounded-full object-cover'}
       />
