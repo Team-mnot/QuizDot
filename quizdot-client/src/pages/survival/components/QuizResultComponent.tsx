@@ -27,6 +27,7 @@ export function QuizResultComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
 
   const userStore = useUserStore();
   const [answerIndex, setAnswerIndex] = useState<number>();
+  const [currentDescription, setCurrentDescription] = useState<string>();
   const [currentAnswer, setCurrentAnswer] = useState<string[]>([]);
   useEffect(() => {
     if (roomInfo.hostId === userStore.id) {
@@ -48,6 +49,7 @@ export function QuizResultComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
   useEffect(() => {
     if (answerIndex !== undefined) {
       setCurrentAnswer(quizzes[answerIndex].answers);
+      setCurrentDescription(quizzes[answerIndex].description);
       handleNextQuiz(); // 각 개인이 갖고있는 퀴즈목록에서 다음으로 가자는거임
     }
   }, [answerIndex]);
@@ -59,6 +61,7 @@ export function QuizResultComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
         {currentAnswer.length > 0 && (
           <div>Answers: {currentAnswer.join(', ')}</div>
         )}{' '}
+        {currentDescription && <div>설명 : {currentDescription}</div>}
       </div>
     </div>
   );
