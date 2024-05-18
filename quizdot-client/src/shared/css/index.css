@@ -6,3 +6,55 @@
 .custom-scrollbar:hover::-webkit-scrollbar-thumb {
   background-color: lightgray;
 }
+
+.custom-text-outline-black {
+  -webkit-text-stroke: 3px #243952;
+}
+
+.custom-box-transparent {
+  @apply flex flex-col justify-center rounded-lg bg-white bg-opacity-20 shadow-md;
+}
+
+.custom-box-white {
+  @apply rounded-lg border-[2px] bg-white shadow-md;
+}
+
+.custom-pink {
+  @apply text-pink-500 hover:text-yellow-500;
+}
+
+.custom-black {
+  @apply text-[#243952] hover:text-[#132841];
+}
+
+.custom-btn-transparent {
+  @apply bg-transparent text-[2em] transition-colors duration-300 hover:border-transparent focus:outline-none;
+}
+
+.custom-btn-white {
+  @apply rounded-lg bg-white transition-colors duration-300 hover:border-solid hover:border-transparent hover:bg-slate-400 hover:text-white focus:outline-none active:bg-slate-500;
+}
+
+.custom-btn-shadow-hover:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.custom-btn-shadow {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.custom-blinking:hover {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0% {
+    color: #333;
+  }
+  50% {
+    color: #888;
+  }
+  100% {
+    color: #333;
+  }
+}

@@ -2,15 +2,14 @@ import { Button } from '@/shared/ui';
 import { useRouter } from '@/shared/hooks';
 import { enterLobbyApi } from '@/pages/lobby/api/api';
 import { leaveRoomApi } from '@/pages/waitingRoom/api/api';
+import { useRoomStore } from '@/shared/stores/connectionStore/roomStore';
 
-export function LeaveBtn({
-  roomId,
-  channelId,
-}: {
-  roomId: number;
-  channelId: number;
-}) {
+export function LeaveBtn() {
   const router = useRouter();
+  const roomStore = useRoomStore();
+
+  const roomId = roomStore.roomInfo!.roomId;
+  const channelId = Math.floor(roomStore.roomInfo!.roomId);
 
   const handleLeaveGame = async () => {
     const confirmation = window.confirm('정말 방에서 나가시겠습니까?');

@@ -107,20 +107,25 @@ export function SurvivalMatchBtn({ roomId, category, visible }: Props) {
             onClick={handleCancelGame}
           />
           <p>
-            {String(matchCount / 60).padStart(2, '0')}:
+            {String(Math.floor(matchCount / 60)).padStart(2, '0')}:
+            {String(matchCount % 60).padStart(2, '0')}
+          </p>
+        </div>
+      )}
+      {matchStatus == 1 && !visible && (
+        <div>
+          <p className="custom-text-transparent">매칭 중</p>
+          <p>
+            {String(Math.floor(matchCount / 60)).padStart(2, '0')}:
             {String(matchCount % 60).padStart(2, '0')}
           </p>
         </div>
       )}
       {matchStatus == 2 && (
         <div>
-          <Button
-            className="w-[300px] text-5xl"
-            value="매칭 완료"
-            onClick={() => {}}
-          />
+          <p>매칭 완료</p>
           <p>
-            {String(matchCount / 60).padStart(2, '0')}:
+            {String(Math.floor(matchCount / 60)).padStart(2, '0')}:
             {String(matchCount % 60).padStart(2, '0')}
           </p>
         </div>

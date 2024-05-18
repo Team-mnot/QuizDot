@@ -20,6 +20,8 @@ export function RoomChattingBox({
     useContext(WebSocketContext);
 
   const handleSubmitMessage = (message: string) => {
+    if (message.trim() == '') return;
+
     const chattingMessage = {
       sender: userStore.nickname,
       text: message,

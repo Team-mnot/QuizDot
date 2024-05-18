@@ -46,7 +46,7 @@ export function RoomList({
 
   return (
     <div className="px-[30px] py-[10px]">
-      <div className="h-[360px] w-[1100px] rounded-lg bg-white bg-opacity-20 shadow-md">
+      <div className="h-[360px] w-[700px] rounded-lg bg-white bg-opacity-20 shadow-md">
         <div className="flex h-auto w-full justify-between p-[20px]">
           <div className="flex w-[300px] justify-between pr-[20px] ">
             <Button value="전체" />

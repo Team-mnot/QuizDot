@@ -22,23 +22,29 @@ export function LobbyContent({ channelId }: { channelId: number }) {
   }, [isReady]);
 
   return (
-    <div className={'absolute left-[0px] top-[70px] flex w-full p-[20px]'}>
+    <div className="flex h-full min-h-[500px] w-full">
       {isLobbyError && (
-        <div className="text-center">
+        <div className="flex items-center justify-center w-full h-full">
           해당 채널의 로비를 불러올 수 없습니다.
         </div>
       )}
-      {isLobbyLoading && <div className="text-center">Loading . . .</div>}
-      {!isLobbyLoading && !lobby && (
-        <div className="text-center">해당 채널의 로비가 존재하지 않습니다.</div>
+      {!isLobbyError && isLobbyLoading && (
+        <div className="flex items-center justify-center w-full h-full">
+          Loading . . .
+        </div>
       )}
-      {!isLobbyLoading && lobby && lobby.channelId != -1 && (
-        <div className={'w-full'}>
-          <div className={'flex justify-between'}>
+      {!isLobbyError && !isLobbyLoading && !lobby && (
+        <div className="flex items-center justify-center w-full h-full">
+          해당 채널의 로비가 존재하지 않습니다.
+        </div>
+      )}
+      {!isLobbyError && !isLobbyLoading && lobby && lobby.channelId != -1 && (
+        <div className="w-full">
+          <div className="flex h-[50%] w-full justify-center bg-black">
             <OnlineUserList activeUsers={lobby.activeUsers} />
             <RoomList roomInfos={lobby.roomInfos} channelId={lobby.channelId} />
           </div>
-          <div className="flex">
+          <div className="flex h-[50%]">
             <MyProfile />
             <LobbyChattingBox channelId={lobby.channelId} />
           </div>

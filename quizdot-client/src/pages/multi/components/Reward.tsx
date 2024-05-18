@@ -54,7 +54,7 @@ export function Reward({
       (message: MessageDto) => {
         if (message.type == 'TITLE') {
           console.log(message);
-          setToastMessage('칭호가 해금되었습니다.');
+          setToastMessage('새로운 칭호가 해금되었습니다!');
           setToastState(true);
         }
       },
@@ -102,6 +102,9 @@ export function Reward({
                 <p>랭킹</p>
               </td>
               <td>
+                <p>레벨</p>
+              </td>
+              <td>
                 <p>닉네임</p>
               </td>
               <td>
@@ -122,8 +125,12 @@ export function Reward({
                   </td>
                   <td>
                     <p>
-                      Lv.{rank.curLevel} {rank.nickname}
+                      Lv.{rank.level}&nbsp;
+                      {rank.curLevel != 0 && `+ (${rank.curLevel})`}
                     </p>
+                  </td>
+                  <td>
+                    <p>{rank.nickname}</p>
                   </td>
                   <td>
                     <p>{rank.point}</p>

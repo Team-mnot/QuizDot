@@ -10,7 +10,8 @@ export function WaitingRoomPage() {
   };
 
   useEffect(() => {
-    document.body.style.backgroundImage = 'url(/images/MultiBackground.png)';
+    document.body.style.backgroundImage =
+      'url(/images/WaitingBackground02.png)';
     document.body.style.backgroundSize = 'cover';
   }, []);
 

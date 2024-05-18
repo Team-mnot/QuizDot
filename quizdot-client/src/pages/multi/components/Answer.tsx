@@ -11,9 +11,9 @@ export function Answer({
         <p>정답 :</p>
         {answers &&
           answers.map((ans, index) => (
-            <p key={ans}>
+            <div key={ans}>
               {index == answers.length - 1 ? <p>{ans}, </p> : <p>{ans}</p>}
-            </p>
+            </div>
           ))}
         <p></p>
       </div>
