@@ -10,7 +10,9 @@ export function OnlineUser({
   return (
     <div className={'px-[20px] py-[10px]'}>
       <div
-        className={'w-[220px] rounded-lg border-2 bg-white p-[10px] shadow-md'}
+        className={
+          'w-[220px] cursor-pointer rounded-lg border-2 bg-white p-[10px] shadow-md hover:bg-slate-200 active:bg-slate-300'
+        }
         onClick={() => handleClickUser(activeUser.id)}
       >
         <p>

@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { Button } from '../ui';
 import { LogOutApi } from '../apis/user';
 import { useUserStore } from '../stores/userStore/userStore';
 
@@ -15,5 +14,12 @@ export function LogOutButton() {
     }
   };
 
-  return <Button onClick={handleLogOut} value={'로그아웃'} />;
+  return (
+    <div
+      onClick={handleLogOut}
+      className="custom-blinking custom-pink custom-btn-transparent text-border mr-4 flex cursor-pointer items-center"
+    >
+      로그아웃
+    </div>
+  );
 }

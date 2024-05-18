@@ -1,4 +1,4 @@
-import { Button, Modal } from '@/shared/ui';
+import { Modal } from '@/shared/ui';
 import { useOpenModal } from '@/shared/hooks';
 import { useState } from 'react';
 import { ActiveUserType } from '../api/types';
@@ -30,13 +30,11 @@ export function OnlineUserList({
     <div className="px-[30px] py-[10px]">
       <div
         className={
-          'h-[360px] w-auto rounded-lg bg-white bg-opacity-20 shadow-md'
+          'h-[520px] w-auto rounded-lg bg-white bg-opacity-60 shadow-md'
         }
       >
-        <div className="p-[20px] text-center">
-          <Button value="접속 유저 리스트" />
-        </div>
-        <div className="custom-scrollbar h-[260px] max-h-[260px] overflow-y-scroll">
+        <div className="p-[20px] text-center text-2xl">접속 중인 유저</div>
+        <div className="custom-scrollbar mr-2 h-[430px] max-h-[430px] overflow-y-scroll">
           {activeUsers.map((user) => (
             <OnlineUser
               key={user.id}

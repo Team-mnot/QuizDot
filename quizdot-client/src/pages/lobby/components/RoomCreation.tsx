@@ -71,7 +71,7 @@ export function RoomCreation({ channelId }: { channelId: number }) {
       mode: mode,
       category: category,
       maxPeople: mode == 'NORMAL' ? maxPeople : fixedMaxPeople,
-      maxQuestion: mode == 'NORMAL' ? maxQuestion : 0,
+      maxQuestion: maxQuestion,
     };
 
     const response = await createRoomApi(channelId, creatingRoom);
@@ -168,21 +168,23 @@ export function RoomCreation({ channelId }: { channelId: number }) {
             selectedKey={selectedCategory}
           />
         </div>
-        {mode == 'NORMAL' && (
-          <div className="px-[30px] py-[10px]">
-            <p className="p-[10px]">문제 수</p>
-            <Dropbox
-              size="w-[100px]"
-              initial={maxQuestion}
-              options={maxQuestionList}
-              selectedKey={selectedMaxQuestion}
-            />
-          </div>
-        )}
+        <div className="px-[30px] py-[10px]">
+          <p className="p-[10px]">문제 수</p>
+          <Dropbox
+            size="w-[100px]"
+            initial={maxQuestion}
+            options={maxQuestionList}
+            selectedKey={selectedMaxQuestion}
+          />
+        </div>
       </div>
 
       <div className="p-[30px]">
-        <Button className="w-full" value="방 생성" onClick={handleCreateRoom} />
+        <Button
+          className="w-full hover:border-transparent hover:bg-slate-200 focus:outline-none active:bg-slate-300"
+          value="방 생성"
+          onClick={handleCreateRoom}
+        />
       </div>
 
       {toastState === true ? (
