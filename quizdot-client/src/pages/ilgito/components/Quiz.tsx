@@ -1,11 +1,13 @@
 import { categoryList } from '@/pages/lobby/constants';
 
 export function Quiz({
+  index,
   questionType,
   question,
   category,
   imagePath,
 }: {
+  index: number;
   questionType: string;
   question: string;
   category: string;
@@ -15,7 +17,7 @@ export function Quiz({
     <div>
       <div className="flex h-[150px] w-[500px] flex-col justify-between rounded-md border-r-2 bg-white p-4 py-5 shadow-md">
         <div className="h-16 text-center">
-          <p>Q. </p>
+          <p>Q. {index} </p>
           <p>{question}</p>
         </div>
         <div className={'text-end'}>

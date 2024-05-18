@@ -17,7 +17,7 @@ export function MyProfile() {
             <div className="rounded-lg border-2 bg-white p-[10px]">
               {/* 유저 캐릭터 */}
               <img
-                src="/images/ikball.png"
+                src={`/images/${userStore.characterId}.gif`}
                 alt=""
                 className="h-[100px] w-[100px]"
               />

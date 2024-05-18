@@ -88,7 +88,7 @@ export function MyPage(props: { id: number }) {
               backgroundColor: 'black',
             }}
           >
-            {store.characterId}
+            <img src={`/images/${store.characterId}.gif`} alt="" />
           </div>
         </div>
         <div
