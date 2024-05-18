@@ -33,7 +33,9 @@ export function CharacterList(chaInfo: {
                 backgroundColor: 'black',
               }}
               onClick={() => handleClick(character.id)}
-            ></div>
+            >
+              <img src={`/images/${character.id}.gif`} alt="" />
+            </div>
             <span>
               No {character.id} : {character.name}
             </span>
