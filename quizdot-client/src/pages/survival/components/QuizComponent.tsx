@@ -133,19 +133,28 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
           {/* <p>Answers: {currentQuiz.answers.join(', ')}</p> */}
         </div>
       </div>
-      <div className=" fixed left-0 right-0 top-56 mx-auto max-w-3xl">
+      {/* <div className=" fixed left-0 right-0 top-56 mx-auto max-w-3xl text-yellow-50">
         Category: {currentQuiz.category}
-      </div>
+      </div> */}
       {showHint && (
-        <div className="fixed left-0 right-0 top-64 mx-auto max-w-3xl">
+        <div className="fixed left-0 right-0 top-56 mx-auto max-w-3xl text-yellow-50">
           초성힌트: {currentQuiz.hint}
+        </div>
+      )}
+      {currentQuiz.questionType === 'IMAGE' && (
+        <div className="w-[500px] rounded-md border-r-2 bg-white p-5 shadow-md">
+          <img
+            src={currentQuiz.imagePath}
+            alt=""
+            className="h-[300px] w-[400px]"
+          />
         </div>
       )}
 
       {/* 정답 제출 합시다 ~ */}
       <div>
         {isAnswerSubmitted ? (
-          <div className="fixed bottom-72 left-0 right-0 mx-auto flex justify-center text-4xl">
+          <div className="fixed bottom-72 left-0 right-0 mx-auto flex justify-center text-4xl text-yellow-50">
             다른사람 기다려
           </div>
         ) : (
