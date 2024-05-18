@@ -19,13 +19,14 @@ import { useQuizSetStore } from '@/shared/stores/connectionStore/quizSetStore';
 import { QuizResult } from './QuizResult';
 import { RoomChattingBox } from './RoomChattingBox';
 
-export function QuizPreview({
-  roomId,
-  channelId,
-}: {
-  roomId: number;
-  channelId: number;
-}) {
+export function QuizPreview() {
+  // 문제 리스트, 유저 정보
+  const quizSetStore = useQuizSetStore();
+  const roomStore = useRoomStore();
+  const userStore = useUserStore();
+
+  const roomId = roomStore.roomInfo!.roomId;
+  const channelId = Math.floor(roomStore.roomInfo!.roomId);
   // 현재 문제 리스트의 인덱스
   const quizIndex = useRef<number>(0);
   // 타이머
@@ -54,11 +55,6 @@ export function QuizPreview({
     clickModal: clickRewardModal,
     closeModal: closeRewardModal,
   } = useOpenModal();
-
-  // 문제 리스트, 유저 정보
-  const quizSetStore = useQuizSetStore();
-  const roomStore = useRoomStore();
-  const userStore = useUserStore();
 
   const { isReady, onSubscribeWithCallBack, onUnsubscribe } =
     useContext(WebSocketContext);
@@ -91,14 +87,17 @@ export function QuizPreview({
 
   // 해당 문제의 정답 여부 판단
   const checkQuestionsTruth = (myAns: string, ansList: string[]) => {
-    if (ansList.indexOf(myAns) >= 0 || ansList.indexOf(myAns.trim()) >= 0)
+    if (
+      ansList.indexOf(myAns) >= 0 ||
+      ansList.indexOf(myAns.replace(/^\s+|\s+$/g, '')) >= 0
+    )
       return true;
     else return false;
   };
 
   // 게임 종료
-  const handleExitGame = async (_roomId: number) => {
-    await exitGameApi(_roomId);
+  const handleExitGame = async () => {
+    await exitGameApi(roomId);
   };
 
   const callbackOfInfo = async (message: MessageDto) => {
@@ -184,7 +183,7 @@ export function QuizPreview({
                 roomStore.roomInfo &&
                 roomStore.roomInfo.hostId == userStore.id
               ) {
-                handleExitGame(roomId);
+                handleExitGame();
               }
 
               clearInterval(timer);
@@ -262,7 +261,11 @@ export function QuizPreview({
           )}
         <RoomChattingBox
           roomId={roomId}
-          visible={isSubmitAnswer.current || isCorrectAnswer.current}
+          visible={
+            isSubmitAnswer.current ||
+            isCorrectAnswer.current ||
+            isShowAnswer.current
+          }
         />
       </div>
       <Modal isOpen={isOpenRewardModal} onClose={closeRewardModal}>

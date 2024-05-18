@@ -12,6 +12,8 @@ export function LobbyChattingBox({ channelId }: { channelId: number }) {
   const { callbackMsg, onSend } = useContext(WebSocketContext);
 
   const handleSubmitMessage = (message: string) => {
+    if (message.trim() == '') return;
+
     const chattingMessage = {
       sender: userStore.nickname,
       text: message,

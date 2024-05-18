@@ -57,6 +57,8 @@ export function RoomInfo({ roomInfo }: { roomInfo: RoomInfoType }) {
   return (
     <div>
       <div className="flex w-[700px]">
+        <p>{Math.floor(roomInfo.roomId / 1000)}&nbsp;채널&nbsp;</p>
+        <p>{roomInfo.roomId}&nbsp;</p>
         <p>[{roomInfo.title}]&nbsp;</p>
         <p>{roomInfo.open ? '공개' : '비공개'}&nbsp;|&nbsp;</p>
         <p>{roomInfo.gameMode}&nbsp;|&nbsp;</p>

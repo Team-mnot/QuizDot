@@ -6,7 +6,7 @@ import { MessageDto } from '@/shared/apis/types';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 import { useQuizSetStore } from '@/shared/stores/connectionStore/quizSetStore';
 
-export function Players({ roomId }: { roomId: number }) {
+export function Players() {
   const roomStore = useRoomStore();
   const quizSetStore = useQuizSetStore();
   const playersCount = useRef<number>(Object.keys(roomStore.players).length);
@@ -22,10 +22,13 @@ export function Players({ roomId }: { roomId: number }) {
   };
 
   useEffect(() => {
-    onSubscribeWithCallBack(`players/room/${roomId}`, callbackOfPlayers);
+    onSubscribeWithCallBack(
+      `players/room/${roomStore.roomInfo!.roomId}`,
+      callbackOfPlayers,
+    );
 
     return () => {
-      onUnsubscribe(`players/room/${roomId}`);
+      onUnsubscribe(`players/room/${roomStore.roomInfo!.roomId}`);
     };
   }, [isReady]);
 

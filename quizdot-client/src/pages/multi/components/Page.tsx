@@ -1,13 +1,12 @@
 import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import { RoomHeader } from './RoomHeader';
 import { RoomContent } from './RoomContent';
 
 export function MultiPage() {
-  const { channelId, roomId } = useParams() as {
-    channelId: string;
-    roomId: string;
-  };
+  // const { channelId, roomId } = useParams() as {
+  //   channelId: string;
+  //   roomId: string;
+  // };
 
   useEffect(() => {
     document.body.style.backgroundImage = 'url(/images/MultiBackground.png)';
@@ -16,8 +15,8 @@ export function MultiPage() {
 
   return (
     <div>
-      <RoomHeader channelId={Number(channelId)} roomId={Number(roomId)} />
-      <RoomContent roomId={Number(roomId)} channelId={Number(channelId)} />
+      <RoomHeader />
+      <RoomContent />
     </div>
   );
 }
