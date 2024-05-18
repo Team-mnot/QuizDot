@@ -17,6 +17,7 @@ import { useOpenModal } from '@/shared/hooks';
 import { Reward } from './Reward';
 import { useQuizSetStore } from '@/shared/stores/connectionStore/quizSetStore';
 import { QuizResult } from './QuizResult';
+import { RoomChattingBox } from './RoomChattingBox';
 
 export function QuizPreview({
   roomId,
@@ -197,6 +198,7 @@ export function QuizPreview({
               isShowQuiz.current = true;
               isSubmitAnswer.current = false;
               isShowAnswer.current = false; // 정답 제공 해제
+              isCorrectAnswer.current = false;
 
               setUpdateStage(!updateStage);
 
@@ -242,20 +244,26 @@ export function QuizPreview({
             description={quizSetStore.quizzes[quizIndex.current].description}
           />
         )}
-        {!isSubmitAnswer.current &&
+        {isShowQuiz.current &&
+          !isSubmitAnswer.current &&
           quizSetStore.quizzes[quizIndex.current].questionType == 'OX' && (
             <OXTypeBtn
               handleSubmitAnswer={handleSubmitAnswer}
               handleSubmitPass={handleSubmitPass}
             />
           )}
-        {!isSubmitAnswer.current &&
+        {isShowQuiz.current &&
+          !isSubmitAnswer.current &&
           quizSetStore.quizzes[quizIndex.current].questionType != 'OX' && (
             <TextTypeInput
               handleSubmitAnswer={handleSubmitAnswer}
               handleSubmitPass={handleSubmitPass}
             />
           )}
+        <RoomChattingBox
+          roomId={roomId}
+          visible={isSubmitAnswer.current || isCorrectAnswer.current}
+        />
       </div>
       <Modal isOpen={isOpenRewardModal} onClose={closeRewardModal}>
         <Reward

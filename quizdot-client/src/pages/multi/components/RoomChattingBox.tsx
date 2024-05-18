@@ -4,7 +4,13 @@ import { useUserStore } from '@/shared/stores/userStore/userStore';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 import { MessageDto } from '@/shared/apis/types';
 
-export function RoomChattingBox({ roomId }: { roomId: number }) {
+export function RoomChattingBox({
+  roomId,
+  visible,
+}: {
+  roomId: number;
+  visible: boolean;
+}) {
   const [messages, setMessages] = useState<
     { nickname: string; content: string }[]
   >([]);
@@ -44,5 +50,7 @@ export function RoomChattingBox({ roomId }: { roomId: number }) {
     };
   }, [isReady]);
 
-  return <ChattingBox onSend={handleSubmitMessage} messages={messages} />;
+  if (visible) {
+    return <ChattingBox onSend={handleSubmitMessage} messages={messages} />;
+  } else return null;
 }
