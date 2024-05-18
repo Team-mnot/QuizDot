@@ -17,6 +17,7 @@
     "@types/qs": "6.9.15",
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.6.8",
+    "lottie-react": "2.4.0",
     "qs": "6.12.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

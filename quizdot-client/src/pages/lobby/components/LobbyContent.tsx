@@ -24,17 +24,17 @@ export function LobbyContent({ channelId }: { channelId: number }) {
   return (
     <div className="flex h-full min-h-[500px] w-full">
       {isLobbyError && (
-        <div className="flex items-center justify-center w-full h-full">
+        <div className="flex h-full w-full items-center justify-center">
           해당 채널의 로비를 불러올 수 없습니다.
         </div>
       )}
       {!isLobbyError && isLobbyLoading && (
-        <div className="flex items-center justify-center w-full h-full">
+        <div className="flex h-full w-full items-center justify-center">
           Loading . . .
         </div>
       )}
       {!isLobbyError && !isLobbyLoading && !lobby && (
-        <div className="flex items-center justify-center w-full h-full">
+        <div className="flex h-full w-full items-center justify-center">
           해당 채널의 로비가 존재하지 않습니다.
         </div>
       )}

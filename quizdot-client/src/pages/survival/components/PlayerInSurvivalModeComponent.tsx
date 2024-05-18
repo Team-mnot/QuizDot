@@ -1,8 +1,7 @@
-// src/pages/survival/components/CharacterWithPositionComponent.tsx
-import { Character } from '@/shared/ui/Character';
+// src/pages/survival/components/PlayerInSurvivalModeComponent.tsx
 import { PlayerType } from '@/shared/apis/types';
-
-// `CharacterWithPositionProps` 타입에 `position` 프로퍼티를 추가해야 합니다.
+import Lottie from 'lottie-react';
+import deadAnimation from '@/images/tomb.json'; // Lottie JSON 파일 경로
 
 interface PlayerInSurvivalModeProps extends PlayerType {
   position: { top: number; left: number };
@@ -28,30 +27,58 @@ export function PlayerInSurvivalModeComponent({
       style={{
         top: `${position.top}%`,
         left: `${position.left}%`,
-        transform: `translate(-50%, -50%) scale(1)`, // 수정: 중심을 기준으로 위치 조정 및 크기 조정
-        transformOrigin: 'center center', // 추가: 변환의 기준점을 중앙으로 설정
+        transform: `translate(-50%, -50%)`,
+        transformOrigin: 'center center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
       }}
     >
-      {/* 중복을 피하기 위해 CharacterComponent를 재사용합니다. */}
-      <div
-        className="relative z-10" // characterImageUrl의 z-index를 설정합니다.
-      >
-        <Character
-          characterId={displayCharacterId}
-          // characterId={characterId}
-          title={title}
-          nickname={nickname}
-          nicknameColor={nicknameColor} // 색상 전달
-          level={level} // 레벨 전달
-        />
+      <div className="relative">
+        {isAlive ? (
+          <img
+            src={`/images/${displayCharacterId}.gif`}
+            alt={nickname}
+            className={'h-20 w-20 rounded-full object-cover'}
+          />
+        ) : (
+          <Lottie
+            animationData={deadAnimation}
+            style={{ width: 80, height: 80 }}
+          />
+        )}
       </div>
 
-      {/* 부활하면 머리에 링 씌워주려고요 ~ */}
+      <div className="mt-2 flex flex-col items-center">
+        <p
+          className={
+            'mb-1 rounded-lg border-2 border-solid border-black bg-white bg-opacity-80 px-2 text-xs text-red-500'
+          }
+        >
+          {title}
+        </p>
+        <p
+          style={{ color: nicknameColor }}
+          className={
+            'mb-1 rounded-lg border-2 border-solid border-black bg-white bg-opacity-80 px-2 text-xs font-bold'
+          }
+        >
+          {nickname}
+        </p>
+        <div
+          className={
+            'rounded-lg border-2 border-solid border-black bg-white bg-opacity-80 px-2 text-xs'
+          }
+        >
+          Level: {level}
+        </div>
+      </div>
+
       {isRevive && (
         <img
           src="/images/halo.png"
           alt="Revived"
-          className={'h-30 w-30 absolute -top-5 z-0 '}
+          className={'h-30 absolute -top-0 -z-10 w-40'}
         />
       )}
     </div>
