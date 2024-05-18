@@ -33,7 +33,7 @@ export function UserInfo(props: { id: number }) {
                 backgroundColor: 'black',
               }}
             >
-              {userInfo.characterId}
+              <img src={`/images/${userInfo.characterId}.gif`} alt="" />
             </div>
           </div>
           <div
