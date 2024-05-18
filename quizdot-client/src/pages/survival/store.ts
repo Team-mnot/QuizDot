@@ -1,5 +1,5 @@
 // src/pages/survival/store.tsx
-import create from 'zustand';
+import { create } from 'zustand';
 import { PlayerInSurvivalMode, iQuiz } from './api/types'; // 경로는 실제 위치에 따라 다를 수 있습니다.
 
 interface PlayerStore {

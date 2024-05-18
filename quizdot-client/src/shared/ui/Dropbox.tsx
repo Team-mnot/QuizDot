@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface DropboxProps {
   size: string;
@@ -15,6 +15,8 @@ export function Dropbox(props: DropboxProps) {
     props.options[props.initial],
   );
 
+  const dropboxRef = useRef<HTMLDivElement>(null);
+
   const selectedItem = (
     key: string | number,
     value: string | number | boolean,
@@ -24,8 +26,24 @@ export function Dropbox(props: DropboxProps) {
     setIsOpen(false);
   };
 
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      dropboxRef.current &&
+      !dropboxRef.current.contains(event.target as Node)
+    ) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-block" ref={dropboxRef}>
       <div
         className={`flex h-auto ${props.size} justify-between rounded-md border-2 bg-white px-[20px] py-[10px] shadow-md hover:bg-gray-100`}
         onClick={() => setIsOpen(!isOpen)}

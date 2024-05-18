@@ -71,7 +71,7 @@ export function RoomCreation({ channelId }: { channelId: number }) {
       mode: mode,
       category: category,
       maxPeople: mode == 'NORMAL' ? maxPeople : fixedMaxPeople,
-      maxQuestion: mode == 'NORMAL' ? maxQuestion : 0,
+      maxQuestion: maxQuestion,
     };
 
     const response = await createRoomApi(channelId, creatingRoom);
@@ -168,17 +168,15 @@ export function RoomCreation({ channelId }: { channelId: number }) {
             selectedKey={selectedCategory}
           />
         </div>
-        {mode == 'NORMAL' && (
-          <div className="px-[30px] py-[10px]">
-            <p className="p-[10px]">문제 수</p>
-            <Dropbox
-              size="w-[100px]"
-              initial={maxQuestion}
-              options={maxQuestionList}
-              selectedKey={selectedMaxQuestion}
-            />
-          </div>
-        )}
+        <div className="px-[30px] py-[10px]">
+          <p className="p-[10px]">문제 수</p>
+          <Dropbox
+            size="w-[100px]"
+            initial={maxQuestion}
+            options={maxQuestionList}
+            selectedKey={selectedMaxQuestion}
+          />
+        </div>
       </div>
 
       <div className="p-[30px]">

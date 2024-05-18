@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { LogInForm } from './LogInForm';
-// import { UserInfo } from '@/widgets/userInfo';
-// import { MyPage } from '@/widgets/myPage';
 
 export function LoginPage() {
   useEffect(() => {
@@ -29,9 +27,6 @@ export function LoginPage() {
           <span className="font-bold">비밀번호 찾기</span>
         </Link>
       </div>
-
-      {/* <UserInfo id={16} />
-      <MyPage id={16} /> */}
     </div>
   );
 }

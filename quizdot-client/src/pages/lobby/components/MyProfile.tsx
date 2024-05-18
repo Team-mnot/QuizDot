@@ -10,11 +10,14 @@ export function MyProfile() {
   const userStore = useUserStore();
 
   return (
-    <div className="px-[30px] py-[10px]">
+    <div className="cursor-pointer px-[30px] py-[10px]">
       <div onClick={clickModal}>
-        <div className="w-[370px] rounded-lg border-2 bg-white p-[20px] shadow-md">
+        <div className="w-[370px] rounded-lg border-2 bg-white bg-opacity-90 p-[20px] shadow-md">
           <div className="flex justify-between">
-            <div className="rounded-lg border-2 bg-white p-[10px]">
+            <div
+              className="rounded-lg border-2 bg-white p-[10px]"
+              style={{ height: '130px' }}
+            >
               {/* 유저 캐릭터 */}
               <img
                 src={`/images/${userStore.characterId}.gif`}

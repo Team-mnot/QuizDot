@@ -11,7 +11,7 @@ export function LobbyPage() {
   }, []);
 
   return (
-    <div className="w-screen h-screen">
+    <div className="h-full w-full overflow-hidden">
       <LobbyHeader channelId={Number(channelId)} />
       <LobbyContent channelId={Number(channelId)} />
     </div>

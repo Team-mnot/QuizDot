@@ -9,7 +9,7 @@ export function Room({
   handleEnterRoom: (roomId: number, isPublic: boolean) => void;
 }) {
   return (
-    <div className="px-[20px] py-[10px]">
+    <div className="cursor-pointer px-[20px] py-[10px]">
       <div
         className={`h-[110px] w-[450px] rounded-lg border-2 bg-white p-[20px] shadow-md text-${roomStateColors[roomInfo.state]}`}
         onClick={() => handleEnterRoom(roomInfo.roomId, roomInfo.open)}

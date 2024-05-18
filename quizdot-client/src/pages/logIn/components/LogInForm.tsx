@@ -117,6 +117,7 @@ export function LogInForm() {
           type="text"
           placeholder="아이디"
           {...register('memberId')}
+          autoComplete="memberId"
           autoFocus
           minLength={4}
           maxLength={20}
@@ -134,6 +135,7 @@ export function LogInForm() {
             type={showPassword ? 'text' : 'password'}
             placeholder="비밀번호"
             {...register('password')}
+            autoComplete="current-password"
             value={password}
             onChange={passwordChange}
             onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
