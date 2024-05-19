@@ -6,16 +6,15 @@ export function Answer({
   description: string;
 }) {
   return (
-    <div className="absolute w-full text-center top-1/2">
+    <div className="absolute top-1/2 w-full text-center">
       <div className="flex">
-        <p>정답 :</p>
+        <p>정답&nbsp;:&nbsp;</p>
         {answers &&
           answers.map((ans, index) => (
             <div key={ans}>
-              {index == answers.length - 1 ? <p>{ans}, </p> : <p>{ans}</p>}
+              {index == answers.length - 1 ? <p>{ans}</p> : <p>{ans},&nbsp;</p>}
             </div>
           ))}
-        <p></p>
       </div>
       <p>{description}</p>
     </div>

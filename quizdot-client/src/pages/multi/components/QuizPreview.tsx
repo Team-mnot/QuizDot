@@ -1,4 +1,4 @@
-import { Modal, Progress } from '@/shared/ui';
+import { CoverModal, Progress } from '@/shared/ui';
 import { Quiz } from './Quiz';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Answer } from './Answer';
@@ -50,11 +50,8 @@ export function QuizPreview() {
   // 게임 결과
   const resultRewards = useRef<RankType[]>([]);
 
-  const {
-    isOpenModal: isOpenRewardModal,
-    clickModal: clickRewardModal,
-    closeModal: closeRewardModal,
-  } = useOpenModal();
+  const { isOpenModal: isOpenRewardModal, clickModal: clickRewardModal } =
+    useOpenModal();
 
   const { isReady, onSubscribeWithCallBack, onUnsubscribe } =
     useContext(WebSocketContext);
@@ -268,13 +265,13 @@ export function QuizPreview() {
           }
         />
       </div>
-      <Modal isOpen={isOpenRewardModal} onClose={closeRewardModal}>
+      <CoverModal isOpen={isOpenRewardModal}>
         <Reward
           ranks={resultRewards.current}
           roomId={roomId}
           channelId={channelId}
         />
-      </Modal>
+      </CoverModal>
     </div>
   );
 }
