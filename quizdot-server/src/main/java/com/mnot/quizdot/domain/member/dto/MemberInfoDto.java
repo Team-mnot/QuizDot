@@ -24,6 +24,9 @@ public class MemberInfoDto {
     //서바이벌 승률
     private float survivalRate;
 
+    //일대일 승률
+    private float otoRate;
+
     //닉네임
     private String nickname;
 
@@ -38,6 +41,9 @@ public class MemberInfoDto {
 
     //서바이벌 1등 횟수
     private int survivalWinCount;
+
+    //일대일 승리 횟수
+    private int otoWinCount;
 
     //칭호
     private String title;
@@ -62,8 +68,10 @@ public class MemberInfoDto {
 
     @Builder
     public MemberInfoDto(int id, float totalRate, float normalRate, float survivalRate,
+        float otoRate,
         String nickname,
         String nicknameColor, int totalWinCount, int normalWinCount, int survivalWinCount,
+        int otoWinCount,
         String title,
         int characterId,
         int point, int level, int exp, List<TitleListDto> titleListDtos,
@@ -72,11 +80,13 @@ public class MemberInfoDto {
         this.totalRate = totalRate;
         this.normalRate = normalRate;
         this.survivalRate = survivalRate;
+        this.otoRate = otoRate;
         this.nickname = nickname;
         this.nicknameColor = nicknameColor;
         this.totalWinCount = totalWinCount;
         this.normalWinCount = normalWinCount;
         this.survivalWinCount = survivalWinCount;
+        this.otoWinCount = otoWinCount;
         this.title = title;
         this.titleListDtos = titleListDtos;
         this.characterId = characterId;

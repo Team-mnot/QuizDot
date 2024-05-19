@@ -212,7 +212,9 @@ public class MemberServiceImpl implements MemberService {
         MultiRecord survivalRecord = multiRecordRepository.findByMemberIdAndMode(memberId,
                 ModeType.SURVIVAL)
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_RECORD));
-
+        MultiRecord otoRecord = multiRecordRepository.findByMemberIdAndMode(memberId,
+                ModeType.ILGITO)
+            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_RECORD));
         String title = titleRepository.findById(member.getTitleId())
             .orElseThrow(() -> new BusinessException(ErrorCode.LOCK_TITLE_ERROR)).getTitle();
 
@@ -220,21 +222,29 @@ public class MemberServiceImpl implements MemberService {
             : (float) normalRecord.getWinCount() / normalRecord.getTotalCount() * 100;
         float survivalRate = survivalRecord.getTotalCount() == 0 ? 0.0f
             : (float) survivalRecord.getWinCount() / survivalRecord.getTotalCount() * 100;
+        float otoRate = otoRecord.getTotalCount() == 0 ? 0.0f
+            : (float) otoRecord.getWinCount() / otoRecord.getTotalCount() * 100;
+
         float totalRate =
-            (survivalRecord.getTotalCount() + normalRecord.getTotalCount()) == 0 ? 0.0f
-                : (float) (survivalRecord.getWinCount() + normalRecord.getWinCount())
-                    / (survivalRecord.getTotalCount() + normalRecord.getTotalCount()) * 100;
+            (survivalRecord.getTotalCount() + normalRecord.getTotalCount()
+                + otoRecord.getTotalCount()) == 0 ? 0.0f
+                : (float) (survivalRecord.getWinCount() + normalRecord.getWinCount()
+                    + otoRecord.getWinCount())
+                    / (survivalRecord.getTotalCount() + normalRecord.getTotalCount()
+                    + otoRecord.getTotalCount()) * 100;
 
         return MemberInfoDto.builder()
             .id(memberId)
             .totalRate(totalRate)
             .normalRate(normalRate)
             .survivalRate(survivalRate)
+            .otoRate(otoRate)
             .nickname(member.getNickname())
             .nicknameColor(member.getNicknameColor())
             .totalWinCount(normalRecord.getWinCount() + survivalRecord.getWinCount())
             .normalWinCount(normalRecord.getWinCount())
             .survivalWinCount(survivalRecord.getWinCount())
+            .otoWinCount(otoRecord.getWinCount())
             .title(title)
             .titleListDtos(titleRepository.findAllTitlesByMemberId(memberId))
             .characterId(member.getCharacterId())
