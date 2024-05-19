@@ -20,7 +20,7 @@ import com.mnot.quizdot.domain.member.repository.RefreshTokenRedisRepository;
 import com.mnot.quizdot.domain.member.repository.TitleRepository;
 import com.mnot.quizdot.global.result.error.ErrorCode;
 import com.mnot.quizdot.global.result.error.exception.BusinessException;
-import com.mnot.quizdot.global.util.RedisUtil;
+import com.mnot.quizdot.global.util.SessionUtil;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +41,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberTitleRepository memberTitleRepository;
     private final CharacterRepository characterRepository;
     private final MemberCharacterRepository memberCharacterRepository;
-    private final RedisUtil redisUtil;
+    private final SessionUtil sessionUtil;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
     //비밀번호 암호화
@@ -139,7 +139,7 @@ public class MemberServiceImpl implements MemberService {
         //존재하면 삭제하고 종료
         memberRepository.deleteByMemberId(customMemberDetail.getUsername());
         //redis에서 refreshToken, lobby 삭제
-        redisUtil.deleteInactivePlayer(String.valueOf(customMemberDetail.getId()), 0);
+        sessionUtil.deleteInactivePlayer(String.valueOf(customMemberDetail.getId()), 0);
         refreshTokenRedisRepository.deleteById(customMemberDetail.getUsername());
         log.info("회원 탈퇴 : COMPLETE");
     }
