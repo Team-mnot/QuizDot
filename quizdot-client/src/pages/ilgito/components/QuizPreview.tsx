@@ -16,6 +16,10 @@ import { exitGameApi, selectQuestionApi, updateScoresApi } from '../api/api';
 import { RankType } from '@/pages/multi/api/types';
 import { getQuizzesApi } from '@/shared/apis/commonApi';
 
+interface userCheck {
+  [key: string]: string;
+}
+
 export function QuizPreview() {
   // 문제 리스트, 유저 정보
   const quizSetStore = useQuizSetStore();
@@ -30,13 +34,16 @@ export function QuizPreview() {
   const [updateCount, setUpdateCount] = useState<number>(secCount.current);
 
   // 게임 준비 화면 활성화
-  const isGameReady = useRef<boolean>(true);
+  const isGameReady = useRef<boolean>(quizSetStore.gameState);
 
-  // 이번 라운드 상대에게 퀴즈를 보냈는지
-  const isThrowQuiz = useRef<boolean>(false);
-
+  // 이번 라운드 상대에게 퀴즈를 보낼 수 있는지
+  const isThrowQuiz = useRef<boolean>(true);
+  // 어떤 인덱스의 문제를 선택했는지
+  const selectedIndex = useRef<number>(-1);
+  // 문제를 받아와야 하는지
+  const isReceiveQuizzes = useRef<boolean>(false);
   // 이번 라운드 점수 업데이트 카운트
-  const [roundCount, setRoundCound] = useState<number>(1);
+  const submitCount = useRef<userCheck>({});
   // 이번 라운드 카운트
   const [round, setRound] = useState<number>(0);
 
@@ -72,14 +79,15 @@ export function QuizPreview() {
   const handleForceSubmitAnswer = async () => {
     if (isSubmitAnswer.current || !isShowQuiz.current) return;
 
-    isCorrectAnswer.current = false;
-    isSubmitAnswer.current = true;
+    isCorrectAnswer.current = false; // 오답 제출 상태
+    isSubmitAnswer.current = true; // 답 제출 상태
     setUpdateState(!updateState);
     await updateScoresApi(roomId, false);
   };
 
   // 해당 문제의 답안 제출
   const handleSubmitAnswer = async (myAns: string) => {
+    // 이미 제출했거나 제출 시간이 아닌 경우에도 리턴
     if (
       isSubmitAnswer.current ||
       !isShowQuiz.current ||
@@ -87,8 +95,8 @@ export function QuizPreview() {
     )
       return;
 
-    isCorrectAnswer.current = true;
-    isSubmitAnswer.current = true;
+    isCorrectAnswer.current = true; // 정답 제출 상태
+    isSubmitAnswer.current = true; // 답 제출 상태
     setUpdateState(!updateState);
     await updateScoresApi(roomId, true);
   };
@@ -108,57 +116,79 @@ export function QuizPreview() {
     await exitGameApi(roomId);
   };
 
-  const callbackOfQuiz = async (message: MessageDto) => {
+  const callbackOfQuiz = (message: MessageDto) => {
     // 상대에게 퀴즈를 보내기 위해 받음
-    console.log(message);
     if (message.type === 'QUIZ') {
-      console.log(message.data);
-      quizSetStore.clearQuizzes();
-      quizSetStore.fetchQuizzes(message.data);
-      // quizSetStore.fetchQuizzes(message.data[0]);
-      // quizSetStore.fetchQuizzes(message.data[1]);
-      // quizSetStore.fetchQuizzes(message.data[2]);
-    }
-  };
-  const callbackOfSelect = async (message: MessageDto) => {
-    // 상대에게 퀴즈를 받음
-    console.log(message);
-    if (message.type === 'SUBMIT') {
-      console.log(message.data);
-      quizSetStore.fetchQuiz(message.data);
+      quizSetStore.fetchQuizzes([
+        message.data[0],
+        message.data[1],
+        message.data[2],
+      ]);
+
+      console.log('저장완료햇서여 ', quizSetStore.quizzes);
+      // 문제를 받으면 다음 타이머로
+      isReceiveQuizzes.current = false;
+      isThrowQuiz.current = false; // 문제를 보낼 수 있게 설정
+      maxCount.current = 5;
+      setUpdateCount(5);
+      setUpdateStage((prev) => {
+        return !prev;
+      });
     }
   };
 
-  const callbackOfUpdate = async (message: MessageDto) => {
+  const callbackOfSelect = (message: MessageDto) => {
+    // 상대에게 퀴즈를 받음
+    if (message.type === 'SUBMIT') {
+      quizSetStore.fetchQuiz(message.data);
+
+      console.log('쩌짱완료 ', quizSetStore.quiz);
+
+      setRound((prevRound) => {
+        // 해당 라운드
+        return prevRound + 1;
+      });
+
+      // // 퀴즈를 보냈고, 퀴즈를 받았다면 다음 타이머로 넘어감
+      // if (isThrowQuiz.current && quizSetStore.quiz.id != -1) {
+      //   console.log('퀴즈를받은것으로끝');
+      //   isShowQuiz.current = true; // 문제 제공 설정
+      //   maxCount.current = 15;
+      //   setUpdateCount(15);
+      //   setUpdateStage(!updateStage); // 다음 타이머를 진행
+      // }
+    }
+  };
+
+  const callbackOfUpdate = (message: MessageDto) => {
     // 플레이어의 점수를 갱신해야 할 경우
     if (message.type == 'UPDATE') {
-      console.log(message.data);
-
       quizSetStore.fetchScores(message.data.playerId, message.data.score);
 
       // 현재 점수가 0 인 플레이어의 존재 여부
       if (message.data.score == 0) isDefeatedPlayer.current = true;
 
       // 현재 제출한 플레이어 수
-      setRoundCound((prevCnt) => {
-        return prevCnt + 1;
-      });
+      submitCount.current[message.data.id] = '.';
+      setUpdateState(!updateState);
 
       // 모든 플레이어의 점수가 갱신되면 다음 라운드를 진행하기 위해 시간을 단축함
-      if (roundCount == 2) {
-        setRoundCound(0);
+      if (Object.keys(submitCount.current).length == 2) {
+        submitCount.current = {};
         setUpdateCount(0);
       }
     }
-
+    // 게임을 끝냄
+    else if (message.type == 'EXIT') {
+      isDefeatedPlayer.current = true;
+      setUpdateState(!updateState);
+    }
     // 게임이 끝나서 보상을 받아야 할 경우
     else if (message.type == 'REWARD') {
       // 결과 모달을 보여줌
       resultRewards.current = message.data;
       quizSetStore.clearScores();
       setUpdateState(!updateState);
-
-      console.log(message);
       clickRewardModal();
     }
   };
@@ -167,8 +197,14 @@ export function QuizPreview() {
   const handleSubmitQuiz = async (questionId: number) => {
     await selectQuestionApi(roomId, questionId);
 
-    isThrowQuiz.current = true;
-    setUpdateState(!updateState);
+    // // 퀴즈를 보냈고, 퀴즈를 받았다면 다음 타이머로 넘어감
+    // if (isThrowQuiz.current && quizSetStore.quiz.id != -1) {
+    //   console.log('퀴즈를보낸것으로끝');
+    //   isShowQuiz.current = true; // 문제 제공 설정
+    //   maxCount.current = 15;
+    //   setUpdateCount(15);
+    //   setUpdateStage(!updateStage); // 다음 타이머를 진행
+    // }
   };
 
   // 0-2 중에 랜덤으로 선택함
@@ -209,29 +245,43 @@ export function QuizPreview() {
 
   useEffect(() => {
     // 1. 게임 시작 타이머 (새로고침 해도 처음만 작동)
-    if (isGameReady.current) {
+    if (quizSetStore.gameState) {
       quizSetStore.setGameState(false);
-      isGameReady.current = true;
-      quizSetStore.clearQuiz();
-      if (roomStore.roomInfo!.hostId == userStore.id) handleReceiveQuizzes();
+      isGameReady.current = false;
 
       const timer = setInterval(() => {
         setUpdateCount((prevCnt) => {
           if (prevCnt >= 1) {
             return prevCnt - 1;
           } else {
+            isReceiveQuizzes.current = true; // 문제를 받을 수 있게 설정
+            maxCount.current = 5;
             clearInterval(timer);
+            setUpdateStage(!updateStage);
             return 5;
           }
         });
       }, 1000);
     }
+  }, []);
+
+  useEffect(() => {
+    // 2. 퀴즈 전송 전 문제를 받아옴
+    if (isReceiveQuizzes.current) {
+      quizSetStore.clearQuiz();
+      quizSetStore.clearQuizzes();
+
+      if (roomStore.roomInfo!.hostId == userStore.id)
+        handleReceiveQuizzes()
+          .then(() => {
+            console.log('퀴즈 저장 성공');
+          })
+          .catch((error) => {
+            console.error('퀴즈 저장 실패:', error);
+          });
+    }
     // 2. 퀴즈 전송 시 작동할 타이머
     else if (!isThrowQuiz.current) {
-      setRound((prevRound) => {
-        return prevRound + 1;
-      });
-
       const timer = setInterval(() => {
         setUpdateCount((prevCnt) => {
           // 시간이 점차 감소함
@@ -241,21 +291,34 @@ export function QuizPreview() {
           // 0 초가 되면 타이머를 멈춤
           // 아직 문제 전송 전이면 랜덤으로 전송함
           else {
-            if (!isThrowQuiz.current) {
-              const index = getRandomNumber();
-              handleSubmitQuiz(quizSetStore.quizzes[index].id);
+            setUpdateState(!updateState);
+            if (selectedIndex.current == -1)
+              selectedIndex.current = getRandomNumber();
+            setUpdateState(!setUpdateState);
+
+            if (quizSetStore.quizzes.length > 0) {
+              const id = quizSetStore.quizzes[selectedIndex.current].id;
+              handleSubmitQuiz(id)
+                .then(() => {
+                  console.log('퀴즈 전송 성공');
+
+                  selectedIndex.current = -1;
+                  isShowQuiz.current = true; // 문제 제공 설정
+                  maxCount.current = 15;
+                  isThrowQuiz.current = true;
+                  quizSetStore.clearQuizzes();
+                  setUpdateStage(!updateStage); // 다음 타이머를 진행
+                })
+                .catch((error) => {
+                  console.error('퀴즈 전송 실패:', error);
+                });
             }
-
-            isShowQuiz.current = true; // 문제 제공 설정
-            maxCount.current = 15;
-            setUpdateCount(15);
-
             clearInterval(timer);
-            setUpdateStage(!updateStage); // 다음 타이머를 진행
             return 15;
           }
         });
       }, 1000);
+      console.log('2 타이머 중단');
     }
 
     // 3. 퀴즈 풀이 시 작동할 타이머
@@ -264,19 +327,42 @@ export function QuizPreview() {
         setUpdateCount((prevCnt) => {
           // 시간이 점차 감소함
           if (prevCnt >= 1) {
-            return prevCnt - 1;
+            // 체력이 0 인 사람이 있다면 게임을 종료함
+            if (isDefeatedPlayer.current == true) {
+              isShowAnswer.current = false; // 정답 제공 해제
+              isShowQuiz.current = false; // 문제 제공 해제
+
+              handleExitGame();
+              clearInterval(timer);
+              return 0;
+            } else return prevCnt - 1;
           }
           // 0 초가 되면 타이머를 멈춤
           // 아직 정답 제출 전이면 쓰레기 값으로 제출함
           else {
             if (!isSubmitAnswer.current) {
-              handleForceSubmitAnswer();
+              handleForceSubmitAnswer()
+                .then(() => {
+                  console.log('퀴즈 제출 성공');
+                })
+                .catch((error) => {
+                  console.error('퀴즈 제출 실패:', error);
+                });
+            }
+
+            // 체력이 0 인 사람이 있다면 게임을 종료함
+            if (isDefeatedPlayer.current == true) {
+              isShowAnswer.current = false; // 정답 제공 해제
+              isShowQuiz.current = false; // 문제 제공 해제
+
+              handleExitGame();
+              clearInterval(timer);
+              return 0;
             }
 
             isShowQuiz.current = false; // 문제 제공 해제
             isShowAnswer.current = true; // 정답 제공 설정
             maxCount.current = 5;
-            setUpdateCount(5);
 
             clearInterval(timer);
 
@@ -285,6 +371,7 @@ export function QuizPreview() {
           }
         });
       }, 1000);
+      console.log('3 타이머 중단');
     }
 
     // 4. 정답 제공 시 작동할 타이머
@@ -302,15 +389,7 @@ export function QuizPreview() {
               isShowAnswer.current = false; // 정답 제공 해제
               isShowQuiz.current = false; // 문제 제공 해제
 
-              // 방장이 게임 종료 호출
-              // 정상 종료 안 되면 몇 초 뒤 다시 시도하는 코드 추가하기
-              if (
-                roomStore.roomInfo &&
-                roomStore.roomInfo.hostId == userStore.id
-              ) {
-                handleExitGame();
-              }
-
+              handleExitGame();
               clearInterval(timer);
               return 0;
             }
@@ -319,28 +398,25 @@ export function QuizPreview() {
               isSubmitAnswer.current = false;
               isShowAnswer.current = false;
               isCorrectAnswer.current = false;
-              isThrowQuiz.current = false; // 아직 문제를 보내지 않았다고 설정
-
-              if (roomStore.roomInfo!.hostId == userStore.id)
-                handleReceiveQuizzes();
-
+              isReceiveQuizzes.current = true; // 문제를 받아오도록 설정
+              // isThrowQuiz.current = false; // 아직 문제를 보내지 않았다고 설정
               maxCount.current = 5;
-              setUpdateCount(5);
-              setUpdateStage(!updateStage);
 
+              setUpdateStage(!updateStage);
               clearInterval(timer);
               return 5;
             }
           }
         });
       }, 1000);
+      console.log('4 타이머 중단');
     }
   }, [updateStage]);
 
   return (
     <div className="absolute left-[0px] top-[60px] w-full">
       <div>
-        {quizSetStore.gameState && (
+        {isGameReady.current && (
           <div>{updateCount} 초 후 게임이 시작됩니다</div>
         )}
 
@@ -348,20 +424,22 @@ export function QuizPreview() {
           <QuizResult isResult={isCorrectAnswer.current} />
         )}
         {/* 퀴즈를 받았으나 보내지 않았음, 선택해야 함 */}
-        {!isThrowQuiz.current && quizSetStore.quizzes && (
+        {!isThrowQuiz.current && selectedIndex.current == -1 && (
           <div>
-            {quizSetStore.quizzes.map((item) => (
+            {quizSetStore.quizzes.map((item, index) => (
               <div
                 key={item.id}
-                className="bg-white p-2"
-                onClick={() => handleSubmitQuiz(item.id)}
+                className="p-2 bg-white"
+                onClick={() => {
+                  selectedIndex.current = index;
+                }}
               >
                 {item.category}
               </div>
             ))}
           </div>
         )}
-        {isShowQuiz.current && (
+        {isShowQuiz.current && quizSetStore.quiz.id != -1 && (
           <Quiz
             index={round}
             question={quizSetStore.quiz.question}
@@ -370,8 +448,7 @@ export function QuizPreview() {
             imagePath={quizSetStore.quiz.imagePath}
           ></Quiz>
         )}
-        {(isGameReady ||
-          !isThrowQuiz.current ||
+        {(!isThrowQuiz.current ||
           isShowQuiz.current ||
           isShowAnswer.current) && (
           <Progress
@@ -383,7 +460,7 @@ export function QuizPreview() {
             maxValue={maxCount.current}
           ></Progress>
         )}
-        {isShowAnswer.current && (
+        {isShowAnswer.current && quizSetStore.quiz.id != -1 && (
           <Answer
             answers={quizSetStore.quiz.answers}
             description={quizSetStore.quiz.description}

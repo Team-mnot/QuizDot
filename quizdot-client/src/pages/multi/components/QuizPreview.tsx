@@ -34,8 +34,10 @@ export function QuizPreview() {
   // 현재 문제 리스트의 인덱스
   const quizIndex = useRef<number>(0);
   // 타이머
-  const secCount = useRef<number>(10);
-  const maxCount = useRef<number>(10);
+
+  const secCount = useRef<number>(5);
+  const maxCount = useRef<number>(5);
+
   const [updateCount, setUpdateCount] = useState<number>(secCount.current);
   // 퀴즈 활성화 확인
   const isShowQuiz = useRef<boolean>(false);
@@ -140,7 +142,6 @@ export function QuizPreview() {
       resultRewards.current = message.data;
       quizSetStore.clearScores();
       setUpdateState(!updateState);
-      console.log(message);
       clickRewardModal();
     }
   };
@@ -168,6 +169,7 @@ export function QuizPreview() {
             return prevCnt - 1;
           } else {
             isShowQuiz.current = true;
+            maxCount.current = 15;
             clearInterval(timer);
             isGameReady.current = false;
             setUpdateStage(!updateStage);
@@ -253,12 +255,22 @@ export function QuizPreview() {
   }, [updateStage]);
 
   return (
-    <div className="absolute left-[0px] top-[10px] w-full">
-      <div className="text-center">
-        {isGameReady.current && (
-          <div className="mt-[100px] text-4xl">
-            {updateCount} 초 후 게임이 시작됩니다
-          </div>
+    <div className="absolute left-[0px] top-[60px] w-full">
+      <div>
+        {!isGameReady.current && (
+          <div>{updateCount} 초 후 게임이 시작됩니다</div>
+        )}
+        {isShowAnswer.current && (
+          <QuizResult isResult={isCorrectAnswer.current} />
+        )}
+        {isShowQuiz.current && (
+          <Quiz
+            index={quizIndex.current + 1}
+            question={quizSetStore.quizzes[quizIndex.current].question}
+            category={quizSetStore.quizzes[quizIndex.current].category}
+            questionType={quizSetStore.quizzes[quizIndex.current].questionType}
+            imagePath={quizSetStore.quizzes[quizIndex.current].imagePath}
+          ></Quiz>
         )}
         {(isShowQuiz.current || isShowAnswer.current) && (
           <div className="flex justify-center">

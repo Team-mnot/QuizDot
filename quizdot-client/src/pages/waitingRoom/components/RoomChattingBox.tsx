@@ -53,6 +53,9 @@ export function RoomChattingBox({
     else if (message.type == 'MULTI') {
       if (!roomStore.roomInfo) return;
 
+      quizSetStore.clearQuiz();
+      quizSetStore.clearQuizzes();
+      quizSetStore.clearScores();
       quizSetStore.setGameState(true);
       router.routeTo(`/${channelId}/${roomId}/normal`);
     }
@@ -60,6 +63,9 @@ export function RoomChattingBox({
     else if (message.type == 'ILGITO') {
       if (!roomStore.roomInfo) return;
 
+      quizSetStore.clearQuiz();
+      quizSetStore.clearQuizzes();
+      quizSetStore.clearScores();
       quizSetStore.setGameState(true);
       router.routeTo(`/${channelId}/${roomId}/ilgito`);
     }

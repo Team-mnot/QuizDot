@@ -76,14 +76,15 @@ export function RoomCreation({ channelId }: { channelId: number }) {
   const handleCreateRoom = async () => {
     const creatingRoom: CreatingRoomType = {
       title: title,
-      open: open ? true : false,
-      password: open ? '' : password,
+      open: open == 1 ? true : false,
+      password: open == 1 ? '' : password,
       mode: mode,
       category: category,
       maxPeople: mode == 'NORMAL' ? maxPeople : fixedMaxPeople,
       maxQuestion: mode == 'NORMAL' ? maxQuestion : 0,
     };
 
+    console.log('방 생성 정보 : ', creatingRoom);
     const response = await createRoomApi(channelId, creatingRoom);
 
     if (response.status == 201) {
