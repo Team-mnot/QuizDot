@@ -130,6 +130,7 @@ public class RoomServiceImpl implements RoomService {
             MessageDto.of(SERVER_SENDER, MessageType.LEAVE, memberId));
         messagingTemplate.convertAndSend(ROOM_CHAT_DESTINATION + roomId,
             MessageDto.of(SERVER_SENDER, player.getNickname() + "님이 퇴장하셨습니다.", MessageType.CHAT));
+        log.info("퇴장메시지 {}번방에 전송", roomId); // TODO : 서버 프론트 코드 LEAVE 받게 수정하면 삭제
 
         // 방장이 퇴장한 경우 체크
         String roomKey = redisUtil.getRoomInfoKey(roomId);
@@ -144,6 +145,10 @@ public class RoomServiceImpl implements RoomService {
                 deleteRoom(roomId);
 
                 // ID POOL 관리
+                if(roomId > 9999) {
+                    // 서바이벌 매칭으로 생성된 대기실은 관리 안함
+                    return;
+                }
                 int channelId = roomId / 1000;
                 int roomNum = roomId % 100;
                 lobbyService.modifyRoomNumList(channelId, roomNum, false);
