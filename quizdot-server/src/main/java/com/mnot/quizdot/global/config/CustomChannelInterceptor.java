@@ -64,7 +64,7 @@ public class CustomChannelInterceptor implements ChannelInterceptor {
     public void checkHeartbeat() {
         for (String sessionId : heartbeatCounts.keySet()) {
             Integer count = heartbeatCounts.get(sessionId);
-            log.info("하트비트 못받은 횟수: "+count);
+//            log.info("하트비트 못받은 횟수: "+count);
             heartbeatCounts.put(sessionId, ++count);
             if (count > MAX_HEARTBEAT_COUNT) {
                 // 연속으로 10번 핑퐁 안되면 세션 종료
