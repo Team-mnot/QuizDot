@@ -93,8 +93,12 @@ public class MemberController {
     @DeleteMapping("")
     @Operation(summary = "회원 탈퇴")
     public ResponseEntity<ResultResponse> deleteMember(
+        HttpServletResponse response,
         @AuthenticationPrincipal CustomMemberDetail customMemberDetail) {
         memberService.deleteMember(customMemberDetail);
+
+        // refresh 토큰을 Cookie에서 삭제
+        deleteCookie("refresh", response);
         return ResponseEntity.ok(ResultResponse.of(200, "회원 탈퇴가 완료되었습니다."));
     }
 
@@ -311,6 +315,14 @@ public class MemberController {
         cookie.setMaxAge(24 * 60 * 60);
         cookie.setHttpOnly(true);
 
+        return cookie;
+    }
+
+    private Cookie deleteCookie(String key, HttpServletResponse response) {
+        Cookie cookie = new Cookie("refresh", null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
         return cookie;
     }
 }
