@@ -56,8 +56,8 @@ public class QuizServiceImpl implements QuizService {
         String category = (CategoryType.RANDOM.equals(quizParam.getCategory())) ? null
             : String.valueOf(quizParam.getCategory());
         // 문제 리스트 조회
-        List<Integer> quizIdList = quizRepository.getRandomQuizIdsByQuizParam(
-            category, quizParam.getCount(), quizList);
+        List<Integer> quizIdList = quizRepository.getRandomQuizIdsByQuizParam(category,
+            quizParam.getCount(), quizList);
         List<QuizRes> quizListRes = quizRepository.getQuizzesByIds(quizIdList);
         // 중복 출제 방지를 위해 조회한 문제 PK를 REDIS에 저장
         quizListRes
@@ -110,13 +110,16 @@ public class QuizServiceImpl implements QuizService {
             messagingTemplate.convertAndSend("/sub/info/game/" + roomId,
                 MessageDto.of(SERVER_SENDER, "모든 유저의 동의 하에 문제가 패스되었습니다.", MessageType.PASS,
                     System.currentTimeMillis()));
-        } else {
-            // 아직 모든 유저가 PASS 버튼을 누르지 않았다면
+
             messagingTemplate.convertAndSend("/sub/chat/game/" + roomId,
-                MessageDto.of(SERVER_SENDER,
-                    String.format("%s님이 문제를 패스했습니다. [%d명/%d명]", nickname, passPeople,
-                        totalPeople), MessageType.CHAT));
+                MessageDto.of(SERVER_SENDER, "모든 유저의 동의 하에 문제가 패스되었습니다.", MessageType.CHAT));
         }
+
+        // 아직 모든 유저가 PASS 버튼을 누르지 않았다면
+        messagingTemplate.convertAndSend("/sub/chat/game/" + roomId,
+            MessageDto.of(SERVER_SENDER,
+                String.format("%s님이 문제를 패스했습니다. [%d명/%d명]", nickname, passPeople,
+                    totalPeople), MessageType.CHAT));
     }
 
     /**

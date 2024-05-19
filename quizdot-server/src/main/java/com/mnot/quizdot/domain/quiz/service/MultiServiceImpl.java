@@ -76,6 +76,9 @@ public class MultiServiceImpl implements MultiService {
             messagingTemplate.convertAndSend(getGameDestination(roomId),
                 MessageDto.of(SERVER_SENDER, "모든 플레이어가 답안을 제출하였습니다.", MessageType.PASS,
                     System.currentTimeMillis()));
+
+            messagingTemplate.convertAndSend("/sub/chat/game/" + roomId,
+                MessageDto.of(SERVER_SENDER, "모든 플레이어가 답안을 제출하였습니다.", MessageType.PASS));
         }
     }
 
