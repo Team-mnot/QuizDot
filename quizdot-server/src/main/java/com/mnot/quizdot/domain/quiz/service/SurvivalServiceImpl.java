@@ -83,8 +83,8 @@ public class SurvivalServiceImpl implements SurvivalService {
                 MessageDto.of(SERVER_SENDER, "모든 생존자가 답안을 제출하였습니다.", MessageType.PASS,
                     System.currentTimeMillis()));
 
-            messagingTemplate.convertAndSend("/sub/chat/game/" + roomId,
-                MessageDto.of(SERVER_SENDER, "모든 생존자가 답안을 제출하였습니다.", MessageType.CHAT));
+//            messagingTemplate.convertAndSend("/sub/chat/game/" + roomId,
+//                MessageDto.of(SERVER_SENDER, "모든 생존자가 답안을 제출하였습니다.", MessageType.CHAT));
         }
     }
 
