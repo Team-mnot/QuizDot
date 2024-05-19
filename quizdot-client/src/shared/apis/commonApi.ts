@@ -6,43 +6,49 @@ const url = 'game';
 
 /*** 게임 시작 ***/
 async function startGameApi(roomId: number, mode: string): Promise<number> {
-  const response = await jwtAxiosInstance.post(
-    `${baseApi}/${url}/start/${roomId}?mode=${mode}`,
-  );
-
-  console.log(`[${response.data.status}] ${response.data.message}`);
-  if (response.data.status == 200) return response.data.status;
-  else throw response.data.error;
+  const apiUrl = `${baseApi}/${url}/start/${roomId}?mode=${mode}`;
+  try {
+    const response = await jwtAxiosInstance.post(apiUrl);
+    console.log('startGameApi is successfully:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error to startGameApi:', error);
+    throw new Error('Failed to startGameApi');
+  }
 }
 
 /*** 조건에 따른 퀴즈 목록 조회 ***/
-async function getQuizzes(
+async function getQuizzesApi(
   roomId: number,
   category: string,
   count: number,
   modeType: string,
 ): Promise<Response> {
-  const response = await jwtAxiosInstance.get(
-    `${baseApi}/${url}/quiz/${roomId}?category=${category}&count=${count}&modeType=${modeType}`,
-  );
-
-  console.log(`[${response.data.status}] ${response.data.message}`);
-  if (response.data.status == 200) return response.data;
-  else throw response.data.error;
+  const apiUrl = `${baseApi}/${url}/quiz/${roomId}?category=${category}&count=${count}&modeType=${modeType}`;
+  try {
+    const response = await jwtAxiosInstance.get(apiUrl);
+    console.log('getQuizzesApi is successfully:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error to getQuizzesApi:', error);
+    throw new Error('Failed to getQuizzesApi');
+  }
 }
 
 /*** 문제 패스 ***/
-async function passQuestion(
+async function passQuestionApi(
   roomId: number,
   questionId: number,
 ): Promise<number> {
-  const response = await jwtAxiosInstance.post(
-    `${baseApi}/${url}/quiz/${roomId}/${questionId}`,
-  );
-
-  console.log(`[${response.data.status}] ${response.data.message}`);
-  if (response.data.status == 200) return response.data.status;
-  else throw response.data.error;
+  const apiUrl = `${baseApi}/${url}/quiz/${roomId}/${questionId}`;
+  try {
+    const response = await jwtAxiosInstance.post(apiUrl);
+    console.log('passQuestionApi is successfully:', response.data);
+    return response.data.status;
+  } catch (error) {
+    console.error('Error to passQuestionApi:', error);
+    throw new Error('Failed to passQuestionApi');
+  }
 }
 
-export { startGameApi, passQuestion, getQuizzes };
+export { startGameApi, getQuizzesApi, passQuestionApi };

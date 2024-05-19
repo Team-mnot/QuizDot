@@ -50,6 +50,7 @@ const WebSocketProvider = ({ children }: { children: ReactNode }) => {
   const wsUrl = `${baseApi}/ws/chat`;
 
   useEffect(() => {
+    if (localStorage.getItem('accessToken') === undefined) return;
     onConnect();
 
     return () => {

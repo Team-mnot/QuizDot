@@ -1,4 +1,10 @@
-import { useState, ChangeEvent, KeyboardEvent, useRef } from 'react';
+import {
+  useState,
+  ChangeEvent,
+  KeyboardEvent,
+  useRef,
+  useContext,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -7,6 +13,7 @@ import { LogInApi } from '../api/api';
 import { IdCheckApi } from '@/pages/signUp/api/api';
 import type { LogInProps } from '../api/types';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
+import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 
 // 유효성 조건
 const idRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
@@ -24,6 +31,8 @@ export function LogInForm() {
   const { register, handleSubmit } = useForm({
     resolver: zodResolver(schema),
   });
+
+  const { isReady, onConnect } = useContext(WebSocketContext);
 
   const [memberId, setMemberId] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -52,9 +61,10 @@ export function LogInForm() {
       password: data.password as string,
     };
     const info = await LogInApi(logInProps);
-    // 로그인 성공 시 유저 정보 로컬 스토리지에 저장, 채널로 이동
+    // 로그인 성공 시 유저 정보 로컬 스토리지에 저장, 소켓 연결, 채널로 이동
     if (info !== null) {
       store.getData(info);
+      if (isReady) onConnect();
       navi('/channel');
     } else {
       window.alert('비밀번호가 일치하지 않습니다');
@@ -111,7 +121,7 @@ export function LogInForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="mb-1 rounded-lg bg-white p-2 px-3">
+      <div className="p-2 px-3 mb-1 bg-white rounded-lg">
         <input
           className="focus:outline-none"
           type="text"
@@ -124,13 +134,13 @@ export function LogInForm() {
           value={memberId}
         />
       </div>
-      <div className="mb-1 mt-6 flex items-center">
+      <div className="flex items-center mt-6 mb-1">
         <div
-          className="flex justify-center rounded-lg bg-white"
+          className="flex justify-center bg-white rounded-lg"
           style={{ height: '40px' }}
         >
           <input
-            className="rounded-lg px-3 focus:outline-none"
+            className="px-3 rounded-lg focus:outline-none"
             type={showPassword ? 'text' : 'password'}
             placeholder="비밀번호"
             {...register('password')}
@@ -145,13 +155,13 @@ export function LogInForm() {
             }}
           />
           <button
-            className="bg-white px-3 hover:border-transparent focus:outline-none"
+            className="px-3 bg-white hover:border-transparent focus:outline-none"
             type="button"
             onClick={togglePwdView}
             tabIndex={-1}
           >
             <img
-              className="m-0 h-4 w-4 p-0 "
+              className="w-4 h-4 p-0 m-0 "
               src={`/images/${showPassword ? 'EyeClosed.png' : 'Eye.png'}`}
               alt=""
             />
@@ -162,14 +172,14 @@ export function LogInForm() {
         <button
           type="submit"
           ref={submitButtonRef}
-          className="mt-6 w-full hover:border-transparent hover:bg-gray-200 focus:outline-none active:bg-gray-300"
+          className="w-full mt-6 hover:border-transparent hover:bg-gray-200 focus:outline-none active:bg-gray-300"
         >
           Log In
         </button>
       ) : (
         <button
           onClick={onValidChk}
-          className="mt-6 w-full hover:border-transparent hover:bg-gray-200 focus:outline-none active:bg-gray-300"
+          className="w-full mt-6 hover:border-transparent hover:bg-gray-200 focus:outline-none active:bg-gray-300"
         >
           Log In
         </button>

@@ -8,25 +8,29 @@ const url = 'multi';
 async function updateScoresApi(
   roomId: number,
   questionId: number,
-): Promise<boolean> {
-  const response = await jwtAxiosInstance.post(
-    `${baseApi}/${url}/score/${roomId}/${questionId}`,
-  );
-
-  console.log(`[${response.data.status}] ${response.data.message}`);
-  if (response.data.status == 200) return response.data.status;
-  else throw response.data.error;
+): Promise<number> {
+  const apiUrl = `${baseApi}/${url}/score/${roomId}/${questionId}`;
+  try {
+    const response = await jwtAxiosInstance.post(apiUrl);
+    console.log('updateScoresApi is successfully:', response.data);
+    return response.data.status;
+  } catch (error) {
+    console.error('Error to updateScoresApi:', error);
+    throw new Error('Failed to updateScoresApi');
+  }
 }
 
 /*** 멀티 모드 리워드 지급 및 결과 정보 제공 ***/
 async function exitGameApi(roomId: number): Promise<Response> {
-  const response = await jwtAxiosInstance.post(
-    `${baseApi}/${url}/exit/${roomId}`,
-  );
-
-  console.log(`[${response.data.status}] ${response.data.message}`);
-  if (response.data.status == 200) return response.data.data;
-  else throw response.data.error;
+  const apiUrl = `${baseApi}/${url}/exit/${roomId}`;
+  try {
+    const response = await jwtAxiosInstance.post(apiUrl);
+    console.log('exitGameApi is successfully:', response.data);
+    return response.data.data;
+  } catch (error) {
+    console.error('Error to exitGameApi:', error);
+    throw new Error('Failed to exitGameApi');
+  }
 }
 
 export { updateScoresApi, exitGameApi };

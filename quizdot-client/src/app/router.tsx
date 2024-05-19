@@ -12,7 +12,6 @@ import { SurvivalPage } from '@/pages/survival';
 import { IlgitoPage } from '@/pages/ilgito';
 import { WaitingRoomPage } from '@/pages/waitingRoom';
 import { InvitingLinkPage } from '@/pages/invitingLink';
-import { WebSocketProvider } from '@/shared/utils/WebSocketProvider.tsx';
 
 export const router = createBrowserRouter([
   {
@@ -37,51 +36,27 @@ export const router = createBrowserRouter([
   },
   {
     path: '/channel',
-    element: (
-      <WebSocketProvider>
-        <ChannelPage />
-      </WebSocketProvider>
-    ),
+    element: <ChannelPage />,
   },
   {
     path: '/:channelId/lobby',
-    element: (
-      <WebSocketProvider>
-        <LobbyPage />
-      </WebSocketProvider>
-    ),
+    element: <LobbyPage />,
   },
   {
     path: '/:channelId/:roomId/waiting',
-    element: (
-      <WebSocketProvider>
-        <WaitingRoomPage />
-      </WebSocketProvider>
-    ),
+    element: <WaitingRoomPage />,
   },
   {
     path: '/:channelId/:roomId/normal',
-    element: (
-      <WebSocketProvider>
-        <MultiPage />
-      </WebSocketProvider>
-    ),
+    element: <MultiPage />,
   },
   {
     path: '/:channelId/:roomId/survival',
-    element: (
-      <WebSocketProvider>
-        <SurvivalPage />
-      </WebSocketProvider>
-    ),
+    element: <SurvivalPage />,
   },
   {
     path: '/:channelId/:roomId/ilgito',
-    element: (
-      <WebSocketProvider>
-        <IlgitoPage />
-      </WebSocketProvider>
-    ),
+    element: <IlgitoPage />,
   },
   {
     path: '/invite',

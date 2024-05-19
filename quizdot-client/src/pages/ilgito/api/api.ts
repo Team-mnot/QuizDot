@@ -2,31 +2,47 @@ import jwtAxiosInstance from '@/shared/utils/jwtAxiosInstance';
 import { baseApi } from '@/shared/apis';
 import { Response } from '@/shared/apis/types';
 
-const url = 'multi';
+const url = 'oto';
 
-/*** 스테이지 별, 정답을 맞힌 플레이어의 점수 업데이트 ***/
-async function updateScoresApi(
+/*** 일대일 문제 전달 API ***/
+async function selectQuestionApi(
   roomId: number,
   questionId: number,
-): Promise<boolean> {
-  const response = await jwtAxiosInstance.post(
-    `${baseApi}/${url}/score/${roomId}/${questionId}`,
-  );
-
-  console.log(`[${response.data.status}] ${response.data.message}`);
-  if (response.data.status == 200) return response.data.status;
-  else throw response.data.error;
+): Promise<void> {
+  const apiUrl = `${baseApi}/${url}/select/${roomId}/${questionId}`;
+  try {
+    const response = await jwtAxiosInstance.post(apiUrl);
+    console.log('selectQuestionApi is successfully:', response.data);
+  } catch (error) {
+    console.error('Error to selectQuestionApi:', error);
+    throw new Error('Failed to selectQuestionApi');
+  }
 }
 
-/*** 멀티 모드 리워드 지급 및 결과 정보 제공 ***/
+/*** 일대일 점수 업데이트 API ***/
+async function updateScoresApi(roomId: number, result: number): Promise<void> {
+  const apiUrl = `${baseApi}/${url}/score/${roomId}`;
+  try {
+    const response = await jwtAxiosInstance.post(apiUrl, { result });
+    console.log('updateScoresApi is successfully:', response.data);
+  } catch (error) {
+    console.error('Error to updateScoresApi:', error);
+    throw new Error('Failed to updateScoresApi');
+  }
+}
+
+/*** 일대일 결과 업데이트 API ***/
 async function exitGameApi(roomId: number): Promise<Response> {
-  const response = await jwtAxiosInstance.post(
-    `${baseApi}/${url}/exit/${roomId}`,
-  );
+  const apiUrl = `${baseApi}/${url}/exit/${roomId}`;
+  try {
+    const response = await jwtAxiosInstance.post(apiUrl);
+    console.log('exitGameApi is successfully:', response.data);
 
-  console.log(`[${response.data.status}] ${response.data.message}`);
-  if (response.data.status == 200) return response.data.data;
-  else throw response.data.error;
+    return response.data;
+  } catch (error) {
+    console.error('Error to exitGameApi:', error);
+    throw new Error('Failed to exitGameApi');
+  }
 }
 
-export { updateScoresApi, exitGameApi };
+export { selectQuestionApi, updateScoresApi, exitGameApi };
