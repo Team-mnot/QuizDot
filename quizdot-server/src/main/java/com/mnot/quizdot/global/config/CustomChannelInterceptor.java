@@ -38,7 +38,7 @@ public class CustomChannelInterceptor implements ChannelInterceptor {
                 case CONNECT:
                     String accessToken = accessor.getFirstNativeHeader("access");
                     if (accessToken != null) {
-                        log.info("access token 있다 : {}", accessToken);
+//                        log.info("access token 있다 : {}", accessToken);
                         // Access token을 세션 속성에 저장
                         accessor.getSessionAttributes().put("access", accessToken);
                     } else {
@@ -47,7 +47,7 @@ public class CustomChannelInterceptor implements ChannelInterceptor {
                     break;
                 case HEARTBEAT:
                     // HEARTBEAT 메시지 처리
-                    log.info("하트비트받았다");
+//                    log.info("하트비트받았다");
                     handleHeartbeat(accessor);
                     break;
             }
@@ -74,7 +74,7 @@ public class CustomChannelInterceptor implements ChannelInterceptor {
                     // 세션 종료 실패 처리
                     log.error("세션 종료 실패: {}", e.getMessage());
                 }
-                log.info("하트비트 핑퐁안됨!!");
+//                log.info("하트비트 핑퐁안됨!!");
                 heartbeatCounts.remove(sessionId); // 종료된 세션의 카운트 삭제
             }
         }
