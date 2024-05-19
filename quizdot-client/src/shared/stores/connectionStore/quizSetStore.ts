@@ -64,7 +64,7 @@ const useQuizSetStore = create(
       },
       AddQuizzes: (quiz: QuizSetType) => {
         set((state) => ({
-          quizzes: { ...state.quizzes, quiz },
+          quizzes: [...state.quizzes, quiz],
         }));
       },
       clearQuizzes: () => {

@@ -34,8 +34,8 @@ export function QuizPreview() {
   // 현재 문제 리스트의 인덱스
   const quizIndex = useRef<number>(0);
   // 타이머
-  const secCount = useRef<number>(15);
-  const maxCount = useRef<number>(15);
+  const secCount = useRef<number>(5);
+  const maxCount = useRef<number>(5);
   const [updateCount, setUpdateCount] = useState<number>(secCount.current);
   // 퀴즈 활성화 확인
   const isShowQuiz = useRef<boolean>(false);
@@ -140,7 +140,6 @@ export function QuizPreview() {
       resultRewards.current = message.data;
       quizSetStore.clearScores();
       setUpdateState(!updateState);
-      console.log(message);
       clickRewardModal();
     }
   };
@@ -168,6 +167,7 @@ export function QuizPreview() {
             return prevCnt - 1;
           } else {
             isShowQuiz.current = true;
+            maxCount.current = 15;
             clearInterval(timer);
 
             setUpdateStage(!updateStage);
@@ -255,7 +255,7 @@ export function QuizPreview() {
   return (
     <div className="absolute left-[0px] top-[60px] w-full">
       <div>
-        {isGameReady.current && (
+        {!isGameReady.current && (
           <div>{updateCount} 초 후 게임이 시작됩니다</div>
         )}
         {isShowAnswer.current && (

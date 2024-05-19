@@ -67,8 +67,8 @@ export function RoomModification({ roomInfo }: { roomInfo: RoomInfoType }) {
   const handleModifyRoom = async () => {
     const modifyingRoomInfo: ModifyingRoomType = {
       title: title,
-      open: open ? true : false,
-      password: open ? '' : password,
+      open: open == 1 ? true : false,
+      password: open == 1 ? '' : password,
       mode: mode,
       category: category,
       maxPeople: mode == 'NORMAL' ? maxPeople : fixedMaxPeople,
