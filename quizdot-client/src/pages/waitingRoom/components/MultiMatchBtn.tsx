@@ -10,8 +10,7 @@ export function MultiMatchBtn({
 }) {
   const handleStartGame = async () => {
     const response = await startGameApi(roomId, 'NORMAL');
-
-    if (response != 200) console.error('[멀티 게임 입장 실패]');
+    response;
   };
 
   return (

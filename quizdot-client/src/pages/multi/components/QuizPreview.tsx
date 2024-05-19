@@ -6,7 +6,7 @@ import { Answer } from './Answer';
 import { TextTypeInput } from './TextTypeInput';
 import { OXTypeBtn } from './OXTypeBtn';
 import { RankType } from '../api/types';
-import { passQuestion } from '@/shared/apis/commonApi';
+import { passQuestionApi } from '@/shared/apis/commonApi';
 import { Hint } from './Hint';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 import { MessageDto } from '@/shared/apis/types';
@@ -60,7 +60,7 @@ export function QuizPreview() {
   const handleSubmitPass = async () => {
     if (isShowAnswer.current) return;
 
-    await passQuestion(roomId, quizSetStore.quizzes[quizIndex.current].id);
+    await passQuestionApi(roomId, quizSetStore.quizzes[quizIndex.current].id);
 
     isSubmitAnswer.current = true;
     setUpdateState(!updateState);
