@@ -220,20 +220,25 @@ public class MemberServiceImpl implements MemberService {
             : (float) otoRecord.getWinCount() / otoRecord.getTotalCount() * 100;
 
         float totalRate =
-            (survivalRecord.getTotalCount() + normalRecord.getTotalCount()) == 0 ? 0.0f
-                : (float) (survivalRecord.getWinCount() + normalRecord.getWinCount())
-                    / (survivalRecord.getTotalCount() + normalRecord.getTotalCount()) * 100;
+            (survivalRecord.getTotalCount() + normalRecord.getTotalCount()
+                + otoRecord.getTotalCount()) == 0 ? 0.0f
+                : (float) (survivalRecord.getWinCount() + normalRecord.getWinCount()
+                    + otoRecord.getWinCount())
+                    / (survivalRecord.getTotalCount() + normalRecord.getTotalCount()
+                    + otoRecord.getTotalCount()) * 100;
 
         return MemberInfoDto.builder()
             .id(memberId)
             .totalRate(totalRate)
             .normalRate(normalRate)
             .survivalRate(survivalRate)
+            .otoRate(otoRate)
             .nickname(member.getNickname())
             .nicknameColor(member.getNicknameColor())
             .totalWinCount(normalRecord.getWinCount() + survivalRecord.getWinCount())
             .normalWinCount(normalRecord.getWinCount())
             .survivalWinCount(survivalRecord.getWinCount())
+            .otoWinCount(otoRecord.getWinCount())
             .title(title)
             .titleListDtos(titleRepository.findAllTitlesByMemberId(memberId))
             .characterId(member.getCharacterId())
