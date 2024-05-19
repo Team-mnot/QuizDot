@@ -98,5 +98,4 @@ public class TitleRequirment {
         //찾는 titleId 의 value 값이 없거나 null 일때 반환하는 값
         return requirment.getOrDefault(titleId, titleData -> false);
     }
-
 }

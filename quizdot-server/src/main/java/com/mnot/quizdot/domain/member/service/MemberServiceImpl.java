@@ -206,7 +206,9 @@ public class MemberServiceImpl implements MemberService {
         MultiRecord survivalRecord = multiRecordRepository.findByMemberIdAndMode(memberId,
                 ModeType.SURVIVAL)
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_RECORD));
-
+        MultiRecord otoRecord = multiRecordRepository.findByMemberIdAndMode(memberId,
+                ModeType.ILGITO)
+            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_RECORD));
         String title = titleRepository.findById(member.getTitleId())
             .orElseThrow(() -> new BusinessException(ErrorCode.LOCK_TITLE_ERROR)).getTitle();
 
@@ -214,6 +216,9 @@ public class MemberServiceImpl implements MemberService {
             : (float) normalRecord.getWinCount() / normalRecord.getTotalCount() * 100;
         float survivalRate = survivalRecord.getTotalCount() == 0 ? 0.0f
             : (float) survivalRecord.getWinCount() / survivalRecord.getTotalCount() * 100;
+        float otoRate = otoRecord.getTotalCount() == 0 ? 0.0f
+            : (float) otoRecord.getWinCount() / otoRecord.getTotalCount() * 100;
+
         float totalRate =
             (survivalRecord.getTotalCount() + normalRecord.getTotalCount()) == 0 ? 0.0f
                 : (float) (survivalRecord.getWinCount() + normalRecord.getWinCount())
