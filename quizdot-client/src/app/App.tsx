@@ -32,7 +32,7 @@ function App() {
         <Button
           onClick={toggleAudio}
           value={isPlaying ? '노래 꺼!' : '노래 켜!'}
-          className="absolute right-4 top-4"
+          className="text-border custom-blinking custom-btn-transparent absolute right-[270px] top-0 z-50 cursor-pointer py-[10px] text-blue-400"
         />
       </QueryClientProvider>
     </div>
