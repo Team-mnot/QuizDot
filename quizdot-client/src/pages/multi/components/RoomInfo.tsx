@@ -7,8 +7,12 @@ export function RoomInfo() {
     <div>
       {roomStore.roomInfo ? (
         <div className="flex w-[700px]">
-          <p>{Math.floor(roomStore.roomInfo.roomId / 1000)}&nbsp;채널&nbsp;</p>
-          <p>{roomStore.roomInfo.roomId}&nbsp;</p>
+          <p>[{roomStore.roomInfo.title}]&nbsp;</p>
+          <p>
+            {Math.floor(roomStore.roomInfo.roomId / 1000)}
+            &nbsp;채널&nbsp;|&nbsp;
+          </p>
+          <p>{roomStore.roomInfo.roomId}&nbsp;|&nbsp;</p>
           <p>{roomStore.roomInfo.open ? '공개' : '비공개'}&nbsp;|&nbsp;</p>
           <p>{roomStore.roomInfo.gameMode}&nbsp;|&nbsp;</p>
           <p>{roomStore.roomInfo.maxPeople}&nbsp;인&nbsp;|&nbsp;</p>

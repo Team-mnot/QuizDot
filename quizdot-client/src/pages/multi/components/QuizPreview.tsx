@@ -26,7 +26,7 @@ export function QuizPreview() {
   const userStore = useUserStore();
 
   const roomId = roomStore.roomInfo!.roomId;
-  const channelId = Math.floor(roomStore.roomInfo!.roomId);
+  const channelId = Math.floor(roomStore.roomInfo!.roomId / 1000);
   // 현재 문제 리스트의 인덱스
   const quizIndex = useRef<number>(0);
   // 타이머
@@ -222,15 +222,16 @@ export function QuizPreview() {
             imagePath={quizSetStore.quizzes[quizIndex.current].imagePath}
           ></Quiz>
         )}
-        <Progress
-          padding="py-5"
-          size="w-[500px]"
-          color={updateCount <= 5 ? 'yellow' : 'lightgreen'}
-          label={`${updateCount}`}
-          currentValue={updateCount}
-          maxValue={maxCount.current}
-        ></Progress>
-
+        {(isShowQuiz.current || isShowAnswer.current) && (
+          <Progress
+            padding="py-5"
+            size="w-[500px]"
+            color={updateCount <= 5 ? 'yellow' : 'lightgreen'}
+            label={`${updateCount}`}
+            currentValue={updateCount}
+            maxValue={maxCount.current}
+          ></Progress>
+        )}
         {isShowHint.current && (
           <Hint hint={quizSetStore.quizzes[quizIndex.current].hint} />
         )}
