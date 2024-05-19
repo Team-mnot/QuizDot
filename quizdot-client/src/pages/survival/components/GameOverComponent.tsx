@@ -47,11 +47,11 @@ export function GameOverComponent({ rewardData }: { rewardData: any[] }) {
   // TODO : navigate 할 때 , 버튼 눌러서 갈건지 10초뒤에 보낼건지
 
   return (
-    <div className="game-over-container bg-gray-500 bg-opacity-50 text-yellow-50">
+    <div className="game-over-container text-yellow-50">
       <h1 className="mb-4 text-2xl font-bold">게임 결과</h1>
       {/* 카운트다운 메시지 */}
       <p className="mb-4">{countdown}초 뒤에 대기실로 이동합니다</p>{' '}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto bg-gray-500 bg-opacity-50">
         <table className="reward-table min-w-full border">
           <thead className="">
             <tr>

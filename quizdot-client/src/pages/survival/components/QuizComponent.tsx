@@ -101,7 +101,7 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowHint(true);
-    }, 3000);
+    }, 7000);
 
     return () => clearTimeout(timer);
   }, []);
