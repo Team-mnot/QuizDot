@@ -1,5 +1,3 @@
-// src/pages/survival/components/CountDown.tsx
-
 import { useEffect, useState } from 'react';
 import { useQuizStore } from '../store';
 

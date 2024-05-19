@@ -1,10 +1,6 @@
-// src/pages/survival/components/GameOverComponent.tsx
-
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-// import { enterRoomApi } from '@/pages/waitingRoom/api/api';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
-// import jwtAxiosInstance from '@/shared/utils/jwtAxiosInstance';
 import { useRoomStore } from '@/shared/stores/connectionStore/roomStore';
 import { useQuizStore } from '../store';
 
@@ -43,8 +39,6 @@ export function GameOverComponent({ rewardData }: { rewardData: any[] }) {
       clearTimeout(timeout);
     };
   }, [userStore.id, roomId, navigate, channelId]);
-
-  // TODO : navigate 할 때 , 버튼 눌러서 갈건지 10초뒤에 보낼건지
 
   return (
     <div className="game-over-container text-yellow-50">

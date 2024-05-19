@@ -65,7 +65,6 @@ interface QuizStore {
 const useQuizStore = create<QuizStore>((set) => ({
   quizzes: [],
   setQuizzes: (quizzes: iQuiz[]) => {
-    console.log('Updating quizzes state:', quizzes);
     set({ quizzes });
   },
 

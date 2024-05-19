@@ -22,17 +22,13 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
     setShowHint,
   } = useQuizStore();
 
-  // TODO : useQuiz에 handleNextQuiz 넣을 필요 없는데 나중에 분리합시다
   const { loading, error } = useQuiz2();
 
   const [userAnswer, setUserAnswer] = useState(''); // 사용자 입력을 저장할 상태
   const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false); // 사용자 입력을 저장할 상태
   const [countdown, setCountdown] = useState(10); // 카운트다운 초기값 설정
 
-  const {
-    loading: submitLoading,
-    // error: submitError,
-  } = requestQuestion();
+  const { loading: submitLoading } = requestQuestion();
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -139,14 +135,9 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
       >
         <div key={currentQuiz.id}>
           <h2>{currentQuiz.question}</h2>
-          {/* <p>{currentQuiz.description}</p> */}
-          {/* <p>Type: {currentQuiz.questionType}</p> */}
-          {/* <p>Answers: {currentQuiz.answers.join(', ')}</p> */}
         </div>
       </div>
-      {/* <div className=" fixed left-0 right-0 top-56 mx-auto max-w-3xl text-yellow-50">
-        Category: {currentQuiz.category}
-      </div> */}
+
       {showHint && (
         <div className="fixed left-0 right-0 top-56 mx-auto max-w-3xl text-yellow-50">
           초성힌트: {currentQuiz.hint}

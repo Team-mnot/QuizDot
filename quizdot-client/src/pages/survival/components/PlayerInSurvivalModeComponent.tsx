@@ -1,4 +1,3 @@
-// src/pages/survival/components/PlayerInSurvivalModeComponent.tsx
 import { PlayerType } from '@/shared/apis/types';
 import Lottie from 'lottie-react';
 import deadAnimation from '@/images/tomb.json'; // Lottie JSON 파일 경로

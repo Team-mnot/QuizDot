@@ -1,6 +1,3 @@
-// src/pages/survival/components/CharacterPreview.tsx
-
-// import { getPlayerData } from '../api/api';
 import { PlayerInSurvivalModeComponent } from './PlayerInSurvivalModeComponent';
 import { usePlayerStore } from '../store';
 
@@ -28,7 +25,6 @@ export const predefinedPositions = [
 
 export function PlayerPreview() {
   const players = usePlayerStore((state) => state.players);
-  // console.log(players);
 
   return (
     <div>

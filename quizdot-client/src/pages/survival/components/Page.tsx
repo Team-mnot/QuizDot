@@ -42,7 +42,7 @@ export function SurvivalPage() {
     // quizzes,
   } = useQuizStore();
 
-  const { players, setPlayers, updatePlayerStatus } = usePlayerStore();
+  const { setPlayers, updatePlayerStatus } = usePlayerStore();
   const { requestQuestion } = useRequestQuestion();
   const { onSend, onSubscribe, callbackMsg } = useContext(WebSocketContext);
   const [messages, setMessages] = useState<
@@ -66,7 +66,6 @@ export function SurvivalPage() {
 
     if (hostId === userStore.id) {
       requestQuestion(parseInt(roomId), category, 1, gameMode); // 방장만 호출하는거
-      console.log('문제내놔', roomId);
     }
 
     const players = Object.keys(playersObj).map((key) => playersObj[key]);
@@ -95,14 +94,11 @@ export function SurvivalPage() {
       callbackMsg.address == `info/game/${roomId}` &&
       callbackMsg.msg.type == 'STAGE_RESULT'
     ) {
-      // console.log('매 스테이지 결과');
-      // console.log(callbackMsg.msg.data);
       callbackMsg.msg.data.forEach(
         (result: { score: number; value: number }) => {
           updatePlayerStatus(result.value, result.score > 0);
         },
       );
-      console.log('플레이어상태', players);
     } else if (
       callbackMsg.msg &&
       callbackMsg.address == `info/game/${roomId}` &&
@@ -115,16 +111,12 @@ export function SurvivalPage() {
       callbackMsg.address == `info/game/${roomId}` &&
       callbackMsg.msg.type == 'REWARD'
     ) {
-      console.log('리워드');
-      console.log(callbackMsg.msg.data);
       setRewardData(callbackMsg.msg.data);
     } else if (
       callbackMsg.msg &&
       callbackMsg.address == `info/game/${roomId}` &&
       callbackMsg.msg.type == 'LEAVE'
     ) {
-      console.log('리브');
-      console.log(callbackMsg.msg.data);
       setRewardData(callbackMsg.msg.data);
     } else if (
       callbackMsg.msg &&
@@ -132,27 +124,20 @@ export function SurvivalPage() {
       callbackMsg.msg.type == 'EXIT'
     ) {
       if (roomInfo.hostId === userStore.id) {
-        console.log('방장');
         jwtAxiosInstance
           .post(`/survival/exit/${roomInfo.roomId}`, {})
-          .then((response) => {
-            console.log('Exit request successful:', response.data);
-          })
           .catch((error) => {
             console.error('Exit request failed:', error);
           });
       }
       setTimeout(() => {
         setIsGameOver(true);
-        console.log('isGameOver', isGameOver);
       }, 4500);
-      console.log('종료호출');
     } else if (
       callbackMsg.msg &&
       callbackMsg.address == `info/game/${roomId}` &&
       callbackMsg.msg.type == 'PASS'
     ) {
-      console.log('패스');
       setShowResult(true);
       setShowChatBox(true);
       setShowHint(false);
