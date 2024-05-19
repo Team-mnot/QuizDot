@@ -105,6 +105,12 @@ public class QuizServiceImpl implements QuizService {
         String memberKey = String.format("rooms:%d:players", roomId);
         Long totalPeople = redisTemplate.opsForHash().size(memberKey);
 
+        // 아직 모든 유저가 PASS 버튼을 누르지 않았다면
+        messagingTemplate.convertAndSend("/sub/chat/game/" + roomId,
+            MessageDto.of(SERVER_SENDER,
+                String.format("%s님이 문제를 패스했습니다. [%d명/%d명]", nickname, passPeople,
+                    totalPeople), MessageType.CHAT));
+
         if (passPeople == totalPeople) {
             // 모든 유저가 PASS 버튼을 눌렀다면
             messagingTemplate.convertAndSend("/sub/info/game/" + roomId,
@@ -115,11 +121,6 @@ public class QuizServiceImpl implements QuizService {
                 MessageDto.of(SERVER_SENDER, "모든 유저의 동의 하에 문제가 패스되었습니다.", MessageType.CHAT));
         }
 
-        // 아직 모든 유저가 PASS 버튼을 누르지 않았다면
-        messagingTemplate.convertAndSend("/sub/chat/game/" + roomId,
-            MessageDto.of(SERVER_SENDER,
-                String.format("%s님이 문제를 패스했습니다. [%d명/%d명]", nickname, passPeople,
-                    totalPeople), MessageType.CHAT));
     }
 
     /**
