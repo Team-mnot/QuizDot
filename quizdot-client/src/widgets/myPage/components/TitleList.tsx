@@ -21,7 +21,7 @@ export function TitleList(titleInfo: { title: number; titleList: Title[] }) {
       {titleInfo.titleList.map((title, id) => (
         <div
           key={id}
-          className={`flex items-center justify-between pl-10 text-gray-400 ${title.get && ' text-black hover:border-transparent'}`}
+          className={`flex items-center justify-between pl-10 ${title.get ? ' text-black hover:border-transparent' : 'text-gray-400'}`}
         >
           <div className="flex items-center">
             <div

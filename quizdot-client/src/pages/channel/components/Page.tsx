@@ -8,7 +8,7 @@ export function ChannelPage() {
   }, []);
 
   return (
-    <div className="w-screen h-screen">
+    <div className="h-screen w-screen">
       <ChannelHeader />
       <ChannelContent />
     </div>

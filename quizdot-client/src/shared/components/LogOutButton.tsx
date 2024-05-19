@@ -12,6 +12,9 @@ export function LogOutButton() {
       store.resetData();
       navi('/login');
     }
+    localStorage.removeItem('accessToken');
+    store.resetData();
+    navi('/login');
   };
 
   return (
