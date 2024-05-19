@@ -352,6 +352,7 @@ export function QuizPreview() {
           <div>
             {quizSetStore.quizzes.map((item) => (
               <div
+                key={item.id}
                 className="bg-white p-2"
                 onClick={() => handleSubmitQuiz(item.id)}
               >

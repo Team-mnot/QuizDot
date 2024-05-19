@@ -25,12 +25,12 @@ const WebSocketContext = createContext<{
     msg: { sender: '', data: '', text: '', type: '' },
     address: '',
   },
-  onConnect: () => { },
-  onSubscribe: () => { },
-  onSubscribeWithCallBack: () => { },
-  onUnsubscribe: () => { },
-  onSend: () => { },
-  onDisconnect: () => { },
+  onConnect: () => {},
+  onSubscribe: () => {},
+  onSubscribeWithCallBack: () => {},
+  onUnsubscribe: () => {},
+  onSend: () => {},
+  onDisconnect: () => {},
 });
 
 const WebSocketProvider = ({ children }: { children: ReactNode }) => {
@@ -65,7 +65,7 @@ const WebSocketProvider = ({ children }: { children: ReactNode }) => {
     const socket = Stomp.over(() => new SockJS(wsUrl));
     const token = localStorage.getItem('accessToken');
     const headers = {
-      'access': token,
+      access: token,
     };
 
     client.current = socket;

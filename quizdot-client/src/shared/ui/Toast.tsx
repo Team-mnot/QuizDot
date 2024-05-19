@@ -19,11 +19,10 @@ export function Toast(props: ToastProps) {
   return (
     <div
       className={
-        'h-30 fixed top-[20px] z-50 flex items-center justify-center rounded-md border-2 bg-white p-2 shadow-md'
+        'h-30 fixed left-[720px] top-[20px] z-50 flex items-center justify-center rounded-md border-2 bg-white p-2 shadow-md'
       }
       onClick={() => props.setToastState(false)}
     >
-      <img src="/images/ikball.png" alt="" className="h-[23px] w-[23px]" />
       <div className={'p-2 font-bold'}>{props.message}</div>
     </div>
   );

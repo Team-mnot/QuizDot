@@ -4,7 +4,6 @@ import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 import { baseApi } from '@/shared/apis';
 import { useNavigate } from 'react-router-dom';
 import jwtAxiosInstance from '@/shared/utils/jwtAxiosInstance';
-// import { RoomInfo } from './RoomInfo';
 
 interface Props {
   roomId: number;
@@ -13,8 +12,6 @@ interface Props {
 }
 
 export function SurvivalMatchBtn({ roomId, category, visible }: Props) {
-  // const matchStatus = useRef<number>(0);
-  // const [matchCount, setMatchCount] = useState<number>(0);
   const { isReady, callbackMsg } = useContext(WebSocketContext);
   const [matchStatus, setMatchStatus] = useState<number>(0); // 0: 매칭 전, 1: 매칭 중, 2: 매칭 완료
   const [matchCount, setMatchCount] = useState<number>(0);
@@ -94,31 +91,29 @@ export function SurvivalMatchBtn({ roomId, category, visible }: Props) {
     <div>
       {matchStatus == 0 && visible && (
         <Button
-          className="w-[300px] text-5xl"
+          className="custom-pink custom-btn-transparent custom-text-outline-black custom-blinking text-[4em]"
           value="매칭 시작"
           onClick={handleMatchGame}
         />
       )}
       {matchStatus == 1 && visible && (
         <div>
-          <Button
-            className="w-[300px] text-5xl"
-            value="매칭 취소"
-            onClick={handleCancelGame}
-          />
-          <p>
+          <p className="custom-black custom-btn-transparent custom-text-outline-black custom-blinking text-[4em]">
+            매칭 중
+          </p>
+          <p className="rounded-2xl bg-white bg-opacity-70 text-2xl">
             {String(Math.floor(matchCount / 60)).padStart(2, '0')}:
             {String(matchCount % 60).padStart(2, '0')}
           </p>
         </div>
       )}
-      {matchStatus == 1 && !visible && (
+      {matchStatus == 1 && visible && (
         <div>
-          <p className="custom-text-transparent">매칭 중</p>
-          <p>
-            {String(Math.floor(matchCount / 60)).padStart(2, '0')}:
-            {String(matchCount % 60).padStart(2, '0')}
-          </p>
+          <Button
+            className="custom-pink custom-btn-transparent custom-text-outline-black"
+            value="매칭 취소"
+            onClick={handleCancelGame}
+          />
         </div>
       )}
       {matchStatus == 2 && (

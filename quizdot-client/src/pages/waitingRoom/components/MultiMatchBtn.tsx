@@ -24,7 +24,7 @@ export function MultiMatchBtn({
           onClick={handleStartGame}
         />
       ) : (
-        <div className="flex justify-center pt-10 text-3xl text-red-700 ">
+        <div className="m-[100px] flex justify-center rounded-2xl bg-white bg-opacity-70 p-4 text-4xl text-red-700">
           호스트가 게임을 시작할때 까지 기다려주세요
         </div>
       )}

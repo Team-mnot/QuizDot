@@ -11,7 +11,13 @@ import {
 } from '@/pages/lobby/constants';
 import { ModifyingRoomType } from '../api/types';
 
-export function RoomModification({ roomInfo }: { roomInfo: RoomInfoType }) {
+export function RoomModification({
+  roomInfo,
+  onClose,
+}: {
+  roomInfo: RoomInfoType;
+  onClose: () => void;
+}) {
   const [title, setTitle] = useState<string>(roomInfo.title);
   const [open, setOpen] = useState<number>(roomInfo.open ? 1 : 0);
   const [password, setPassword] = useState<string>(roomInfo.password);
@@ -75,14 +81,14 @@ export function RoomModification({ roomInfo }: { roomInfo: RoomInfoType }) {
       maxQuestion: mode == 'NORMAL' ? maxQuestion : 0,
     };
 
-    console.log(modifyingRoomInfo);
     const response = await modifyRoomApi(roomInfo.roomId, modifyingRoomInfo);
 
     if (response == 200) {
-      setToastMessage('방 정보를 변경했습니다.');
+      setToastMessage('방 정보가 변경되었습니다');
       setToastState(true);
+      setTimeout(onClose, 1000);
     } else {
-      setToastMessage('방 정보를 변경하지 못했습니다.');
+      setToastMessage('방 정보 변경에 실패했습니다');
       setToastState(true);
     }
   };

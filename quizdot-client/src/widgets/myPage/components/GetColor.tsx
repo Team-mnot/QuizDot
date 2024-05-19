@@ -6,7 +6,7 @@ export function GetColor(props: GetColorProps) {
   return (
     <div
       className="flex flex-col items-center justify-center"
-      style={{ width: '300px', height: '200px' }}
+      style={{ width: '300px', height: '210px' }}
     >
       <div
         style={{

@@ -16,7 +16,7 @@ export function WaitingRoomPage() {
   }, []);
 
   return (
-    <div>
+    <div className="max-w-screen max-h-screen">
       <RoomFetchData channelId={Number(channelId)} roomId={Number(roomId)} />
     </div>
   );

@@ -102,5 +102,14 @@ export function UserInfo(props: { id: number }) {
         </div>
       </div>
     );
+  } else {
+    return (
+      <div
+        className="m-2 flex items-center justify-center p-2 text-center text-3xl"
+        style={{ width: '800px', height: '400px' }}
+      >
+        유저 정보 로딩중
+      </div>
+    );
   }
 }

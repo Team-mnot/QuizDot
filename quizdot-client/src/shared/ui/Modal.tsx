@@ -9,7 +9,7 @@ interface ModalProps {
 export function Modal(props: ModalProps) {
   const handleClose = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (event.target === event.currentTarget) {
-      // 모달 배경을 클릭한 경우에만 모달을 닫음
+      // 모달 배경을 클릭한 경우에 모달을 닫음
       props.onClose();
     }
   };

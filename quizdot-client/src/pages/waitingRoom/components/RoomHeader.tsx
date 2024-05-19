@@ -37,14 +37,17 @@ export function RoomHeader({
   return (
     <div>
       {roomStore.roomInfo && (
-        <div className="absolute left-[0px] top-[0px] z-[2] w-full px-[50px] py-[20px]">
-          <div className="flex justify-between">
+        <div
+          className="absolute left-[0px] top-[0px] z-[2] w-full px-[50px] py-[20px]"
+          style={{ zIndex: 1 }}
+        >
+          <div className="flex items-start justify-between">
             <RoomInfo roomInfo={roomStore.roomInfo} />
             <LeaveBtn roomId={roomId} channelId={channelId} />
           </div>
 
-          <div className="text-center">
-            <div className="flex justify-center">
+          <div className="flex justify-center text-center">
+            <div className="flex justify-center" style={{ zIndex: 1 }}>
               {roomStore.roomInfo.gameMode === 'SURVIVAL' ? (
                 <SurvivalMatchBtn
                   roomId={roomId}

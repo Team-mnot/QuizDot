@@ -50,7 +50,10 @@ export function PlayerList({ roomId }: { roomId: number }) {
 
   return (
     <div className="flex justify-between">
-      <div>
+      <div
+        className="mt-[200px] flex flex-wrap"
+        style={{ width: '400px', height: '500px' }}
+      >
         {roomStore.players &&
           Object.entries(roomStore.players)
             .slice(0, (playersCount + 1) / 2)
@@ -61,6 +64,8 @@ export function PlayerList({ roomId }: { roomId: number }) {
                   setClickedUserId(key);
                   clickModal();
                 }}
+                className="m-2 cursor-pointer rounded-2xl bg-white bg-opacity-70 hover:bg-opacity-50"
+                style={{ width: '160px', height: '190px' }}
               >
                 <Character
                   title={player.title}
@@ -72,7 +77,10 @@ export function PlayerList({ roomId }: { roomId: number }) {
               </div>
             ))}
       </div>
-      <div>
+      <div
+        className="mt-[200px] flex flex-wrap pl-[40px]"
+        style={{ width: '400px', height: '500px' }}
+      >
         {roomStore.players &&
           Object.entries(roomStore.players)
             .slice((playersCount + 1) / 2, playersCount)
@@ -83,6 +91,8 @@ export function PlayerList({ roomId }: { roomId: number }) {
                   setClickedUserId(key);
                   clickModal();
                 }}
+                className="m-2 cursor-pointer rounded-2xl bg-white bg-opacity-70 hover:bg-opacity-50"
+                style={{ width: '160px', height: '190px' }}
               >
                 <Character
                   title={player.title}

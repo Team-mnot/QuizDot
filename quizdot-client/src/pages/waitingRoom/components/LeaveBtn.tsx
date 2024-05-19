@@ -33,7 +33,7 @@ export function LeaveBtn({
   return (
     <Button
       className="custom-pink custom-btn-transparent custom-text-outline-black"
-      value="퇴장"
+      value="방 나가기"
       onClick={handleLeaveRoom}
     />
   );

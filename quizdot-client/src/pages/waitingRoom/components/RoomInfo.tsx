@@ -56,52 +56,53 @@ export function RoomInfo({ roomInfo }: { roomInfo: RoomInfoType }) {
   };
 
   return (
-    <div>
-      <div className="flex w-[700px]">
-        <p>[{roomInfo.title}]&nbsp;</p>
-        <p>
-          {Math.floor(roomInfo.roomId / 1000)}
-          &nbsp;채널&nbsp;|&nbsp;
-        </p>
-        <p>{roomInfo.roomId}&nbsp;|&nbsp;</p>
-        <p>{roomInfo.open ? '공개' : '비공개'}&nbsp;|&nbsp;</p>
-        <p>{modeList[roomInfo.gameMode]}&nbsp;|&nbsp;</p>
-        <p>{roomInfo.maxPeople}&nbsp;인&nbsp;|&nbsp;</p>
-        <p>{categoryList[roomInfo.category]}&nbsp;</p>
-        {roomInfo.gameMode == 'NORMAL' && (
-          <p>|&nbsp;{roomInfo.maxQuestion}&nbsp;문제</p>
-        )}
-
-        {roomInfo.hostId == userStore.id && (
-          <Button
-            className="custom-pink custom-btn-transparent custom-text-outline-black"
-            value="변경"
-            onClick={clickModificationModal}
-          />
-        )}
+    <div className="flex flex-col">
+      <div className="flex items-center">
+        <div className="flex w-full items-center rounded-2xl bg-white bg-opacity-70 p-2 pl-5 text-2xl">
+          <p>[{roomInfo.title}]&nbsp;</p>
+          <p>
+            {Math.floor(roomInfo.roomId / 1000)}
+            &nbsp;채널&nbsp;|&nbsp;
+          </p>
+          <p>{roomInfo.roomId}&nbsp;|&nbsp;</p>
+          <p>{roomInfo.open ? '공개' : '비공개'}&nbsp;|&nbsp;</p>
+          <p>{modeList[roomInfo.gameMode]}&nbsp;|&nbsp;</p>
+          <p>{roomInfo.maxPeople}&nbsp;인&nbsp;|&nbsp;</p>
+          <p>{categoryList[roomInfo.category]}&nbsp;</p>
+          {roomInfo.gameMode == 'NORMAL' && (
+            <p>|&nbsp;{roomInfo.maxQuestion}&nbsp;문제</p>
+          )}
+          {roomInfo.hostId == userStore.id && (
+            <Button
+              className="ml-2 bg-white bg-opacity-75 text-pink-600 hover:border-transparent hover:bg-slate-200 hover:text-pink-400 focus:outline-none"
+              value="변경"
+              onClick={clickModificationModal}
+            />
+          )}
+        </div>
       </div>
 
-      <div className="flex w-[700px]">
+      <div className="mt-2 flex  w-full items-center">
         <p>초대 코드&nbsp;:&nbsp;</p>
         {inviteLink ? (
-          <div className="flex">
+          <div className="flex items-center">
             <p>
               {inviteLink.substr(39, 6)}
               &nbsp;.&nbsp;.&nbsp;.
             </p>
             <Button
-              className="w-[70px] text-[10px]"
-              value="복사"
+              className=""
+              value="클립보드에 복사"
               onClick={copyClipBoard}
             />
           </div>
         ) : (
-          <div className="flex">
+          <div className="flex items-center">
             <p>&nbsp;---&nbsp;</p>
             {roomInfo.hostId == userStore.id && (
               <Button
                 value="초대 링크 생성"
-                className="custom-pink custom-btn-transparent custom-text-outline-black"
+                className="ml-1 bg-white bg-opacity-75 text-pink-600 hover:border-transparent hover:bg-slate-200 hover:text-pink-400 focus:outline-none"
                 onClick={inviteRoomWithLink}
               />
             )}
@@ -109,7 +110,10 @@ export function RoomInfo({ roomInfo }: { roomInfo: RoomInfoType }) {
         )}
       </div>
       <Modal isOpen={isOpenModificationModal} onClose={closeModificationModal}>
-        <RoomModification roomInfo={roomInfo} />
+        <RoomModification
+          roomInfo={roomInfo}
+          onClose={closeModificationModal}
+        />
       </Modal>
 
       {toastState === true ? (
