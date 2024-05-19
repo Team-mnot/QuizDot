@@ -2,31 +2,26 @@ import { useContext, useEffect, useState } from 'react';
 import { ChattingBox } from '@/shared/ui/ChattingBox';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
-
-import { useRouter } from '@/shared/hooks';
-import { useRoomStore } from '@/shared/stores/connectionStore/roomStore';
 import { MessageDto } from '@/shared/apis/types';
-import { useQuizSetStore } from '@/shared/stores/connectionStore/quizSetStore';
+
 export function RoomChattingBox({
   roomId,
-  channelId,
+  handleSubmitAnswer,
 }: {
   roomId: number;
-  channelId: number;
+  handleSubmitAnswer: (myAns: string) => void;
 }) {
   const [messages, setMessages] = useState<
     { nickname: string; content: string }[]
   >([]);
 
-  const router = useRouter();
-  const quizSetStore = useQuizSetStore();
   const userStore = useUserStore();
-  const roomStore = useRoomStore();
   const { isReady, onSend, onSubscribeWithCallBack, onUnsubscribe } =
     useContext(WebSocketContext);
 
   const handleSubmitMessage = (message: string) => {
     if (message.trim() == '') return;
+    handleSubmitAnswer(message);
 
     const chattingMessage = {
       sender: userStore.nickname,
@@ -35,11 +30,10 @@ export function RoomChattingBox({
       data: null,
     };
 
-    onSend(`room/${roomId}`, chattingMessage);
+    onSend(`game/${roomId}`, chattingMessage);
   };
 
-  const callbackOfChat = async (message: MessageDto) => {
-    // 플레이어들의 채팅을 받음
+  const callback = (message: MessageDto) => {
     if (message.type == 'CHAT') {
       setMessages((msg) => [
         ...msg,
@@ -49,28 +43,13 @@ export function RoomChattingBox({
         },
       ]);
     }
-    // 게임 시작 요청이 성공함
-    else if (message.type == 'MULTI') {
-      if (!roomStore.roomInfo) return;
-
-      quizSetStore.setGameState(true);
-      router.routeTo(`/${channelId}/${roomId}/normal`);
-    }
-    // 게임 시작 요청이 성공함
-    else if (message.type == 'ILGITO') {
-      if (!roomStore.roomInfo) return;
-
-      quizSetStore.setGameState(true);
-      router.routeTo(`/${channelId}/${roomId}/ilgito`);
-    }
   };
 
-  // 구독 및 구독 해제
   useEffect(() => {
-    onSubscribeWithCallBack(`chat/room/${roomId}`, callbackOfChat);
+    onSubscribeWithCallBack(`chat/game/${roomId}`, callback);
 
     return () => {
-      onUnsubscribe(`chat/room/${roomId}`);
+      onUnsubscribe(`chat/game/${roomId}`);
     };
   }, [isReady]);
 

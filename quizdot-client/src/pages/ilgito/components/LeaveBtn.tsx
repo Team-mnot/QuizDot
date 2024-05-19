@@ -1,18 +1,17 @@
 import { Button } from '@/shared/ui';
-import { leaveRoomApi } from '../api/api';
 import { useRouter } from '@/shared/hooks';
 import { enterLobbyApi } from '@/pages/lobby/api/api';
+import { leaveRoomApi } from '@/pages/waitingRoom/api/api';
+import { useRoomStore } from '@/shared/stores/connectionStore/roomStore';
 
-export function LeaveBtn({
-  roomId,
-  channelId,
-}: {
-  roomId: number;
-  channelId: number;
-}) {
+export function LeaveBtn() {
   const router = useRouter();
+  const roomStore = useRoomStore();
 
-  const handleLeaveRoom = async () => {
+  const roomId = roomStore.roomInfo!.roomId;
+  const channelId = Math.floor(roomStore.roomInfo!.roomId);
+
+  const handleLeaveGame = async () => {
     const confirmation = window.confirm('정말 방에서 나가시겠습니까?');
     if (confirmation) {
       const response = await leaveRoomApi(roomId);
@@ -21,7 +20,6 @@ export function LeaveBtn({
       } else console.log('[로비 입장 실패]');
     }
   };
-
   const handleEnterLobby = async () => {
     const response = await enterLobbyApi(channelId);
 
@@ -31,10 +29,6 @@ export function LeaveBtn({
   };
 
   return (
-    <Button
-      className="custom-pink custom-btn-transparent custom-text-outline-black"
-      value="퇴장"
-      onClick={handleLeaveRoom}
-    />
+    <Button className="w-[100px]" value="퇴장" onClick={handleLeaveGame} />
   );
 }

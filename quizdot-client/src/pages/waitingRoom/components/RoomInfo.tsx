@@ -67,12 +67,14 @@ export function RoomInfo({ roomInfo }: { roomInfo: RoomInfoType }) {
         <p>{roomInfo.open ? '공개' : '비공개'}&nbsp;|&nbsp;</p>
         <p>{modeList[roomInfo.gameMode]}&nbsp;|&nbsp;</p>
         <p>{roomInfo.maxPeople}&nbsp;인&nbsp;|&nbsp;</p>
-        <p>{categoryList[roomInfo.category]}&nbsp;|&nbsp;</p>
-        <p>{roomInfo.maxQuestion}&nbsp;문제</p>
+        <p>{categoryList[roomInfo.category]}&nbsp;</p>
+        {roomInfo.gameMode == 'NORMAL' && (
+          <p>|&nbsp;{roomInfo.maxQuestion}&nbsp;문제</p>
+        )}
 
         {roomInfo.hostId == userStore.id && (
           <Button
-            className="text-[10px]"
+            className="custom-pink custom-btn-transparent custom-text-outline-black"
             value="변경"
             onClick={clickModificationModal}
           />
@@ -99,7 +101,7 @@ export function RoomInfo({ roomInfo }: { roomInfo: RoomInfoType }) {
             {roomInfo.hostId == userStore.id && (
               <Button
                 value="초대 링크 생성"
-                className="w-[110px] text-[10px] text-red-700"
+                className="custom-pink custom-btn-transparent custom-text-outline-black"
                 onClick={inviteRoomWithLink}
               />
             )}

@@ -3,13 +3,15 @@ import { Button } from '@/shared/ui';
 
 export function MultiMatchBtn({
   roomId,
+  gameMode,
   visible,
 }: {
   roomId: number;
+  gameMode: string;
   visible: boolean;
 }) {
   const handleStartGame = async () => {
-    const response = await startGameApi(roomId, 'NORMAL');
+    const response = await startGameApi(roomId, gameMode);
     response;
   };
 
@@ -17,7 +19,7 @@ export function MultiMatchBtn({
     <div>
       {visible ? (
         <Button
-          className="text-5xl"
+          className="custom-pink custom-btn-transparent custom-text-outline-black custom-blinking text-[4em]"
           value="게임 시작"
           onClick={handleStartGame}
         />

@@ -1,11 +1,11 @@
-import { categoryList, modeList } from '@/pages/lobby/constants';
 import { useRoomStore } from '@/shared/stores/connectionStore/roomStore';
+import { categoryList, modeList } from '@/pages/lobby/constants';
 
-export function RoomInfo() {
+export function RoomHeader() {
   const roomStore = useRoomStore();
 
   return (
-    <div>
+    <div className="absolute left-[0px] top-[0px] w-full px-[50px] py-[20px]">
       {roomStore.roomInfo ? (
         <div className="flex w-[700px]">
           <p>[{roomStore.roomInfo.title}]&nbsp;</p>

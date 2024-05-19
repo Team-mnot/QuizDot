@@ -37,7 +37,7 @@ export function Players() {
       <div>
         {roomStore.players &&
           Object.entries(roomStore.players)
-            .slice(0, (playersCount.current + 1) / 2)
+            .slice(0, playersCount.current)
             .map(([key, player]) => (
               <div key={key}>
                 <Character
@@ -48,29 +48,7 @@ export function Players() {
                   characterId={player.characterId}
                 />
                 <p>
-                  point&nbsp;:&nbsp;
-                  {quizSetStore.scores[Number(key)]
-                    ? quizSetStore.scores[Number(key)]
-                    : 0}
-                </p>
-              </div>
-            ))}
-      </div>
-      <div>
-        {roomStore.players &&
-          Object.entries(roomStore.players)
-            .slice((playersCount.current + 1) / 2, playersCount.current)
-            .map(([key, player]) => (
-              <div key={key}>
-                <Character
-                  title={player.title}
-                  nickname={player.nickname}
-                  nicknameColor={player.nicknameColor}
-                  level={player.level}
-                  characterId={player.characterId}
-                />
-                <p>
-                  point&nbsp;:&nbsp;
+                  체력&nbsp;:&nbsp;
                   {quizSetStore.scores[Number(key)]
                     ? quizSetStore.scores[Number(key)]
                     : 0}

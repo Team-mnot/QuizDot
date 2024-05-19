@@ -6,7 +6,7 @@ import { Answer } from './Answer';
 import { TextTypeInput } from './TextTypeInput';
 import { OXTypeBtn } from './OXTypeBtn';
 import { RankType } from '../api/types';
-import { passQuestionApi } from '@/shared/apis/commonApi';
+import { getQuizzesApi, passQuestionApi } from '@/shared/apis/commonApi';
 import { Hint } from './Hint';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 import { MessageDto } from '@/shared/apis/types';
@@ -27,6 +27,10 @@ export function QuizPreview() {
 
   const roomId = roomStore.roomInfo!.roomId;
   const channelId = Math.floor(roomStore.roomInfo!.roomId / 1000);
+
+  // 게임 준비 화면 활성화
+  const isGameReady = useRef<boolean>(true);
+
   // 현재 문제 리스트의 인덱스
   const quizIndex = useRef<number>(0);
   // 타이머
@@ -34,7 +38,7 @@ export function QuizPreview() {
   const maxCount = useRef<number>(15);
   const [updateCount, setUpdateCount] = useState<number>(secCount.current);
   // 퀴즈 활성화 확인
-  const isShowQuiz = useRef<boolean>(true);
+  const isShowQuiz = useRef<boolean>(false);
   // 답변 제출 확인
   const isSubmitAnswer = useRef<boolean>(false);
   // 제출 답변 상태
@@ -97,6 +101,22 @@ export function QuizPreview() {
     await exitGameApi(roomId);
   };
 
+  // 문제를 받음
+  const handleReceiveQuizzes = async () => {
+    if (roomStore.roomInfo) {
+      await getQuizzesApi(
+        roomStore.roomInfo.roomId,
+        roomStore.roomInfo.category,
+        roomStore.roomInfo.maxQuestion,
+        roomStore.roomInfo.gameMode,
+      );
+    }
+  };
+
+  const callbackOfQuiz = async (message: MessageDto) => {
+    quizSetStore.fetchQuizzes(message.data);
+  };
+
   const callbackOfInfo = async (message: MessageDto) => {
     // 플레이어의 점수를 갱신해야 할 경우
     if (message.type == 'UPDATE') {
@@ -127,14 +147,39 @@ export function QuizPreview() {
 
   useEffect(() => {
     onSubscribeWithCallBack(`info/game/${roomId}`, callbackOfInfo);
+    onSubscribeWithCallBack(`quiz/game/${roomId}`, callbackOfQuiz);
 
     return () => {
       onUnsubscribe(`info/game/${roomId}`);
+      onUnsubscribe(`quiz/game/${roomId}`);
     };
   }, [isReady]);
 
   useEffect(() => {
-    // 1. 문제 제공 시 작동할 타이머
+    // 1. 게임 시작 타이머 (새로고침 해도 처음만 작동)
+    if (quizSetStore.gameState) {
+      quizSetStore.setGameState(false);
+      isGameReady.current = true;
+      if (roomStore.roomInfo!.hostId == userStore.id) handleReceiveQuizzes();
+
+      const timer = setInterval(() => {
+        setUpdateCount((prevCnt) => {
+          if (prevCnt >= 1) {
+            return prevCnt - 1;
+          } else {
+            isShowQuiz.current = true;
+            clearInterval(timer);
+
+            setUpdateStage(!updateStage);
+            return 15;
+          }
+        });
+      }, 1000);
+    }
+  }, []);
+
+  useEffect(() => {
+    // 2. 문제 제공 시 작동할 타이머
     if (isShowQuiz.current) {
       const timer = setInterval(() => {
         setUpdateCount((prevCnt) => {
@@ -159,7 +204,7 @@ export function QuizPreview() {
         });
       }, 1000);
     }
-    // 2. 정답 제공 시 작동할 타이머
+    // 3. 정답 제공 시 작동할 타이머
     else if (isShowAnswer.current) {
       const timer = setInterval(() => {
         setUpdateCount((prevCnt) => {
@@ -208,8 +253,11 @@ export function QuizPreview() {
   }, [updateStage]);
 
   return (
-    <div className="absolute left-0 top-[60px] w-full">
+    <div className="absolute left-[0px] top-[60px] w-full">
       <div>
+        {isGameReady.current && (
+          <div>{updateCount} 초 후 게임이 시작됩니다</div>
+        )}
         {isShowAnswer.current && (
           <QuizResult isResult={isCorrectAnswer.current} />
         )}

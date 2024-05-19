@@ -1,4 +1,6 @@
 import { useEffect } from 'react';
+import { RoomContent } from './RoomContent';
+import { RoomHeader } from './RoomHeader';
 
 export function IlgitoPage() {
   // const { channelId, roomId } = useParams() as {
@@ -11,5 +13,10 @@ export function IlgitoPage() {
     document.body.style.backgroundSize = 'cover';
   }, []);
 
-  return <div></div>;
+  return (
+    <div>
+      <RoomHeader />
+      <RoomContent />
+    </div>
+  );
 }
