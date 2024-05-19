@@ -40,9 +40,19 @@ const useUserStore = create(
       setPoint: () =>
         set((prevState) => ({ ...prevState, point: prevState.point - 10000 })),
       getData: (props: UserInfo) => {
-        const { id, title, nickname, nicknameColor, level, exp, point } = props;
+        const {
+          id,
+          characterId,
+          title,
+          nickname,
+          nicknameColor,
+          level,
+          exp,
+          point,
+        } = props;
         set({
           id,
+          characterId,
           title,
           nickname,
           nicknameColor,

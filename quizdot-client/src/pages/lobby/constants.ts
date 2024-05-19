@@ -20,7 +20,7 @@ const maxPeopleList = {
 const categoryList = {
   RANDOM: '랜덤',
   COMMON: '상식',
-  PREVIEW: '시사',
+  CULTURE: '문화',
   ECONOMY: '경제',
   GRAMMER: '한국어',
 } as { [key: string]: string };
