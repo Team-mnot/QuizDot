@@ -35,6 +35,7 @@ public class RoomServiceImpl implements RoomService {
     private static final String ROOM_PLAYER_DESTINATION = "/sub/players/room/";
     private static final String ROOM_INFO_DESTINATION = "/sub/info/room/";
     private static final String ROOM_CHAT_DESTINATION = "/sub/chat/room/";
+    private static final String SURVIVAL_CHAT_DESTINATION = "/sub/chat/game/";
     private final LobbyService lobbyService;
     private final RedisTemplate redisTemplate;
     private final MemberRepository memberRepository;
@@ -128,6 +129,10 @@ public class RoomServiceImpl implements RoomService {
         redisTemplate.opsForHash().delete(playerKey, memberId);
         messagingTemplate.convertAndSend(ROOM_PLAYER_DESTINATION + roomId,
             MessageDto.of(SERVER_SENDER, MessageType.LEAVE, memberId));
+        // 서바이벌 채팅방에서 퇴장 시, 알림
+        messagingTemplate.convertAndSend(SURVIVAL_CHAT_DESTINATION + roomId,
+            MessageDto.of(SERVER_SENDER, player.getNickname() + "님이 퇴장하셨습니다.", MessageType.CHAT));
+        // 대기실 채팅방에서 퇴장 시, 알림
         messagingTemplate.convertAndSend(ROOM_CHAT_DESTINATION + roomId,
             MessageDto.of(SERVER_SENDER, player.getNickname() + "님이 퇴장하셨습니다.", MessageType.CHAT));
 
@@ -144,6 +149,10 @@ public class RoomServiceImpl implements RoomService {
                 deleteRoom(roomId);
 
                 // ID POOL 관리
+                if(roomId > 9999) {
+                    // 서바이벌 매칭으로 생성된 대기실은 관리 안함
+                    return;
+                }
                 int channelId = roomId / 1000;
                 int roomNum = roomId % 100;
                 lobbyService.modifyRoomNumList(channelId, roomNum, false);
