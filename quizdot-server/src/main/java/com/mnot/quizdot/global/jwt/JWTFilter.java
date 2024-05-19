@@ -43,7 +43,6 @@ public class JWTFilter extends OncePerRequestFilter {
             PrintWriter writer = response.getWriter();
             writer.println("access token 만료");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
         }
 
         String category = jwtUtil.getCategory(authorization);

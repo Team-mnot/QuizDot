@@ -168,7 +168,7 @@ public class OneToOneServiceImpl implements OneToOneService {
 
         List<MultiRecord> multiRecordList = multiRecordRepository.findAllByMember_IdAndMode(
             memberIdList,
-            ModeType.NORMAL);
+            ModeType.ILGITO);
 
         Map<Integer, MultiRecord> multiRecordMap = multiRecordList.stream()
             .collect(Collectors.toMap(multiRecord -> multiRecord.getMember().getId(),

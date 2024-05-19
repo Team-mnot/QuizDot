@@ -281,9 +281,8 @@ public class MemberServiceImpl implements MemberService {
             throw new BusinessException(ErrorCode.REJECT_ACCOUNT_POINT);
         }
 
-        //TODO : 캐릭터 정해지면 바꿀것
-        //2부터 13까지
-        int pickCharacter = (int) (Math.random() * 12) + 2;
+        //2부터 11까지
+        int pickCharacter = (int) (Math.random() * 10) + 2;
         member.updatePoint(member.getPoint() - claimPoint);
         List<Integer> characterList = memberCharacterRepository.findCharacterIdsByMemberId(
             member.getId());
