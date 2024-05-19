@@ -143,11 +143,7 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
       )}
       {currentQuiz.questionType === 'IMAGE' && (
         <div className="flex w-[500px] justify-center rounded-md border-r-2 bg-white p-5 shadow-md">
-          <img
-            src={currentQuiz.imagePath}
-            alt=""
-            className="h-[300px] w-[450px]"
-          />
+          <img src={currentQuiz.imagePath} alt="" className="h-[300px]" />
         </div>
       )}
 
