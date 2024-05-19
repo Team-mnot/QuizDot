@@ -91,8 +91,8 @@ export function RoomInfo({ roomInfo }: { roomInfo: RoomInfoType }) {
               &nbsp;.&nbsp;.&nbsp;.
             </p>
             <Button
-              className=""
               value="클립보드에 복사"
+              className="ml-2 bg-white bg-opacity-75 text-pink-600 hover:border-transparent hover:bg-slate-200 hover:text-pink-400 focus:outline-none"
               onClick={copyClipBoard}
             />
           </div>

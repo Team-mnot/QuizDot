@@ -19,7 +19,7 @@ export function Toast(props: ToastProps) {
   return (
     <div
       className={
-        'h-30 fixed left-[720px] top-[20px] z-50 flex items-center justify-center rounded-md border-2 bg-white p-2 shadow-md'
+        'h-30 fixed left-[720px] top-[40px] z-50 flex items-center justify-center rounded-md border-2 bg-white p-2 shadow-md'
       }
       onClick={() => props.setToastState(false)}
     >

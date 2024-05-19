@@ -34,8 +34,8 @@ export function QuizPreview() {
   // 현재 문제 리스트의 인덱스
   const quizIndex = useRef<number>(0);
   // 타이머
-  const secCount = useRef<number>(15);
-  const maxCount = useRef<number>(15);
+  const secCount = useRef<number>(10);
+  const maxCount = useRef<number>(10);
   const [updateCount, setUpdateCount] = useState<number>(secCount.current);
   // 퀴즈 활성화 확인
   const isShowQuiz = useRef<boolean>(false);
@@ -169,9 +169,9 @@ export function QuizPreview() {
           } else {
             isShowQuiz.current = true;
             clearInterval(timer);
-
+            isGameReady.current = false;
             setUpdateStage(!updateStage);
-            return 15;
+            return 10;
           }
         });
       }, 1000);
@@ -253,57 +253,76 @@ export function QuizPreview() {
   }, [updateStage]);
 
   return (
-    <div className="absolute left-[0px] top-[60px] w-full">
-      <div>
+    <div className="absolute left-[0px] top-[10px] w-full">
+      <div className="text-center">
         {isGameReady.current && (
-          <div>{updateCount} 초 후 게임이 시작됩니다</div>
-        )}
-        {isShowAnswer.current && (
-          <QuizResult isResult={isCorrectAnswer.current} />
-        )}
-        {isShowQuiz.current && (
-          <Quiz
-            index={quizIndex.current + 1}
-            question={quizSetStore.quizzes[quizIndex.current].question}
-            category={quizSetStore.quizzes[quizIndex.current].category}
-            questionType={quizSetStore.quizzes[quizIndex.current].questionType}
-            imagePath={quizSetStore.quizzes[quizIndex.current].imagePath}
-          ></Quiz>
+          <div className="mt-[100px] text-4xl">
+            {updateCount} 초 후 게임이 시작됩니다
+          </div>
         )}
         {(isShowQuiz.current || isShowAnswer.current) && (
-          <Progress
-            padding="py-5"
-            size="w-[500px]"
-            color={updateCount <= 5 ? 'yellow' : 'lightgreen'}
-            label={`${updateCount}`}
-            currentValue={updateCount}
-            maxValue={maxCount.current}
-          ></Progress>
-        )}
-        {isShowHint.current && (
-          <Hint hint={quizSetStore.quizzes[quizIndex.current].hint} />
+          <div className="flex justify-center">
+            <Progress
+              padding="py-2"
+              size="w-[640px]"
+              color={updateCount <= 5 ? 'yellow' : 'lightgreen'}
+              label={`${updateCount}`}
+              currentValue={updateCount}
+              maxValue={maxCount.current}
+            ></Progress>
+          </div>
         )}
         {isShowAnswer.current && (
-          <Answer
-            answers={quizSetStore.quizzes[quizIndex.current].answers}
-            description={quizSetStore.quizzes[quizIndex.current].description}
-          />
+          <div className="flex justify-center">
+            <QuizResult isResult={isCorrectAnswer.current} />
+          </div>
+        )}
+        {isShowQuiz.current && (
+          <div className="flex justify-center">
+            <Quiz
+              index={quizIndex.current + 1}
+              question={quizSetStore.quizzes[quizIndex.current].question}
+              category={quizSetStore.quizzes[quizIndex.current].category}
+              questionType={
+                quizSetStore.quizzes[quizIndex.current].questionType
+              }
+              imagePath={quizSetStore.quizzes[quizIndex.current].imagePath}
+            ></Quiz>
+          </div>
+        )}
+
+        {isShowHint.current && (
+          <div className="flex justify-center">
+            <Hint hint={quizSetStore.quizzes[quizIndex.current].hint} />
+          </div>
+        )}
+        {isShowAnswer.current && (
+          <div className="flex justify-center">
+            <Answer
+              answers={quizSetStore.quizzes[quizIndex.current].answers}
+              description={quizSetStore.quizzes[quizIndex.current].description}
+            />
+          </div>
         )}
         {isShowQuiz.current &&
           !isSubmitAnswer.current &&
           quizSetStore.quizzes[quizIndex.current].questionType == 'OX' && (
-            <OXTypeBtn
-              handleSubmitAnswer={handleSubmitAnswer}
-              handleSubmitPass={handleSubmitPass}
-            />
+            <div className="flex justify-center">
+              <OXTypeBtn
+                handleSubmitAnswer={handleSubmitAnswer}
+                handleSubmitPass={handleSubmitPass}
+              />
+            </div>
           )}
         {isShowQuiz.current &&
           !isSubmitAnswer.current &&
           quizSetStore.quizzes[quizIndex.current].questionType != 'OX' && (
-            <TextTypeInput
-              handleSubmitAnswer={handleSubmitAnswer}
-              handleSubmitPass={handleSubmitPass}
-            />
+            <div className="flex justify-center">
+              <TextTypeInput
+                handleSubmitAnswer={handleSubmitAnswer}
+                handleSubmitPass={handleSubmitPass}
+              />
+            </div>
           )}
         <RoomChattingBox
           roomId={roomId}

@@ -34,12 +34,19 @@ export function Players() {
 
   return (
     <div className="flex justify-between">
-      <div>
+      <div
+        className="mt-[200px] flex flex-wrap"
+        style={{ width: '400px', height: '500px' }}
+      >
         {roomStore.players &&
           Object.entries(roomStore.players)
             .slice(0, (playersCount.current + 1) / 2)
             .map(([key, player]) => (
-              <div key={key}>
+              <div
+                key={key}
+                className="m-2 flex cursor-pointer flex-col items-center justify-center rounded-2xl bg-white bg-opacity-70 hover:bg-opacity-50"
+                style={{ width: '160px', height: '220px' }}
+              >
                 <Character
                   title={player.title}
                   nickname={player.nickname}
@@ -47,7 +54,7 @@ export function Players() {
                   level={player.level}
                   characterId={player.characterId}
                 />
-                <p>
+                <p className="pb-2 text-xl">
                   point&nbsp;:&nbsp;
                   {quizSetStore.scores[Number(key)]
                     ? quizSetStore.scores[Number(key)]
@@ -56,12 +63,19 @@ export function Players() {
               </div>
             ))}
       </div>
-      <div>
+      <div
+        className="mt-[200px] flex flex-wrap  pl-[40px]"
+        style={{ width: '400px', height: '500px' }}
+      >
         {roomStore.players &&
           Object.entries(roomStore.players)
             .slice((playersCount.current + 1) / 2, playersCount.current)
             .map(([key, player]) => (
-              <div key={key}>
+              <div
+                key={key}
+                className="m-2 flex cursor-pointer flex-col items-center justify-center rounded-2xl bg-white bg-opacity-70 hover:bg-opacity-50"
+                style={{ width: '160px', height: '220px' }}
+              >
                 <Character
                   title={player.title}
                   nickname={player.nickname}
@@ -69,7 +83,7 @@ export function Players() {
                   level={player.level}
                   characterId={player.characterId}
                 />
-                <p>
+                <p className="pb-2 text-xl">
                   point&nbsp;:&nbsp;
                   {quizSetStore.scores[Number(key)]
                     ? quizSetStore.scores[Number(key)]

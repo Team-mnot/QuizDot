@@ -1,15 +1,16 @@
-import axios, { AxiosResponse } from 'axios';
+import axiosInstance from '@/shared/utils/axiosInstance';
 import { baseApi } from '@/shared/apis';
-import type { Response, UserInfo } from './types';
+import type { UserInfo } from './types';
 
 export async function GetUserInfoApi(props: number): Promise<UserInfo | null> {
   try {
-    const response: AxiosResponse<Response> = await axios.get(
+    const response = await axiosInstance.get(
       `${baseApi}/member/info/${props}`,
       {
         headers: {
           'Content-Type': 'application/json',
         },
+        withCredentials: true,
       },
     );
     if (response.status === 200) {

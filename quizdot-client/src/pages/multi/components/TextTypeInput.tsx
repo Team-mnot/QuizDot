@@ -23,10 +23,10 @@ export function TextTypeInput({
   };
 
   return (
-    <div className="flex h-24 w-[500px] justify-between py-20">
+    <div className="absolute top-[620px] flex h-24 w-[500px] justify-between py-20">
       <div>
         <Input
-          className="h-12 w-72"
+          className="h-12 w-[360px]"
           type="text"
           placeholder="정답을 입력하세요"
           value={answer}

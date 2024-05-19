@@ -22,6 +22,7 @@ export function Progress(props: ProgressProps) {
           isLabelVisible={false}
           baseBgColor="white"
           bgColor={props.color}
+          transitionDuration="0.3s"
         />
       </div>
     </div>

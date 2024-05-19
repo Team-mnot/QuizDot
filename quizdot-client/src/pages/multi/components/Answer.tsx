@@ -6,9 +6,11 @@ export function Answer({
   description: string;
 }) {
   return (
-    <div className="absolute top-1/2 w-full text-center">
-      <div className="flex">
-        <p>정답&nbsp;:&nbsp;</p>
+    <div>
+      <div className="">
+        <p className="mt-1 flex rounded-md bg-white bg-opacity-80 p-2 text-3xl">
+          정답&nbsp;:&nbsp;
+        </p>
         {answers &&
           answers.map((ans, index) => (
             <div key={ans}>

@@ -7,7 +7,7 @@ export function RoomInfo() {
   return (
     <div>
       {roomStore.roomInfo ? (
-        <div className="flex w-[700px]">
+        <div className="flex w-[740px] items-center rounded-2xl bg-white bg-opacity-70 p-2 pl-5 text-2xl">
           <p>[{roomStore.roomInfo.title}]&nbsp;</p>
           <p>
             {Math.floor(roomStore.roomInfo.roomId / 1000)}
