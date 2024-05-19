@@ -1,9 +1,12 @@
 import { LobbyChattingBox, MyProfile, OnlineUserList, RoomList } from '.';
+import { useNavigate } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 import { useLobbyQuery } from '../hooks/useLobbyQuery';
 
 export function LobbyContent({ channelId }: { channelId: number }) {
+  const navi = useNavigate();
+
   const {
     data: lobby,
     isError: isLobbyError,
@@ -20,6 +23,17 @@ export function LobbyContent({ channelId }: { channelId: number }) {
       onUnsubscribe(`chat/lobby/${channelId}`);
     };
   }, [isReady]);
+
+  useEffect(() => {
+    if (isLobbyError) {
+      const timer = setTimeout(() => {
+        window.alert('로그인 페이지로 돌아갑니다');
+        navi('/login/');
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isLobbyError, navi]);
 
   const Loading = () => {
     const [dots, setDots] = useState(1);
@@ -44,7 +58,7 @@ export function LobbyContent({ channelId }: { channelId: number }) {
   return (
     <div className="flex h-full min-h-[500px] w-full">
       {isLobbyError && (
-        <div className="flex h-full w-full items-center justify-center text-3xl">
+        <div className="flex h-full w-full flex-col items-center justify-center text-3xl">
           <div className="flex items-center justify-center rounded-2xl bg-white bg-opacity-70 p-6">
             해당 채널의 로비를 불러올 수 없습니다.
           </div>
