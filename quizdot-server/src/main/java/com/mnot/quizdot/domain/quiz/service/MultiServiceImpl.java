@@ -64,7 +64,7 @@ public class MultiServiceImpl implements MultiService {
 
         log.info("[updateScores] Member : {}, Rank : {}, Score : {}", memberId, size, score);
 
-        // 다른 플레이어들에게 실시간 점수 업데이트 메시지 보내기
+        // 다른 플레이어들에게 실시간 점수 업데이gg트 메시지 보내기
         ScoreDto updatedScore = new ScoreDto(memberId, newScore);
         messagingTemplate.convertAndSend(GAME_DESTINATION + roomId,
             MessageDto.of(SERVER_SENDER, MessageType.UPDATE, updatedScore));
@@ -76,9 +76,8 @@ public class MultiServiceImpl implements MultiService {
             messagingTemplate.convertAndSend(getGameDestination(roomId),
                 MessageDto.of(SERVER_SENDER, "모든 플레이어가 답안을 제출하였습니다.", MessageType.PASS,
                     System.currentTimeMillis()));
-
-            messagingTemplate.convertAndSend("/sub/chat/game/" + roomId,
-                MessageDto.of(SERVER_SENDER, "모든 플레이어가 답안을 제출하였습니다.", MessageType.PASS));
+//            messagingTemplate.convertAndSend("/sub/chat/game/" + roomId,
+//                MessageDto.of(SERVER_SENDER, "모든 플레이어가 답안을 제출하였습니다.", MessageType.CHAT));
         }
     }
 
