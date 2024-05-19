@@ -1,9 +1,8 @@
 package com.mnot.quizdot.global.config;
 
 import com.mnot.quizdot.global.jwt.JWTUtil;
-import com.mnot.quizdot.global.result.error.ErrorCode;
-import com.mnot.quizdot.global.result.error.exception.BusinessException;
-import com.mnot.quizdot.global.util.RedisUtil;
+import com.mnot.quizdot.global.util.SessionUtil;
+import com.mnot.quizdot.global.util.SessionManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -15,19 +14,21 @@ import org.springframework.web.socket.handler.WebSocketHandlerDecorator;
 @Slf4j
 public class CustomWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
 
-    private final RedisUtil redisUtil;
+    private final SessionUtil sessionUtil;
+    private final SessionManager sessionManager;
     private final JWTUtil jwtUtil;
-
-    public CustomWebSocketHandlerDecorator(WebSocketHandler handler, RedisUtil redisUtil,
-        JWTUtil jwtUtil) {
+    public CustomWebSocketHandlerDecorator(WebSocketHandler handler,
+        SessionUtil sessionUtil, JWTUtil jwtUtil, SessionManager sessionManager) {
         super(handler);
-        this.redisUtil = redisUtil;
+        this.sessionUtil = sessionUtil;
         this.jwtUtil = jwtUtil;
+        this.sessionManager = sessionManager;
     }
 
     // 웹소켓 연결
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        sessionManager.addSession(session.getId(), session);
         super.afterConnectionEstablished(session);
     }
 
@@ -54,14 +55,14 @@ public class CustomWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
         throws Exception {
         super.afterConnectionClosed(session, status);
         // 웹소켓 연결이 끊긴 사용자의 데이터 삭제
+        sessionManager.removeSession(session.getId());
+        log.info("연결 끊긴 유저의 sessionId: "+session.getId());
         String accessToken = (String) session.getAttributes().get("access");
         if (accessToken != null) {
-            redisUtil.deleteInactivePlayerData(String.valueOf(jwtUtil.getId(accessToken)));
-        }
-        // TODO : 나중에 살리기
-//        else {
-//            log.info("헤더 없는데?");
+            sessionUtil.deleteInactivePlayerData(String.valueOf(jwtUtil.getId(accessToken)));
+        } else {
+            log.info("헤더 없는데?");
 //            throw new BusinessException(ErrorCode.HTTP_HEADER_INVALID);
-//        }
+        }
     }
 }
