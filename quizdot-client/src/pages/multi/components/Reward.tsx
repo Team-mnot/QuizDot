@@ -18,7 +18,7 @@ export function Reward({
   channelId: number;
 }) {
   const router = useRouter();
-  const secCount = useRef<number>(10);
+  const secCount = useRef<number>(20);
   const [updateCount, setUpdateCount] = useState<number>(secCount.current);
 
   const [toastMessage, setToastMessage] = useState<string>('');
@@ -81,39 +81,33 @@ export function Reward({
   }, []);
 
   return (
-    <div className="flex h-[500px] w-[500px] flex-col justify-between rounded-md border-r-2 bg-white p-4 py-5 shadow-md">
-      <div className="flex">
-        <Button
-          className="w-[100px]"
-          value={`${updateCount} 초 후 대기실로 이동`}
-          onClick={handleReturnToRoom}
-        />
-        <Button
-          className="w-[100px]"
-          value={`로비로 이동`}
-          onClick={handleLeaveRoom}
-        />
+    <div className="flex h-[550px] w-[720px] flex-col justify-between rounded-md border-r-2 bg-white p-4 py-5 shadow-md">
+      <div className="text-center text-3xl">게임 결과</div>
+
+      <div className="my-[10px] text-center text-lg">
+        {updateCount} 초 후 대기실로 이동합니다
       </div>
+      <hr className="mx-3 my-1 border-2 " />
       <div>
         <table>
           <tbody>
             <tr className={'text-center'}>
-              <td>
+              <td className="w-[60px]">
                 <p>랭킹</p>
               </td>
-              <td>
+              <td className="w-[120px]">
                 <p>레벨</p>
               </td>
-              <td>
+              <td className="w-[180px]">
                 <p>닉네임</p>
               </td>
-              <td>
+              <td className="w-[80px]">
                 <p>점수</p>
               </td>
-              <td>
+              <td className="w-[80px]">
                 <p>코인</p>
               </td>
-              <td>
+              <td className="w-[80px]">
                 <p>경험치</p>
               </td>
             </tr>
@@ -126,35 +120,48 @@ export function Reward({
                   <td>
                     <p>
                       Lv.{rank.level}&nbsp;
-                      {rank.curLevel != 0 && `+ (${rank.curLevel})`}
+                      {rank.curLevel != 0 && `(+${rank.curLevel})`}
                     </p>
                   </td>
                   <td>
                     <p>{rank.nickname}</p>
                   </td>
                   <td>
-                    <p>{rank.point}</p>
+                    <p>{rank.score}</p>
                   </td>
                   <td>
                     <p>{rank.point}</p>
                   </td>
                   <td>
-                    <p>{rank.curExp}</p>
-                  </td>
-                  <td>
-                    <Progress
-                      color="yellow"
-                      currentValue={5000}
-                      maxValue={10000}
-                      label={`${rank.curExp}/1000`}
-                      padding=""
-                      size="w-48"
-                    />
+                    <td>
+                      <Progress
+                        color="yellow"
+                        currentValue={rank.curExp}
+                        maxValue={1000}
+                        label={`${rank.curExp}/1000 +(${rank.point})`}
+                        padding=""
+                        size="w-48"
+                      />
+                    </td>
                   </td>
                 </tr>
               ))}
           </tbody>
         </table>
+        <div className="flex justify-around">
+          <Button
+            className="w-[200px] hover:border-transparent hover:bg-gray-200 focus:outline-none
+          active:bg-gray-300"
+            value={'대기실로 이동'}
+            onClick={handleReturnToRoom}
+          />
+          <Button
+            className="w-[200px] hover:border-transparent hover:bg-gray-200 focus:outline-none
+          active:bg-gray-300"
+            value={`로비로 이동`}
+            onClick={handleLeaveRoom}
+          />
+        </div>
       </div>
 
       {toastState === true ? (

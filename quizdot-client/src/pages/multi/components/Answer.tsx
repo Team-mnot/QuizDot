@@ -6,11 +6,9 @@ export function Answer({
   description: string;
 }) {
   return (
-    <div>
-      <div className="">
-        <p className="mt-1 flex rounded-md bg-white bg-opacity-80 p-2 text-3xl">
-          정답&nbsp;:&nbsp;
-        </p>
+    <div className="flex flex-col justify-center">
+      <div className="mt-1 flex justify-center rounded-md bg-white bg-opacity-80 p-2 text-3xl">
+        정답&nbsp;:&nbsp;
         {answers &&
           answers.map((ans, index) => (
             <div key={ans}>
@@ -18,7 +16,11 @@ export function Answer({
             </div>
           ))}
       </div>
-      <p>{description}</p>
+      {description && (
+        <div className="mt-1 max-w-[640px] rounded-md bg-white bg-opacity-80 p-2">
+          {description}
+        </div>
+      )}
     </div>
   );
 }

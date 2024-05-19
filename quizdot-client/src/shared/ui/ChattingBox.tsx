@@ -19,6 +19,12 @@ export function ChattingBox(props: ChattingBoxProps) {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
   const focusInput = () => {
     if (inputRef.current) {
       inputRef.current.focus();
@@ -65,7 +71,7 @@ export function ChattingBox(props: ChattingBoxProps) {
           className={
             'chat-input flex-grow rounded-l-md border border-gray-300 pl-4'
           }
-          placeholder="TAB 눌러서 입력창 활성화"
+          placeholder="채팅 내용을 입력하세요"
         />
 
         {/* 전송 버튼 */}

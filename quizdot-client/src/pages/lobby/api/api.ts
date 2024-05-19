@@ -13,7 +13,7 @@ async function createRoomApi(
   const apiUrl = `${baseApi}/${url}/channel/${channelId}`;
   try {
     const response = await jwtAxiosInstance.post(apiUrl, creatingRoomInfo);
-    console.log('createRoomApi is successfully:', response.data);
+    // console.log('createRoomApi is successfully:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error to createRoomApi:', error);

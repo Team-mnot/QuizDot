@@ -1,5 +1,5 @@
 import { Button, Dropbox, Input, Toast } from '@/shared/ui';
-import { useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { CreatingRoomType } from '../api/types';
 import { useRouter } from '@/shared/hooks';
 import {
@@ -12,9 +12,11 @@ import {
 import { createRoomApi } from '../api/api';
 import { enterRoomApi } from '@/pages/waitingRoom/api/api';
 import { useRoomStore } from '@/shared/stores/connectionStore/roomStore';
+import { useUserStore } from '@/shared/stores/userStore/userStore';
 
 export function RoomCreation({ channelId }: { channelId: number }) {
-  const [title, setTitle] = useState<string>('테스트');
+  const userStore = useUserStore();
+  const [title, setTitle] = useState<string>(`${userStore.nickname}의 퀴즈닷`);
   const [open, setOpen] = useState<number>(1);
   const [password, setPassword] = useState<string>('');
   const [mode, setMode] = useState<string>('NORMAL');
@@ -26,6 +28,14 @@ export function RoomCreation({ channelId }: { channelId: number }) {
   const [toastState, setToastState] = useState<boolean>(false);
   const router = useRouter();
   const roomStore = useRoomStore();
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
   useEffect(() => {
     if (mode === 'SURVIVAL') {
@@ -97,9 +107,10 @@ export function RoomCreation({ channelId }: { channelId: number }) {
     <div className="h-[550px] w-[500px]">
       <div className="px-[30px] py-[10px]">
         <p className="p-[10px]">방 제목</p>
-        <Input
+        <input
+          ref={inputRef}
           type="text"
-          className="w-full"
+          className="w-full rounded-md border-2 bg-white px-[20px] py-[10px] shadow-md focus:outline-none"
           value={title}
           onChange={changeTitle}
         />

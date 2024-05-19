@@ -28,8 +28,8 @@ export function Quiz({
         </div>
       </div>
       {questionType === 'IMAGE' && (
-        <div className="w-[500px] rounded-md border-r-2 bg-white p-5 shadow-md">
-          <img src={imagePath} alt="" className="h-[300px] w-[400px]" />
+        <div className="flex w-[640px] justify-center rounded-md border-r-2 bg-white p-5 shadow-md">
+          <img src={imagePath} alt="" className="max-h-[300px] max-w-[500]" />
         </div>
       )}
     </div>

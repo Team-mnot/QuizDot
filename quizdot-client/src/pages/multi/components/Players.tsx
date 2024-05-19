@@ -1,15 +1,18 @@
-import { useContext, useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Character } from '@/shared/ui/Character';
-
+import type { PlayersType } from '@/pages/waitingRoom/api/types';
 import { useRoomStore } from '@/shared/stores/connectionStore/roomStore';
+import { useUserStore } from '@/shared/stores/userStore/userStore';
 import { MessageDto } from '@/shared/apis/types';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 import { useQuizSetStore } from '@/shared/stores/connectionStore/quizSetStore';
 
 export function Players() {
   const roomStore = useRoomStore();
+  const userStore = useUserStore();
   const quizSetStore = useQuizSetStore();
   const playersCount = useRef<number>(Object.keys(roomStore.players).length);
+  const [playerList, setPlayerList] = useState<PlayersType>();
 
   const { isReady, onSubscribeWithCallBack, onUnsubscribe } =
     useContext(WebSocketContext);
@@ -20,6 +23,17 @@ export function Players() {
       roomStore.leavedPlayer(message.data);
     }
   };
+
+  useEffect(() => {
+    setPlayerList(roomStore.players);
+    roomStore.enteredPlayer(userStore.id, {
+      characterId: userStore.characterId,
+      level: userStore.level,
+      nickname: userStore.nickname,
+      nicknameColor: userStore.nicknameColor,
+      title: userStore.title,
+    });
+  }, []);
 
   useEffect(() => {
     onSubscribeWithCallBack(
@@ -38,7 +52,7 @@ export function Players() {
         className="mt-[200px] flex flex-wrap"
         style={{ width: '400px', height: '500px' }}
       >
-        {roomStore.players &&
+        {playerList &&
           Object.entries(roomStore.players)
             .slice(0, (playersCount.current + 1) / 2)
             .map(([key, player]) => (
@@ -67,7 +81,7 @@ export function Players() {
         className="mt-[200px] flex flex-wrap  pl-[40px]"
         style={{ width: '400px', height: '500px' }}
       >
-        {roomStore.players &&
+        {playerList &&
           Object.entries(roomStore.players)
             .slice((playersCount.current + 1) / 2, playersCount.current)
             .map(([key, player]) => (

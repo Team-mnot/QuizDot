@@ -49,7 +49,7 @@ export function CharacterList(chaInfo: {
               <img src={`/images/${character.id}.gif`} alt="" />
             </div>
             <span>
-              No {character.id} : {character.name}
+              No.{character.id} {character.name}
             </span>
           </div>
         ))}

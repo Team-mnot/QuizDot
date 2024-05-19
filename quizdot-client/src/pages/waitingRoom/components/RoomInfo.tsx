@@ -58,7 +58,7 @@ export function RoomInfo({ roomInfo }: { roomInfo: RoomInfoType }) {
   return (
     <div className="flex flex-col">
       <div className="flex items-center">
-        <div className="flex w-full items-center rounded-2xl bg-white bg-opacity-70 p-2 pl-5 text-2xl">
+        <div className="inline-flex items-center rounded-2xl bg-white bg-opacity-70 p-2 px-5 text-2xl">
           <p>[{roomInfo.title}]&nbsp;</p>
           <p>
             {Math.floor(roomInfo.roomId / 1000)}
