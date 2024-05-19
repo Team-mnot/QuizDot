@@ -121,26 +121,16 @@ public class OneToOneServiceImpl implements OneToOneService {
             throw new BusinessException(ErrorCode.NOT_EXISTS_IN_ROOM);
         }
 
-        int enemyPlayerId = 0;
-        for (int i : players) {
-            if (i != memberId) {
-                enemyPlayerId = i;
-            }
-        }
-        if (enemyPlayerId == 0) {
-            throw new BusinessException(ErrorCode.NOT_EXISTS_IN_ROOM);
-        }
-
-        Double curScore = (isCorrect == 1) ? redisTemplate.opsForZSet()
-            .incrementScore(boardKey, enemyPlayerId, -1)
-            : redisTemplate.opsForZSet().score(boardKey, enemyPlayerId);
+        Double curScore = (isCorrect != 1) ? redisTemplate.opsForZSet()
+            .incrementScore(boardKey, memberId, -1)
+            : redisTemplate.opsForZSet().score(boardKey, memberId);
 
         if (curScore == null) {
             throw new BusinessException(ErrorCode.NOT_EXSITS_BOARD);
         }
 
         // 실시간 점수 업데이트 메시지 보내기
-        ScoreDto updatedScore = new ScoreDto(enemyPlayerId, curScore.longValue());
+        ScoreDto updatedScore = new ScoreDto(memberId, curScore.longValue());
         messagingTemplate.convertAndSend(getGameDestination(roomId),
             MessageDto.of(SERVER_SENDER, MessageType.UPDATE, updatedScore));
 
@@ -168,7 +158,7 @@ public class OneToOneServiceImpl implements OneToOneService {
 
         List<MultiRecord> multiRecordList = multiRecordRepository.findAllByMember_IdAndMode(
             memberIdList,
-            ModeType.NORMAL);
+            ModeType.ILGITO);
 
         Map<Integer, MultiRecord> multiRecordMap = multiRecordList.stream()
             .collect(Collectors.toMap(multiRecord -> multiRecord.getMember().getId(),

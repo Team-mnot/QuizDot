@@ -47,6 +47,7 @@ public class MemberServiceImpl implements MemberService {
     //비밀번호 암호화
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    //TODO : 가챠 필요포인트 정하기
     private final static int claimPoint = 10000;
 
     @Override
@@ -202,6 +203,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberInfoDto getInfo(int memberId) {
+        //TODO : 일대일 모드
         Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEMBER));
         MultiRecord normalRecord = multiRecordRepository.findByMemberIdAndMode(memberId,
@@ -210,7 +212,9 @@ public class MemberServiceImpl implements MemberService {
         MultiRecord survivalRecord = multiRecordRepository.findByMemberIdAndMode(memberId,
                 ModeType.SURVIVAL)
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_RECORD));
-
+        MultiRecord otoRecord = multiRecordRepository.findByMemberIdAndMode(memberId,
+                ModeType.ILGITO)
+            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_RECORD));
         String title = titleRepository.findById(member.getTitleId())
             .orElseThrow(() -> new BusinessException(ErrorCode.LOCK_TITLE_ERROR)).getTitle();
 
@@ -218,21 +222,29 @@ public class MemberServiceImpl implements MemberService {
             : (float) normalRecord.getWinCount() / normalRecord.getTotalCount() * 100;
         float survivalRate = survivalRecord.getTotalCount() == 0 ? 0.0f
             : (float) survivalRecord.getWinCount() / survivalRecord.getTotalCount() * 100;
+        float otoRate = otoRecord.getTotalCount() == 0 ? 0.0f
+            : (float) otoRecord.getWinCount() / otoRecord.getTotalCount() * 100;
+
         float totalRate =
-            (survivalRecord.getTotalCount() + normalRecord.getTotalCount()) == 0 ? 0.0f
-                : (float) (survivalRecord.getWinCount() + normalRecord.getWinCount())
-                    / (survivalRecord.getTotalCount() + normalRecord.getTotalCount()) * 100;
+            (survivalRecord.getTotalCount() + normalRecord.getTotalCount()
+                + otoRecord.getTotalCount()) == 0 ? 0.0f
+                : (float) (survivalRecord.getWinCount() + normalRecord.getWinCount()
+                    + otoRecord.getWinCount())
+                    / (survivalRecord.getTotalCount() + normalRecord.getTotalCount()
+                    + otoRecord.getTotalCount()) * 100;
 
         return MemberInfoDto.builder()
             .id(memberId)
             .totalRate(totalRate)
             .normalRate(normalRate)
             .survivalRate(survivalRate)
+            .otoRate(otoRate)
             .nickname(member.getNickname())
             .nicknameColor(member.getNicknameColor())
             .totalWinCount(normalRecord.getWinCount() + survivalRecord.getWinCount())
             .normalWinCount(normalRecord.getWinCount())
             .survivalWinCount(survivalRecord.getWinCount())
+            .otoWinCount(otoRecord.getWinCount())
             .title(title)
             .titleListDtos(titleRepository.findAllTitlesByMemberId(memberId))
             .characterId(member.getCharacterId())
@@ -285,9 +297,8 @@ public class MemberServiceImpl implements MemberService {
             throw new BusinessException(ErrorCode.REJECT_ACCOUNT_POINT);
         }
 
-        //TODO : 캐릭터 정해지면 바꿀것
-        //2부터 10까지
-        int pickCharacter = (int) (Math.random() * 9) + 2;
+        //2부터 11까지
+        int pickCharacter = (int) (Math.random() * 10) + 2;
         member.updatePoint(member.getPoint() - claimPoint);
         List<Integer> characterList = memberCharacterRepository.findCharacterIdsByMemberId(
             member.getId());
