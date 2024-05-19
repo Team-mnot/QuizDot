@@ -52,6 +52,7 @@ export function LogInForm() {
       password: data.password as string,
     };
     const info = await LogInApi(logInProps);
+    console.log(info);
     // 로그인 성공 시 유저 정보 로컬 스토리지에 저장, 채널로 이동
     if (info !== null) {
       store.getData(info);
