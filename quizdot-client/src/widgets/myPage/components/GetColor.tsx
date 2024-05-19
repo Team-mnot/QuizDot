@@ -18,6 +18,7 @@ export function GetColor(props: GetColorProps) {
       ></div>
       <span className="mt-1">{props.color}</span>
       <span className="mt-6">닉네임 색상이 변경되었습니다</span>
+      <span className="mt-1 text-lg">Enter ▶ 다시 뽑기</span>
     </div>
   );
 }

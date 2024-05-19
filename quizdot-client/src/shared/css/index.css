@@ -29,6 +29,10 @@
   @apply text-[#243952] hover:text-[#132841];
 }
 
+.custom-btn {
+  @apply hover:border-transparent hover:bg-gray-200 focus:outline-none active:bg-gray-300;
+}
+
 .custom-btn-transparent {
   @apply bg-transparent text-[2em] transition-colors duration-300 hover:border-transparent focus:outline-none;
 }

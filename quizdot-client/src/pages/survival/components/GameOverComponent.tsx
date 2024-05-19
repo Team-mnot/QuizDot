@@ -19,7 +19,7 @@ export function GameOverComponent({ rewardData }: { rewardData: any[] }) {
   const roomStore = useRoomStore();
   const userStore = useUserStore();
   const { setIsGameOver, reset } = useQuizStore();
-  const [countdown, setCountdown] = useState(5); // 10초 카운트다운 초기값 설정
+  const [countdown, setCountdown] = useState(5); // 카운트다운 초기값 설정
   const originRoomId = roomStore.roomInfo?.roomId
     ? roomStore.roomInfo.roomId
     : 0;
@@ -49,8 +49,8 @@ export function GameOverComponent({ rewardData }: { rewardData: any[] }) {
   return (
     <div className="game-over-container bg-gray-500 bg-opacity-50 text-yellow-50">
       <h1 className="mb-4 text-2xl font-bold">게임 결과</h1>
-      <p className="mb-4">{countdown}초 뒤에 대기실로 이동합니다</p>{' '}
       {/* 카운트다운 메시지 */}
+      <p className="mb-4">{countdown}초 뒤에 대기실로 이동합니다</p>{' '}
       <div className="overflow-x-auto">
         <table className="reward-table min-w-full border">
           <thead className="">

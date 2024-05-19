@@ -15,10 +15,11 @@ export function GetCharacter(props: GetCharacterProps) {
           backgroundColor: 'black',
         }}
       >
-        {props.character}
+        <img className="" src={`/images/${props.character}.gif`} alt="" />
       </div>
-      <span className="mt-1">{props.character}</span>
-      <span className="mt-6">캐릭터를 얻었습니다</span>
+      <span className="mt-1">No {props.character}</span>
+      <span className="mt-6">캐릭터를 뽑았습니다</span>
+      <span className="mt-1 text-lg">Enter ▶ 다시 뽑기</span>
     </div>
   );
 }

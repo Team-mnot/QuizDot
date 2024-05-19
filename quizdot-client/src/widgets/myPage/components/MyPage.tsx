@@ -25,31 +25,42 @@ export function MyPage(props: { id: number }) {
     clickModal: clickUserModal,
     closeModal: closeUserModal,
   } = useOpenModal();
+  // 뭘 뽑았는지에 따라 다른 모달 띄우기 위한 변수
   const [getItem, setGetItem] = useState<string>('');
   const [getCha, setGetCha] = useState<number>(0);
 
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [selected, setSelected] = useState('Record');
 
+  const [isBeforeCha, setIsBeforeCha] = useState<boolean>(false);
+  const [isBeforeCol, setIsBeforeCol] = useState<boolean>(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const accessToken = localStorage.getItem('accessToken');
         const userinfo = await GetUserInfoApi(props.id);
         if (userinfo) {
+          console.log(userinfo);
           setUserInfo(userinfo);
-        }
-        if (accessToken) {
-          localStorage.setItem('accessToken', accessToken!);
         }
       } catch (error) {
         console.error('Error Fetching UserInfo', error);
       }
     };
     fetchData();
-  }, []);
+  }, [getCha]);
 
   const handleGetCha = async () => {
+    if (!isBeforeCha) {
+      const confirmation = window.confirm(
+        '10,000 포인트를 사용하여 캐릭터 뽑기를 하시겠습니까?\n뽑기에서 중복된 캐릭터가 나올 수 있습니다',
+      );
+      if (!confirmation) {
+        return;
+      } else {
+        setIsBeforeCha(true);
+      }
+    }
     const cha = await GetCharacterApi();
     if (cha) {
       store.setPoint();
@@ -60,6 +71,16 @@ export function MyPage(props: { id: number }) {
   };
 
   const handleGetCol = async () => {
+    if (!isBeforeCol) {
+      const confirmation = window.confirm(
+        '10,000 포인트를 사용하여 닉네임 색상 뽑기를 하시겠습니까?\n색상은 완전히 무작위이며, 변경 시 이전의 색상은 사라집니다',
+      );
+      if (!confirmation) {
+        return;
+      } else {
+        setIsBeforeCol(true);
+      }
+    }
     const color = await GetColerApi();
     if (color) {
       store.setNicknameColor(color);
@@ -109,10 +130,18 @@ export function MyPage(props: { id: number }) {
           padding="pt-[10px]"
         />
         <span className="mt-1">보유 코인: {store.point.toLocaleString()} </span>
-        <button onClick={handleGetCol} className="mt-1 w-full shadow-md">
+        <button
+          onClick={handleGetCol}
+          className="mt-1 w-full shadow-md hover:border-transparent hover:bg-gray-200 focus:outline-none
+          active:bg-gray-300"
+        >
           닉네임 색상 뽑기
         </button>
-        <button onClick={handleGetCha} className="mt-1 w-full shadow-md">
+        <button
+          onClick={handleGetCha}
+          className="mt-1 w-full shadow-md hover:border-transparent hover:bg-gray-200 focus:outline-none
+          active:bg-gray-300"
+        >
           캐릭터 뽑기
         </button>
       </div>
