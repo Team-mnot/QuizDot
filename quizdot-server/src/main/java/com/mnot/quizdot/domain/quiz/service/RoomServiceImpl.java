@@ -35,6 +35,7 @@ public class RoomServiceImpl implements RoomService {
     private static final String ROOM_PLAYER_DESTINATION = "/sub/players/room/";
     private static final String ROOM_INFO_DESTINATION = "/sub/info/room/";
     private static final String ROOM_CHAT_DESTINATION = "/sub/chat/room/";
+    private static final String SURVIVAL_CHAT_DESTINATION = "/sub/chat/game/";
     private final LobbyService lobbyService;
     private final RedisTemplate redisTemplate;
     private final MemberRepository memberRepository;
@@ -128,9 +129,12 @@ public class RoomServiceImpl implements RoomService {
         redisTemplate.opsForHash().delete(playerKey, memberId);
         messagingTemplate.convertAndSend(ROOM_PLAYER_DESTINATION + roomId,
             MessageDto.of(SERVER_SENDER, MessageType.LEAVE, memberId));
+        // 서바이벌 채팅방에서 퇴장 시, 알림
+        messagingTemplate.convertAndSend(SURVIVAL_CHAT_DESTINATION + roomId,
+            MessageDto.of(SERVER_SENDER, player.getNickname() + "님이 퇴장하셨습니다.", MessageType.CHAT));
+        // 대기실 채팅방에서 퇴장 시, 알림
         messagingTemplate.convertAndSend(ROOM_CHAT_DESTINATION + roomId,
             MessageDto.of(SERVER_SENDER, player.getNickname() + "님이 퇴장하셨습니다.", MessageType.CHAT));
-        log.info("퇴장메시지 {}번방에 전송", roomId); // TODO : 서버 프론트 코드 LEAVE 받게 수정하면 삭제
 
         // 방장이 퇴장한 경우 체크
         String roomKey = redisUtil.getRoomInfoKey(roomId);
