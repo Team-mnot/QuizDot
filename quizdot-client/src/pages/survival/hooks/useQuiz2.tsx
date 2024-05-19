@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useQuizStore } from '../store';
-import useRequestQuestion from './useRequestQuestion';
+// import useRequestQuestion from './useRequestQuestion';
 
-export function useQuiz2(roomId: number, category: string, gameMode: string) {
+export function useQuiz2() {
   const [loading, setLoading] = useState(true); // customHook 국밥
   const [error, setError] = useState<Error | string | null>(null); // 국밥. 사실 여기서 Error 타입은 안쓰고잇죠~ 에러메세지 렌더링 안할거라 ~
   // useQuizIndex에서 사용하십쇼
@@ -32,7 +32,7 @@ export function useQuiz2(roomId: number, category: string, gameMode: string) {
     setCurrentQuiz(quizzes[currentQuizIndex] || null);
   }, [currentQuizIndex, quizzes, setCurrentQuiz]);
 
-  const { requestQuestion } = useRequestQuestion();
+  // const { requestQuestion } = useRequestQuestion();
 
   // 다음 퀴즈로 ~!
   // TODO : handleNextQuiz 분리해서 변수 세개받는걸로 만들어야함
@@ -42,7 +42,7 @@ export function useQuiz2(roomId: number, category: string, gameMode: string) {
       if (nextIndex >= quizzes.length) {
         // 모든 문제를 다 출제한 경우
         // TODO : 이거 호스트만 할 필요가 없긴 한데 나중에 추가할지 오류나는지 보자
-        requestQuestion(roomId, category, 3, gameMode); // 새로운 문제 요청
+        // requestQuestion(roomId, category, 3, gameMode); // 새로운 문제 요청
         setCurrentQuizIndex(0); // 다시 첫 번째 문제로 인덱스 설정
       } else {
         setCurrentQuizIndex(nextIndex);

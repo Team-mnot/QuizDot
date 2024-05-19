@@ -28,7 +28,7 @@ export const predefinedPositions = [
 
 export function PlayerPreview() {
   const players = usePlayerStore((state) => state.players);
-  console.log(players);
+  // console.log(players);
 
   return (
     <div>

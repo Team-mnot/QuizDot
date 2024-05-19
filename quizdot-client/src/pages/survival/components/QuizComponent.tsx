@@ -1,5 +1,3 @@
-//src/pages/survival/components/QuizComponent.tsx
-
 import { useQuiz2 } from '../hooks/useQuiz2';
 import { useState, useEffect, useRef } from 'react';
 import requestQuestion from '../hooks/useRequestQuestion';
@@ -25,11 +23,8 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
   } = useQuizStore();
 
   // TODO : useQuiz에 handleNextQuiz 넣을 필요 없는데 나중에 분리합시다
-  const { loading, error } = useQuiz2(
-    roomInfo.roomId,
-    roomInfo.category,
-    roomInfo.gameMode,
-  );
+  const { loading, error } = useQuiz2();
+
   const [userAnswer, setUserAnswer] = useState(''); // 사용자 입력을 저장할 상태
   const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false); // 사용자 입력을 저장할 상태
   const [countdown, setCountdown] = useState(10); // 카운트다운 초기값 설정
@@ -101,7 +96,7 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowHint(true);
-    }, 3000);
+    }, 7000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -144,7 +139,7 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
       >
         <div key={currentQuiz.id}>
           <h2>{currentQuiz.question}</h2>
-          <p>{currentQuiz.description}</p>
+          {/* <p>{currentQuiz.description}</p> */}
           {/* <p>Type: {currentQuiz.questionType}</p> */}
           {/* <p>Answers: {currentQuiz.answers.join(', ')}</p> */}
         </div>

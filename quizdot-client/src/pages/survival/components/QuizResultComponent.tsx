@@ -6,6 +6,7 @@ import { useQuiz2 } from '../hooks/useQuiz2';
 import { RoomInfoType } from '@/shared/apis/types';
 import { useUserStore } from '@/shared/stores/userStore/userStore';
 import { getQuizResult } from '../api/api';
+import useRequestQuestion from '../hooks/useRequestQuestion';
 // interface QuizResultComponentProps {
 //   roomInfo: RoomInfoType;
 // }
@@ -19,11 +20,7 @@ export function QuizResultComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
     quizzes,
     currentQuizIndex,
   } = useQuizStore();
-  const { handleNextQuiz } = useQuiz2(
-    roomInfo.roomId,
-    roomInfo.category,
-    roomInfo.gameMode,
-  );
+  const { handleNextQuiz } = useQuiz2();
 
   const userStore = useUserStore();
   const [answerIndex, setAnswerIndex] = useState<number>();
@@ -34,7 +31,6 @@ export function QuizResultComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
       getQuizResult(roomInfo.roomId); // 방장만 호출하는거
     }
     setAnswerIndex(currentQuizIndex);
-    // handleNextQuiz(); // 각 개인이 갖고있는 퀴즈목록에서 다음으로 가자는거임
     const timer = setTimeout(() => {
       setShowResult(false);
       setShowCountDown(true); // 카운트다운 페이지 가져와
@@ -46,11 +42,24 @@ export function QuizResultComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
     return () => clearTimeout(timer);
   }, []);
 
+  const { requestQuestion } = useRequestQuestion();
+
   useEffect(() => {
     if (answerIndex !== undefined) {
       setCurrentAnswer(quizzes[answerIndex].answers);
       setCurrentDescription(quizzes[answerIndex].description);
       handleNextQuiz(); // 각 개인이 갖고있는 퀴즈목록에서 다음으로 가자는거임
+      if (
+        roomInfo.hostId == userStore.id &&
+        answerIndex == quizzes.length - 1
+      ) {
+        requestQuestion(
+          roomInfo.roomId,
+          roomInfo.category,
+          3,
+          roomInfo.gameMode,
+        ); // 새로운 문제 요청
+      }
     }
   }, [answerIndex]);
 

@@ -11,6 +11,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
         <ReactQueryDevtools initialIsOpen={true} />
+        <audio src="sounds/jazzyfrenchy.mp3" autoPlay loop />
       </QueryClientProvider>
     </div>
   );

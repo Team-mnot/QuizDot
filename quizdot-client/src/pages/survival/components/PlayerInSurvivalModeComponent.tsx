@@ -39,7 +39,7 @@ export function PlayerInSurvivalModeComponent({
           <img
             src={`/images/${displayCharacterId}.gif`}
             alt={nickname}
-            className={'h-20 w-20 rounded-full object-cover'}
+            className={'h-28 w-28 rounded-full object-cover'}
           />
         ) : (
           <Lottie
