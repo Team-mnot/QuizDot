@@ -6,6 +6,7 @@ import requestQuestion from '../hooks/useRequestQuestion';
 import { useQuizStore } from '../store';
 import { postQuizResult } from '../api/api';
 import { RoomInfoType } from '@/shared/apis/types';
+import { Progress } from '@/shared/ui';
 
 export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
   const {
@@ -31,6 +32,7 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
   );
   const [userAnswer, setUserAnswer] = useState(''); // 사용자 입력을 저장할 상태
   const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false); // 사용자 입력을 저장할 상태
+  const [countdown, setCountdown] = useState(10); // 카운트다운 초기값 설정
 
   const {
     loading: submitLoading,
@@ -99,21 +101,35 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowHint(true);
-    }, 10000);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, []);
 
   // 여기서 n초뒤에 결과창으로 넘어갈 때( 가기전 ) 모든 로직 수행해야함
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const countdownTimer = setInterval(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
+
+    const resultTimer = setTimeout(() => {
       setShowChatBox(true);
       setShowResult(true);
       setShowHint(false);
-    }, 20000);
+      clearInterval(countdownTimer);
+    }, 10000);
 
-    return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 해제
+    return () => {
+      clearInterval(countdownTimer); // 컴포넌트 언마운트 시 타이머 해제
+      clearTimeout(resultTimer);
+    };
   }, []);
+
+  const getColor = () => {
+    if (countdown <= 3) return 'red';
+    if (countdown <= 5) return 'yellow';
+    return 'lightgreen';
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.toString()}</div>;
@@ -146,6 +162,15 @@ export function QuizComponent({ roomInfo }: { roomInfo: RoomInfoType }) {
           <img src={currentQuiz.imagePath} alt="" className="h-[300px]" />
         </div>
       )}
+
+      <Progress
+        padding="py-5"
+        size="w-[500px]"
+        color={getColor()}
+        label={`${countdown}`}
+        currentValue={countdown}
+        maxValue={10}
+      ></Progress>
 
       {/* 정답 제출 합시다 ~ */}
       <div>
