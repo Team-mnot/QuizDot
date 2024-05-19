@@ -1,5 +1,5 @@
 export { LeaveBtn } from './LeaveBtn';
-export { MultiMatchBtn } from './MultiMatchBtn';
+export { MatchBtn } from './MatchBtn';
 export { SurvivalMatchBtn } from './SurvivalMatchBtn';
 export { RoomHeader } from './RoomHeader';
 export { RoomContent } from './RoomContent';

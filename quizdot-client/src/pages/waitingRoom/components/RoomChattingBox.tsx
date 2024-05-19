@@ -4,7 +4,7 @@ import { useUserStore } from '@/shared/stores/userStore/userStore';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 
 import { useRouter } from '@/shared/hooks';
-import { getQuizzes } from '@/shared/apis/commonApi';
+import { getQuizzesApi } from '@/shared/apis/commonApi';
 import { useRoomStore } from '@/shared/stores/connectionStore/roomStore';
 import { MessageDto } from '@/shared/apis/types';
 import { useQuizSetStore } from '@/shared/stores/connectionStore/quizSetStore';
@@ -42,7 +42,7 @@ export function RoomChattingBox({
   //   입장하기 전에 문제를 받아서 이동
   const handleEnterRoomWithQuiz = async () => {
     if (roomStore.roomInfo) {
-      await getQuizzes(
+      await getQuizzesApi(
         roomStore.roomInfo.roomId,
         roomStore.roomInfo.category,
         roomStore.roomInfo.maxQuestion,

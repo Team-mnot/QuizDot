@@ -1,6 +1,6 @@
 import { RoomInfo } from './RoomInfo';
 import { LeaveBtn } from './LeaveBtn';
-import { MultiMatchBtn, SurvivalMatchBtn } from '.';
+import { MatchBtn, SurvivalMatchBtn } from '.';
 import { useContext, useEffect } from 'react';
 import { useRoomStore } from '@/shared/stores/connectionStore/roomStore';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
@@ -45,15 +45,16 @@ export function RoomHeader({
 
           <div className="text-center">
             <div className="flex justify-center">
-              {roomStore.roomInfo.gameMode === 'NORMAL' ? (
-                <MultiMatchBtn
-                  roomId={roomId}
-                  visible={roomStore.roomInfo.hostId === userStore.id}
-                />
-              ) : (
+              {roomStore.roomInfo.gameMode === 'SURVIVAL' ? (
                 <SurvivalMatchBtn
                   roomId={roomId}
                   category={roomStore.roomInfo.category}
+                  visible={roomStore.roomInfo.hostId === userStore.id}
+                />
+              ) : (
+                <MatchBtn
+                  roomId={roomId}
+                  mode={roomStore.roomInfo.gameMode}
                   visible={roomStore.roomInfo.hostId === userStore.id}
                 />
               )}

@@ -5,6 +5,7 @@ import { Character } from '@/shared/ui/Character';
 import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 import { useRoomStore } from '@/shared/stores/connectionStore/roomStore';
 import { MessageDto } from '@/shared/apis/types';
+import { UserInfo } from '@/widgets/userInfo';
 
 export function PlayerList({ roomId }: { roomId: number }) {
   const { isOpenModal, clickModal, closeModal } = useOpenModal();
@@ -94,7 +95,7 @@ export function PlayerList({ roomId }: { roomId: number }) {
             ))}
       </div>
       <Modal isOpen={isOpenModal} onClose={closeModal}>
-        <div className={'h-96 w-96'}>{clickedUserId}</div>
+        <UserInfo id={Number(clickedUserId)}></UserInfo>
       </Modal>
     </div>
   );
