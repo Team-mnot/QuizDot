@@ -60,7 +60,6 @@ const WebSocketProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   // 소켓 연결
-  // 소켓 연결
   const onConnect = async () => {
     if (isReady) return;
     const socket = Stomp.over(() => new SockJS(wsUrl));
@@ -72,8 +71,8 @@ const WebSocketProvider = ({ children }: { children: ReactNode }) => {
     client.current = socket;
 
     // STOMP 클라이언트 하트비트 설정 (1000ms 간격으로 보냄, 1000ms 간격으로 받음)
-    client.current.heartbeat.outgoing = 1000; // 클라이언트 -> 서버로 1초마다 하트비트 신호 보냄
-    client.current.heartbeat.incoming = 1000; // 서버 -> 클라이언트로 1초마다 하트비트 신호 받음
+    // client.current.heartbeat.outgoing = 1000; // 클라이언트 -> 서버로 1초마다 하트비트 신호 보냄
+    // client.current.heartbeat.incoming = 1000; // 서버 -> 클라이언트로 1초마다 하트비트 신호 받음
 
     client.current?.connect(
       headers,
