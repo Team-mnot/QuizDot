@@ -64,6 +64,9 @@ export function SignUpForm() {
         hint: data.hint as string,
       };
       console.log(props);
+      window.alert(
+        '임시적으로 회원가입이 불가능합니다\n발표가 끝난 후 가능합니다',
+      );
       // const response = await SignUpApi(props);
       // 회원가입 성공 시 바로 로그인
       // if (response === 'success') {
