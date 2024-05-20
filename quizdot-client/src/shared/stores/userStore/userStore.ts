@@ -1,39 +1,82 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { baseApi } from '@/shared/apis/';
-import axios from 'axios';
+import type { UserInfo } from '@/pages/logIn/api/types';
 
-interface UserState {}
+interface UserState {
+  id: number;
+  title: string;
+  nickname: string;
+  nicknameColor: string;
+  characterId: number;
+  level: number;
+  exp: number;
+  point: number;
+  isLogin: boolean;
+  setTitle: (title: string) => void;
+  setNickname: (name: string) => void;
+  setNicknameColor: (color: string) => void;
+  setCharacterId: (id: number) => void;
+  setPoint: () => void;
+  getData: (props: UserInfo) => void;
+  resetData: () => void;
+}
 
 const useUserStore = create(
   persist<UserState>(
     (set) => ({
-      userId: 0,
+      id: 0,
+      title: '',
       nickname: '',
-      image: '',
+      nicknameColor: '',
+      characterId: 0,
       level: 0,
       exp: 0,
+      point: 0,
       isLogin: false,
-      getData: async () => {
-        try {
-          const response = await axios.get(`${baseApi}/users/info`, {
-            withCredentials: true,
-          });
-          const responseData = response.data.data;
-          set({
-            userId: responseData.id,
-            nickname: responseData.nickname,
-            image: responseData.image,
-            followingCount: responseData.followingCount,
-            followerCount: responseData.followerCount,
-            role: responseData.role,
-            isLogin: true,
-          });
-        } catch (error) {
-          console.error('Error get user info');
-        }
+      setTitle: (title: string) => set({ title: title }),
+      setNickname: (name: string) => set({ nickname: name }),
+      setNicknameColor: (color: string) => set({ nicknameColor: color }),
+      setCharacterId: (id: number) => set({ characterId: id }),
+      setPoint: () =>
+        set((prevState) => ({ ...prevState, point: prevState.point - 10000 })),
+      getData: (props: UserInfo) => {
+        const {
+          id,
+          characterId,
+          title,
+          nickname,
+          nicknameColor,
+          level,
+          exp,
+          point,
+        } = props;
+        set({
+          id,
+          characterId,
+          title,
+          nickname,
+          nicknameColor,
+          level,
+          exp,
+          point,
+          isLogin: true,
+        });
+      },
+      resetData: () => {
+        set({
+          id: 0,
+          title: '',
+          nickname: '',
+          nicknameColor: '',
+          characterId: 0,
+          level: 0,
+          exp: 0,
+          point: 0,
+          isLogin: false,
+        });
       },
     }),
+
     {
       name: 'userStorage',
     },

@@ -1,0 +1,78 @@
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 20px;
+  background-color: transparent;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: gray;
+  border-radius: 10px;
+}
+
+.custom-text-outline-black {
+  -webkit-text-stroke: 2.5px #000000;
+}
+
+.custom-box-transparent {
+  @apply flex flex-col justify-center rounded-lg bg-white bg-opacity-20 shadow-md;
+}
+
+.custom-box-white {
+  @apply rounded-lg border-[2px] bg-white shadow-md;
+}
+
+.custom-pink {
+  @apply text-pink-400 hover:text-yellow-500;
+}
+
+.custom-black {
+  @apply text-[#243952] hover:text-[#132841];
+}
+
+.custom-btn {
+  @apply hover:border-transparent hover:bg-gray-200 focus:outline-none active:bg-gray-300;
+}
+
+.custom-btn-transparent {
+  @apply bg-transparent text-[2em] transition-colors duration-300 hover:border-transparent focus:outline-none;
+}
+
+.custom-btn-white {
+  @apply rounded-lg bg-white transition-colors duration-300 hover:border-solid hover:border-transparent hover:bg-slate-400 hover:text-white focus:outline-none active:bg-slate-500;
+}
+
+.custom-btn-shadow-hover:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.custom-btn-shadow {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.custom-blinking:hover {
+  animation: blink 1s infinite;
+}
+
+.text-border {
+  text-shadow:
+    2px 2px 0 #000,
+    -2px 2px 0 #000,
+    2px -2px 0 #000,
+    -2px -2px 0 #000,
+    2px 0 0 #000,
+    -2px 0 0 #000,
+    0 2px 0 #000,
+    0 -2px 0 #000;
+}
+
+@keyframes blink {
+  0% {
+    color: #333;
+  }
+  50% {
+    color: #888;
+  }
+  100% {
+    color: #333;
+  }
+}
