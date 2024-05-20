@@ -25,14 +25,17 @@ export function Players() {
   };
 
   useEffect(() => {
-    setPlayerList(roomStore.players);
-    roomStore.enteredPlayer(userStore.id, {
-      characterId: userStore.characterId,
-      level: userStore.level,
-      nickname: userStore.nickname,
-      nicknameColor: userStore.nicknameColor,
-      title: userStore.title,
-    });
+    const refresh = async () => {
+      await roomStore.enteredPlayer(userStore.id, {
+        characterId: userStore.characterId,
+        level: userStore.level,
+        nickname: userStore.nickname,
+        nicknameColor: userStore.nicknameColor,
+        title: userStore.title,
+      });
+      setPlayerList(roomStore.players);
+    };
+    refresh();
   }, []);
 
   useEffect(() => {
