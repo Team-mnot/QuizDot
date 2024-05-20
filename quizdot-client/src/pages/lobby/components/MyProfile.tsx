@@ -42,9 +42,9 @@ export function MyProfile() {
                   {userStore.nickname}
                 </p>
               </div>
-              <div className="flex flex-none p-[10px]">
+              <div className="flex flex-none pb-[10px] pl-[10px]">
                 <img
-                  src="/images/ikball.png"
+                  src="/images/coin.png"
                   alt=""
                   className="h-[23px] w-[23px]"
                 />

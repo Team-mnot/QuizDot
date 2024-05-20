@@ -13,12 +13,16 @@ export function Record({ userInfo }: { userInfo: UserInfo }) {
           <p className="pl-2">{userInfo?.totalRate.toFixed(1)}%</p>
         </div>
         <div>
-          <p className="pt-6 text-xl">일반 게임 평균 승률 </p>
+          <p className="pt-6 text-xl">일반 게임 승률 </p>
           <p className="pl-2">{userInfo?.normalRate.toFixed(1)}%</p>
         </div>
         <div>
-          <p className="pt-6 text-xl">서바이벌 평균 순위</p>
+          <p className="pt-6 text-xl">서바이벌 승률</p>
           <p className="pl-2"> {userInfo?.survivalRate.toFixed(1)}%</p>
+        </div>
+        <div>
+          <p className="pt-6 text-xl">일기토 승률</p>
+          <p className="pl-2"> {userInfo?.otoRate.toFixed(1)}%</p>
         </div>
       </div>
       {/* 오른쪽 */}
@@ -34,6 +38,10 @@ export function Record({ userInfo }: { userInfo: UserInfo }) {
         <div>
           <p className="pt-6 text-xl">서바이벌 모드 우승</p>
           <p className="pl-2"> {userInfo?.survivalWinCount}회</p>
+        </div>
+        <div>
+          <p className="pt-6 text-xl">일기토 모드 승리</p>
+          <p className="pl-2"> {userInfo?.otoWinCount}회</p>
         </div>
       </div>
     </div>

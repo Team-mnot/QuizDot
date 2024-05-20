@@ -40,6 +40,7 @@ export function MyPage(props: { id: number }) {
       try {
         const userinfo = await GetUserInfoApi(props.id);
         if (userinfo) {
+          console.log(userinfo);
           setUserInfo(userinfo);
         }
       } catch (error) {
