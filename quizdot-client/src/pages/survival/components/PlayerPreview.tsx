@@ -1,8 +1,11 @@
 // src/pages/survival/components/CharacterPreview.tsx
 
-// import { getPlayerData } from '../api/api';
+import { useContext, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { PlayerInSurvivalModeComponent } from './PlayerInSurvivalModeComponent';
 import { usePlayerStore } from '../store';
+import { MessageDto } from '@/shared/apis/types';
+import { WebSocketContext } from '@/shared/utils/WebSocketProvider';
 
 // 미리 지정된 위치 정보
 export const predefinedPositions = [
@@ -27,8 +30,29 @@ export const predefinedPositions = [
 ];
 
 export function PlayerPreview() {
+  const { roomId } = useParams() as {
+    channelId: string;
+    roomId: string;
+  };
+
+  const { onSubscribeWithCallBack, onUnsubscribe } =
+    useContext(WebSocketContext);
   const players = usePlayerStore((state) => state.players);
-  console.log(players);
+  const removePlayer = usePlayerStore((state) => state.removePlayer);
+
+  const callbackOfPlayers = async (message: MessageDto) => {
+    console.log('PLAYERS: ', message);
+    if (message.type == 'LEAVE') {
+      removePlayer(message.data);
+    }
+  };
+
+  useEffect(() => {
+    onSubscribeWithCallBack(`players/room/${roomId}`, callbackOfPlayers);
+    return () => {
+      onUnsubscribe(`players/room/${roomId}`);
+    };
+  }, []);
 
   return (
     <div>

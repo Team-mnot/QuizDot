@@ -6,6 +6,7 @@ interface PlayerStore {
   players: PlayerInSurvivalMode[];
   setPlayers: (players: PlayerInSurvivalMode[]) => void;
   updatePlayerStatus: (playerId: number, isAlive: boolean) => void;
+  removePlayer: (playerId: number) => void; // 플레이어 제거 함수 추가
 }
 
 // playerId : 타입에 없는데~?
@@ -28,6 +29,11 @@ const usePlayerStore = create<PlayerStore>((set) => ({
       });
       return { players: updatedPlayers };
     });
+  },
+  removePlayer: (playerId) => {
+    set((state) => ({
+      players: state.players.filter((player) => player.id !== playerId),
+    }));
   },
 }));
 
