@@ -119,7 +119,6 @@ QuizDot 서비스 설명. QuizDot 서비스 설명.<br/>
   <tr align='center'>
     <td>Prettier</td>
     <td>Vite</td>
-    <td>Web3js</td>
   </tr>
 </table>
 
