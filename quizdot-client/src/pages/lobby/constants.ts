@@ -21,6 +21,7 @@ const categoryList = {
   RANDOM: '랜덤',
   COMMON: '상식',
   CULTURE: '문화',
+  PRIVIEW: '시사',
   ECONOMY: '경제',
   GRAMMER: '한국어',
 } as { [key: string]: string };
