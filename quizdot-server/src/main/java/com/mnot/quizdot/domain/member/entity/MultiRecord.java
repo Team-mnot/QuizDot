@@ -38,10 +38,8 @@ public class MultiRecord {
     private int totalCount;
 
     @Builder
-    public MultiRecord(Member member, ModeType mode, int winCount, int totalCount) {
+    public MultiRecord(Member member, ModeType mode) {
         this.member = member;
         this.mode = mode;
-        this.winCount = winCount;
-        this.totalCount = totalCount;
     }
 }

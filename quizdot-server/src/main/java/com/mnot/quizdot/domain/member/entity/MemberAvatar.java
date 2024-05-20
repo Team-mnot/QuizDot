@@ -21,6 +21,8 @@ public class MemberAvatar {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    private boolean isGet;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "avatar_id")
     private Avatar avatar;

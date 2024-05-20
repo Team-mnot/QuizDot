@@ -3,6 +3,7 @@ package com.mnot.quizdot.domain.member.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -17,11 +18,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
+@DynamicInsert
 public class Member {
 
     @Id
@@ -33,11 +38,12 @@ public class Member {
 
     private String password;
 
+    @Column(unique = true)
     private String nickname;
 
     private String hint;
 
-    @ColumnDefault(value = "0")
+    @ColumnDefault(value = "1")
     private int level;
 
     @ColumnDefault(value = "0")
@@ -45,6 +51,12 @@ public class Member {
 
     @ColumnDefault(value = "0")
     private int point;
+
+    @ColumnDefault(value = "1")
+    private int titleId;
+
+    @ColumnDefault(value = "1")
+    private int avatarId;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberTitle> titles = new ArrayList<>();
@@ -61,7 +73,7 @@ public class Member {
     @CreatedDate
     private LocalDateTime createTime;
 
-    @ColumnDefault(value = "000000")
+    @ColumnDefault(value = "'#000000'")
     private String nicknameColor;
 
     @Builder
@@ -71,5 +83,35 @@ public class Member {
         this.nickname = nickname;
         this.hint = hint;
         this.role = role;
+        this.point = 0;
+        this.exp = 0;
+        this.level = 1;
+        this.titleId = 1;
+        this.avatarId = 1;
+        this.nicknameColor = "#000000";
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
+    public void updateHint(String hint) {
+        this.hint = hint;
+    }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updateAvatarId(int avatarId) {
+        this.avatarId = avatarId;
+    }
+
+    public void updateTitleId(int titleId) {
+        this.titleId = titleId;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
