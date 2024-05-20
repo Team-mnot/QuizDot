@@ -81,39 +81,30 @@ export function Reward({
   }, []);
 
   return (
-    <div className="flex h-[500px] w-[500px] flex-col justify-between rounded-md border-r-2 bg-white p-4 py-5 shadow-md">
-      <div className="flex">
-        <Button
-          className="w-[100px]"
-          value={`${updateCount} 초 후 대기실로 이동`}
-          onClick={handleReturnToRoom}
-        />
-        <Button
-          className="w-[100px]"
-          value={`로비로 이동`}
-          onClick={handleLeaveRoom}
-        />
-      </div>
+    <div className="flex h-[300px] w-[720px] flex-col justify-between rounded-md border-r-2 bg-white p-4 py-5 shadow-md">
       <div>
+        <div className="text-center text-3xl">게임 결과</div>
+
+        <div className="my-[10px] text-center text-lg">
+          {updateCount} 초 후 대기실로 이동합니다
+        </div>
+        <hr className="my-2 border-2 " />
         <table>
           <tbody>
             <tr className={'text-center'}>
-              <td>
+              <td className="w-[100px]">
                 <p>랭킹</p>
               </td>
-              <td>
+              <td className="w-[120px]">
                 <p>레벨</p>
               </td>
-              <td>
+              <td className="w-[200px]">
                 <p>닉네임</p>
               </td>
-              <td>
-                <p>점수</p>
-              </td>
-              <td>
+              <td className="w-[120px]">
                 <p>코인</p>
               </td>
-              <td>
+              <td className="w-[120px]">
                 <p>경험치</p>
               </td>
             </tr>
@@ -121,7 +112,7 @@ export function Reward({
               ranks.map((rank) => (
                 <tr className={'h-[50px] w-[500px] text-center'} key={rank.id}>
                   <td>
-                    <p>{rank.rank}</p>
+                    <p>{rank.rank === 1 ? '승리' : '패배'}</p>
                   </td>
                   <td>
                     <p>
@@ -132,21 +123,19 @@ export function Reward({
                   <td>
                     <p>{rank.nickname}</p>
                   </td>
+
                   <td>
                     <p>{rank.point}</p>
                   </td>
                   <td>
                     <p>{rank.point}</p>
-                  </td>
-                  <td>
-                    <p>{rank.curExp}</p>
                   </td>
                   <td>
                     <Progress
                       color="yellow"
-                      currentValue={5000}
-                      maxValue={10000}
-                      label={`${rank.curExp}/1000`}
+                      currentValue={rank.curExp}
+                      maxValue={1000}
+                      label={`${rank.curExp}/1000 +(${rank.point})`}
                       padding=""
                       size="w-48"
                     />
@@ -155,6 +144,20 @@ export function Reward({
               ))}
           </tbody>
         </table>
+        <div className="flex justify-around">
+          <Button
+            className="w-[200px] hover:border-transparent hover:bg-gray-200 focus:outline-none
+          active:bg-gray-300"
+            value={'대기실로 이동'}
+            onClick={handleReturnToRoom}
+          />
+          <Button
+            className="w-[200px] hover:border-transparent hover:bg-gray-200 focus:outline-none
+          active:bg-gray-300"
+            value={`로비로 이동`}
+            onClick={handleLeaveRoom}
+          />
+        </div>
       </div>
 
       {toastState === true ? (
