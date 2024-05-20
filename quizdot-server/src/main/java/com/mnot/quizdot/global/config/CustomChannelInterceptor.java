@@ -38,7 +38,6 @@ public class CustomChannelInterceptor implements ChannelInterceptor {
                 case CONNECT:
                     String accessToken = accessor.getFirstNativeHeader("access");
                     if (accessToken != null) {
-//                        log.info("access token 있다 : {}", accessToken);
                         // Access token을 세션 속성에 저장
                         accessor.getSessionAttributes().put("access", accessToken);
                     } else {
@@ -47,36 +46,33 @@ public class CustomChannelInterceptor implements ChannelInterceptor {
                     break;
                 case HEARTBEAT:
                     // HEARTBEAT 메시지 처리
-//                    log.info("하트비트받았다");
-//                    handleHeartbeat(accessor);
+                    handleHeartbeat(accessor);
                     break;
             }
         }
         return message;
     }
 
-//    private void handleHeartbeat(StompHeaderAccessor accessor) {
-//        String sessionId = accessor.getSessionId();
-//        heartbeatCounts.put(sessionId, 0); // 하트비트 카운트 초기화
-//    }
-//
-//    @Scheduled(fixedDelay = 1000) // 1초마다 실행
-//    public void checkHeartbeat() {
-//        for (String sessionId : heartbeatCounts.keySet()) {
-//            Integer count = heartbeatCounts.get(sessionId);
-////            log.info("하트비트 못받은 횟수: "+count);
-//            heartbeatCounts.put(sessionId, ++count);
-//            if (count > MAX_HEARTBEAT_COUNT) {
-//                // 연속으로 10번 핑퐁 안되면 세션 종료
-//                try {
-//                    sessionManager.closeSession(sessionId);
-//                } catch (Exception e) {
-//                    // 세션 종료 실패 처리
-//                    log.error("세션 종료 실패: {}", e.getMessage());
-//                }
-////                log.info("하트비트 핑퐁안됨!!");
-//                heartbeatCounts.remove(sessionId); // 종료된 세션의 카운트 삭제
-//            }
-//        }
-//    }
+    private void handleHeartbeat(StompHeaderAccessor accessor) {
+        String sessionId = accessor.getSessionId();
+        heartbeatCounts.put(sessionId, 0); // 하트비트 카운트 초기화
+    }
+
+    @Scheduled(fixedDelay = 1000) // 1초마다 실행
+    public void checkHeartbeat() {
+        for (String sessionId : heartbeatCounts.keySet()) {
+            Integer count = heartbeatCounts.get(sessionId);
+            heartbeatCounts.put(sessionId, ++count);
+            if (count > MAX_HEARTBEAT_COUNT) {
+                // 연속으로 10번 핑퐁 안되면 세션 종료
+                try {
+                    sessionManager.closeSession(sessionId);
+                } catch (Exception e) {
+                    // 세션 종료 실패 처리
+                    log.error("세션 종료 실패: {}", e.getMessage());
+                }
+                heartbeatCounts.remove(sessionId); // 종료된 세션의 카운트 삭제
+            }
+        }
+    }
 }
