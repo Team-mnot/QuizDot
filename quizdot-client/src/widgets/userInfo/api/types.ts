@@ -15,6 +15,8 @@ interface UserInfo {
   totalWinCount: number;
   normalWinCount: number;
   survivalWinCount: number;
+  otoRate: number;
+  otoWinCount: number;
   title: number;
   titleListDtos: TitleList[];
   characterId: number;

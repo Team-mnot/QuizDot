@@ -1,7 +1,7 @@
 import { RouterProvider } from 'react-router-dom';
 import { router } from './router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useRef, useState } from 'react';
 import { Button } from '@/shared/ui';
 
@@ -24,15 +24,15 @@ function App() {
   };
 
   return (
-    <div className="flex h-screen w-screen items-center justify-center">
+    <div className="flex items-center justify-center w-screen h-screen">
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
-        <ReactQueryDevtools initialIsOpen={true} />
+        {/* <ReactQueryDevtools initialIsOpen={true} /> */}
         <audio ref={audioRef} src="sounds/jazzyfrenchy.mp3" autoPlay loop />
         <Button
           onClick={toggleAudio}
-          value={isPlaying ? '노래 꺼!' : '노래 켜!'}
-          className="text-border custom-blinking custom-btn-transparent absolute right-[270px] top-0 z-50 cursor-pointer py-[10px] text-blue-400"
+          value={isPlaying ? '🔈' : '🔊'}
+          className="absolute bottom-0 right-0 z-50 cursor-pointer text-border custom-blinking custom-btn-transparent"
         />
       </QueryClientProvider>
     </div>

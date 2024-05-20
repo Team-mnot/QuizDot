@@ -22,14 +22,17 @@ export function Quiz({
         </div>
         <div className={'text-end'}>
           <p className={'text-gray-400'}>
-            문제 유형&nbsp;:&nbsp;{categoryList[category]},
-            &nbsp;정답률&nbsp;:&nbsp;-
+            카테고리&nbsp;:&nbsp;{categoryList[category]}
           </p>
         </div>
       </div>
       {questionType === 'IMAGE' && (
         <div className="flex w-[640px] justify-center rounded-md border-r-2 bg-white p-5 shadow-md">
-          <img src={imagePath} alt="" className="max-h-[300px] max-w-[500]" />
+          <img
+            src={imagePath}
+            alt=""
+            className="max-h-[300px] min-h-[200px] min-w-[200px] max-w-[500]"
+          />
         </div>
       )}
     </div>

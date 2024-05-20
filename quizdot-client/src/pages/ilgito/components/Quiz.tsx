@@ -23,7 +23,6 @@ export function Quiz({
         <div className={'text-end'}>
           <p className={'text-gray-400'}>
             문제 유형&nbsp;:&nbsp;{categoryList[category]},
-            &nbsp;정답률&nbsp;:&nbsp;-
           </p>
         </div>
       </div>

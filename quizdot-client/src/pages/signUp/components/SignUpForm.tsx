@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { SignUpApi, IdCheckApi, NicknameCheckApi } from '../api/api';
+// import { SignUpApi, IdCheckApi, NicknameCheckApi } from '../api/api';
+import { IdCheckApi, NicknameCheckApi } from '../api/api';
 import { LogInApi } from '@/pages/logIn/api/api';
 import type { SignUpProps } from '../api/types';
 import type { LogInProps } from '@/pages/logIn/api/types';
@@ -62,9 +63,11 @@ export function SignUpForm() {
         nickname: data.nickname as string,
         hint: data.hint as string,
       };
-      const response = await SignUpApi(props);
+      console.log(props);
+      // const response = await SignUpApi(props);
       // 회원가입 성공 시 바로 로그인
-      if (response === 'success') {
+      // if (response === 'success') {
+      if (memberId === 'success') {
         const logInProps: LogInProps = {
           memberId: data.memberId as string,
           password: data.password as string,

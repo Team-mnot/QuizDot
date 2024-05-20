@@ -31,7 +31,9 @@ export function Room({
                 {roomInfo.title}
               </p>
             )}
-            <p className="flex-none">{roomInfo.maxQuestion}&nbsp;문제</p>
+            {roomInfo.gameMode === 'NORMAL' && (
+              <p className="flex-none">{roomInfo.maxQuestion}&nbsp;문제</p>
+            )}
             <p>{roomInfo.state}</p>
           </div>
           <div className="flex flex-col text-right">
