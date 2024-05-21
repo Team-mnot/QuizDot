@@ -201,7 +201,7 @@ public class QuizServiceImpl implements QuizService {
             case SURVIVAL:
                 return 1.0;
             case ILGITO:
-                return 2.0;
+                return 10.0;
             default:
                 return 0.0;
         }
