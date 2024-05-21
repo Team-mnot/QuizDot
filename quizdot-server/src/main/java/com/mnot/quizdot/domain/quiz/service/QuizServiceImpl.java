@@ -4,6 +4,7 @@ import com.mnot.quizdot.domain.member.entity.ModeType;
 import com.mnot.quizdot.domain.quiz.dto.GameState;
 import com.mnot.quizdot.domain.quiz.dto.MessageDto;
 import com.mnot.quizdot.domain.quiz.dto.MessageType;
+import com.mnot.quizdot.domain.quiz.dto.QuizListRes;
 import com.mnot.quizdot.domain.quiz.dto.QuizParam;
 import com.mnot.quizdot.domain.quiz.dto.QuizRes;
 import com.mnot.quizdot.domain.quiz.entity.CategoryType;
@@ -14,6 +15,7 @@ import com.mnot.quizdot.global.util.RedisUtil;
 import com.mnot.quizdot.global.util.S3Util;
 import com.mnot.quizdot.global.util.S3Util.Directory;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -59,6 +61,8 @@ public class QuizServiceImpl implements QuizService {
         List<Integer> quizIdList = quizRepository.getRandomQuizIdsByQuizParam(category,
             quizParam.getCount(), quizList);
         List<QuizRes> quizListRes = quizRepository.getQuizzesByIds(quizIdList);
+        Collections.shuffle(quizListRes);
+
         // 중복 출제 방지를 위해 조회한 문제 PK를 REDIS에 저장
         quizListRes
             .forEach(
