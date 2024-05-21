@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 public class CustomChannelInterceptor implements ChannelInterceptor {
 
     private final Map<String, Integer> heartbeatCounts = new ConcurrentHashMap<>();
-    private final int MAX_HEARTBEAT_COUNT = 10; // 최대 허용 하트비트 횟수
+    private final int MAX_HEARTBEAT_COUNT = 30; // 최대 허용 하트비트 횟수
     private final SessionManager sessionManager;
 
     public CustomChannelInterceptor(SessionManager sessionManager) {
