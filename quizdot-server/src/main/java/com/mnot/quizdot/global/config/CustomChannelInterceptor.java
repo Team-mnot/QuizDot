@@ -41,7 +41,7 @@ public class CustomChannelInterceptor implements ChannelInterceptor {
                         // Access token을 세션 속성에 저장
                         accessor.getSessionAttributes().put("access", accessToken);
                     } else {
-                        log.info("access token 없다");
+                        log.info("세션 연결 : access token 없다");
                     }
                     break;
                 case HEARTBEAT:
@@ -64,7 +64,7 @@ public class CustomChannelInterceptor implements ChannelInterceptor {
             Integer count = heartbeatCounts.get(sessionId);
             heartbeatCounts.put(sessionId, ++count);
             if (count > MAX_HEARTBEAT_COUNT) {
-                // 연속으로 10번 핑퐁 안되면 세션 종료
+                // 연속으로 일정 횟수만큼 핑퐁 안되면 세션 종료
                 try {
                     sessionManager.closeSession(sessionId);
                 } catch (Exception e) {
