@@ -287,7 +287,7 @@ public class MemberController {
 
         //새 토큰 발급
         String newAccessToken = jwtUtil.createJwt("access", id, memberId, role, nickname,
-            10800000L);
+            64800000L);
         String newRefreshToken = jwtUtil.createJwt("refresh", id, memberId, role, nickname,
             64800000L);
 
