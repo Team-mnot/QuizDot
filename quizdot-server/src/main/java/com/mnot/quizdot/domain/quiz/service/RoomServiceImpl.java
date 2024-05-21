@@ -123,7 +123,7 @@ public class RoomServiceImpl implements RoomService {
         String playerKey = redisUtil.getPlayersKey(roomId);
         PlayerInfoDto player = (PlayerInfoDto) redisTemplate.opsForHash().get(playerKey, memberId);
         if (player == null) {
-            throw new BusinessException(ErrorCode.NOT_EXISTS_IN_ROOM);
+            return;
         }
 
         redisTemplate.opsForHash().delete(playerKey, memberId);
