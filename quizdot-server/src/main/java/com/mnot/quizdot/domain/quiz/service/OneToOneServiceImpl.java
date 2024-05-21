@@ -5,6 +5,7 @@ import com.mnot.quizdot.domain.member.entity.ModeType;
 import com.mnot.quizdot.domain.member.entity.MultiRecord;
 import com.mnot.quizdot.domain.member.repository.MemberRepository;
 import com.mnot.quizdot.domain.member.repository.MultiRecordRepository;
+import com.mnot.quizdot.domain.quiz.dto.GameState;
 import com.mnot.quizdot.domain.quiz.dto.MessageDto;
 import com.mnot.quizdot.domain.quiz.dto.MessageType;
 import com.mnot.quizdot.domain.quiz.dto.QuizRes;
@@ -99,7 +100,7 @@ public class OneToOneServiceImpl implements OneToOneService {
                         log.info("memberId : {}", sender.getMemberId());
                         // 상대방의 문제 정보 조회
                         messagingTemplate.convertAndSend(
-                            getGameDestination(roomId) + "/select/" + receiver.getMemberId(),
+                            getGameDestination(roomId) + "/select/" + sender.getMemberId(),
                             MessageDto.of(SERVER_SENDER,
                                 MessageType.SUBMIT, quizRes));
                     }
@@ -214,6 +215,10 @@ public class OneToOneServiceImpl implements OneToOneService {
         messagingTemplate.convertAndSend(getGameDestination(roomId),
             MessageDto.of(SERVER_SENDER, "리워드 지급 및 결과 계산이 완료되었습니다.", MessageType.REWARD,
                 resultDtoList));
+        // 대기실 상태 변경 (INPROGRESS -> WAITING)
+        String roomKey = redisUtil.getRoomInfoKey(roomId);
+        redisUtil.modifyRoomState(roomKey, GameState.WAITING);
+
         return resultDtoList;
     }
 
