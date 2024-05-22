@@ -83,6 +83,7 @@ public class LobbyServiceImpl implements LobbyService {
             .maxPeople(roomReq.getMaxPeople())
             .hostId(hostId)
             .state(GameState.WAITING)
+            .enterPeople(0)
             .build();
 
         String roomKey = redisUtil.getRoomInfoKey(roomId);
@@ -134,6 +135,10 @@ public class LobbyServiceImpl implements LobbyService {
                     log.info("key : {}", key);
                     if (!(key.endsWith("0520:info"))) {
                         RoomInfoDto roomInfoDto = redisUtil.getRoomInfo(key);
+                        String[] keyParts = key.split(":");
+                        String playersKey = redisUtil.getPlayersKey(Integer.parseInt(keyParts[1]));
+                        long enterPeople = redisTemplate.opsForHash().size(playersKey);
+                        roomInfoDto.setEnterPeople(enterPeople);
                         roomsList.add(roomInfoDto);
                     }
                 }
