@@ -9,8 +9,9 @@ public interface MemberService {
     //회원가입
     void joinMember(JoinDto joinDto);
 
-    //게스트로 로그인
-    void joinGuest();
+    boolean checkNickname(String nickname);
+
+    boolean checkId(String id);
 
     //회원 탈퇴
     void deleteMember(CustomMemberDetail member);
@@ -37,6 +38,12 @@ public interface MemberService {
     void modifyCharacter(CustomMemberDetail member, int characterId);
 
     //칭호 변경
-    void modifyTitle(CustomMemberDetail member, int titleId);
+    String modifyTitle(CustomMemberDetail member, int titleId);
+
+    //캐릭터 뽑기
+    int gachaCharacter(CustomMemberDetail customMemberDetail);
+
+    //닉네임 색상 뽑기
+    String gachaColor(CustomMemberDetail customMemberDetail);
 
 }

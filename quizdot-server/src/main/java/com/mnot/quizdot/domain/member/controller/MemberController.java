@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -59,13 +60,32 @@ public class MemberController {
         return ResponseEntity.ok(ResultResponse.of(200, "회원가입 성공"));
     }
 
-    //TODO : GUEST로 플레이 클릭하면 알아서 로그인까지 되야하는거 아닌가?
-    @PostMapping("/guest")
-    @Operation(summary = "게스트로 플레이하기")
-    public ResponseEntity<ResultResponse> joinGuest() {
-        memberService.joinGuest();
-        return ResponseEntity.ok(ResultResponse.of(200, "게스트로 플레이하기"));
+    /**
+     * 닉네임 중복 체크
+     */
+    @GetMapping("/check-nickname")
+    @Operation(summary = "닉네임 중복 체크")
+    public ResponseEntity<ResultResponse> checkNickname(@RequestParam String nickname) {
+        if (!memberService.checkNickname(nickname)) {
+            return ResponseEntity.ok(ResultResponse.of(200, "사용할 수 있는 닉네임입니다."));
+        } else {
+            return ResponseEntity.ok(ResultResponse.of(409, "이미 존재하는 닉네임입니다."));
+        }
     }
+
+    /**
+     * 아이디 중복 체크
+     */
+    @GetMapping("/check-id")
+    @Operation(summary = "아이디 중복 체크")
+    public ResponseEntity<ResultResponse> checkId(@RequestParam String id) {
+        if (!memberService.checkId(id)) {
+            return ResponseEntity.ok(ResultResponse.of(200, "사용할 수 있는 아이디입니다."));
+        } else {
+            return ResponseEntity.ok(ResultResponse.of(409, "이미 존재하는 아이디입니다."));
+        }
+    }
+
 
     /**
      * 회원 탈퇴
@@ -73,8 +93,12 @@ public class MemberController {
     @DeleteMapping("")
     @Operation(summary = "회원 탈퇴")
     public ResponseEntity<ResultResponse> deleteMember(
-        @AuthenticationPrincipal CustomMemberDetail member) {
-        memberService.deleteMember(member);
+        HttpServletResponse response,
+        @AuthenticationPrincipal CustomMemberDetail customMemberDetail) {
+        memberService.deleteMember(customMemberDetail);
+
+        // refresh 토큰을 Cookie에서 삭제
+        deleteCookie("refresh", response);
         return ResponseEntity.ok(ResultResponse.of(200, "회원 탈퇴가 완료되었습니다."));
     }
 
@@ -111,10 +135,10 @@ public class MemberController {
     @PostMapping("/info/pwd-check")
     @Operation(summary = "기존 비밀번호 확인")
     public ResponseEntity<ResultResponse> checkPassword(
-        @AuthenticationPrincipal CustomMemberDetail member,
+        @AuthenticationPrincipal CustomMemberDetail customMemberDetail,
         @RequestBody Map<String, String> requestBody) {
         String password = requestBody.get("password");
-        memberService.checkPassword(member, password);
+        memberService.checkPassword(customMemberDetail, password);
         return ResponseEntity.ok(ResultResponse.of(200, "비밀번호가 확인 되었습니다."));
     }
 
@@ -124,11 +148,11 @@ public class MemberController {
     @PostMapping("/info/pwd")
     @Operation(summary = "비밀번호 변경")
     public ResponseEntity<ResultResponse> modifyPassword(
-        @AuthenticationPrincipal CustomMemberDetail member,
+        @AuthenticationPrincipal CustomMemberDetail customMemberDetail,
         @RequestBody Map<String, String> requestBody) {
         String password = requestBody.get("password");
         String chkPassword = requestBody.get("chkPassword");
-        memberService.modifyPassword(member, password, chkPassword);
+        memberService.modifyPassword(customMemberDetail, password, chkPassword);
         return ResponseEntity.ok(ResultResponse.of(200, "비밀번호가 변경되었습니다."));
     }
 
@@ -149,10 +173,10 @@ public class MemberController {
     @PostMapping("/nickname")
     @Operation(summary = "닉네임 변경")
     public ResponseEntity<ResultResponse> modifyNickname(
-        @AuthenticationPrincipal CustomMemberDetail member,
+        @AuthenticationPrincipal CustomMemberDetail customMemberDetail,
         @RequestBody Map<String, String> requestBody) {
         String nickname = requestBody.get("nickname");
-        memberService.modifyNickname(member, nickname);
+        memberService.modifyNickname(customMemberDetail, nickname);
         return ResponseEntity.ok(ResultResponse.of(200, "닉네임을 변경했습니다."));
     }
 
@@ -162,9 +186,9 @@ public class MemberController {
     @PostMapping("/character/{character_id}")
     @Operation(summary = "캐릭터 변경")
     public ResponseEntity<ResultResponse> modifyCharacter(
-        @AuthenticationPrincipal CustomMemberDetail member,
+        @AuthenticationPrincipal CustomMemberDetail customMemberDetail,
         @PathVariable("character_id") int characterId) {
-        memberService.modifyCharacter(member, characterId);
+        memberService.modifyCharacter(customMemberDetail, characterId);
         return ResponseEntity.ok(ResultResponse.of(200, "캐릭터를 변경했습니다."));
     }
 
@@ -174,11 +198,36 @@ public class MemberController {
     @PostMapping("/title/{title_id}")
     @Operation(summary = "칭호 변경")
     public ResponseEntity<ResultResponse> modifyTitle(
-        @AuthenticationPrincipal CustomMemberDetail member,
+        @AuthenticationPrincipal CustomMemberDetail customMemberDetail,
         @PathVariable("title_id") int titleId) {
-        memberService.modifyTitle(member, titleId);
-        return ResponseEntity.ok(ResultResponse.of(200, "칭호를 변경했습니다."));
+        return ResponseEntity.ok(ResultResponse.of(200, "칭호를 변경했습니다.",
+            memberService.modifyTitle(customMemberDetail, titleId)));
     }
+
+    /**
+     * 캐릭터 뽑기
+     */
+    @PostMapping("/reward/random-pick/character")
+    @Operation(summary = "캐릭터 뽑기")
+    public ResponseEntity<ResultResponse> gachaCharacter(
+        @AuthenticationPrincipal CustomMemberDetail customMemberDetail) {
+        return ResponseEntity.ok(
+            ResultResponse.of(200, "캐릭터 뽑기에 성공했습니다.",
+                memberService.gachaCharacter(customMemberDetail)));
+    }
+
+    /**
+     * 닉네임 색상뽑기
+     */
+    @PostMapping("/reward/random-pick/color")
+    @Operation(summary = "닉네임 색상 뽑기")
+    public ResponseEntity<ResultResponse> gachaColor(
+        @AuthenticationPrincipal CustomMemberDetail customMemberDetail
+    ) {
+        return ResponseEntity.ok(ResultResponse.of(200, "닉네임 색상 뽑기에 성공했습니다.",
+            memberService.gachaColor(customMemberDetail)));
+    }
+
 
     /**
      * accessToken 재발급
@@ -201,7 +250,7 @@ public class MemberController {
         log.info("쿠키에서 꺼낸 refresh 토큰 : {}", refresh);
         //refreshToken이 존재하지 않음
         if (refresh == null) {
-            throw new BusinessException(ErrorCode.NOT_EXISTS_REFRESH_TOKEN_ERROR);
+            throw new BusinessException(ErrorCode.NOT_FOUND_REFRESH_TOKEN);
         }
 
         log.info("refreshToken이 있나요?");
@@ -227,17 +276,20 @@ public class MemberController {
         String memberId = jwtUtil.getUsername(refresh);
         String role = jwtUtil.getRole(refresh);
         int id = jwtUtil.getId(refresh);
+        String nickname = jwtUtil.getNickname(refresh);
 
         //redis에 refreshToken이 있는지 확인
         Boolean isExist = refreshTokenRedisRepository.existsById(memberId);
         if (!isExist) {
-            throw new BusinessException(ErrorCode.IS_NOT_EXISTS_REFRESH_TOKEN);
+            throw new BusinessException(ErrorCode.NOT_FOUND_REFRESH_TOKEN);
         }
         log.info("redis에 있는지 확인 : {}", isExist);
 
         //새 토큰 발급
-        String newAccessToken = jwtUtil.createJwt("access", id, memberId, role, 600000L);
-        String newRefreshToken = jwtUtil.createJwt("refresh", id, memberId, role, 86400000L);
+        String newAccessToken = jwtUtil.createJwt("access", id, memberId, role, nickname,
+            64800000L);
+        String newRefreshToken = jwtUtil.createJwt("refresh", id, memberId, role, nickname,
+            64800000L);
 
         //기존 refreshToken redis에서 삭제
         refreshTokenRedisRepository.deleteById(memberId);
@@ -263,6 +315,14 @@ public class MemberController {
         cookie.setMaxAge(24 * 60 * 60);
         cookie.setHttpOnly(true);
 
+        return cookie;
+    }
+
+    private Cookie deleteCookie(String key, HttpServletResponse response) {
+        Cookie cookie = new Cookie("refresh", null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
         return cookie;
     }
 }

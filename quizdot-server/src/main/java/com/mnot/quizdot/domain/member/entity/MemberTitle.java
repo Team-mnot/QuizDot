@@ -38,4 +38,8 @@ public class MemberTitle {
         this.member = member;
         this.isGet = isGet;
     }
+
+    public void updateIsGet() {
+        this.isGet = !this.isGet;
+    }
 }

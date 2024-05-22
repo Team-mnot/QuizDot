@@ -1,14 +1,19 @@
 package com.mnot.quizdot.domain.quiz.dto;
 
+import java.io.Serializable;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
-public class PlayerInfoDto {
+public class PlayerInfoDto implements Serializable {
+
+    private int id;
 
     private int level;
 
@@ -16,17 +21,19 @@ public class PlayerInfoDto {
 
     private String nicknameColor;
 
-    private int title;
+    private String title;
 
-    private int avatar;
+    private int characterId;
 
 
     @Builder
-    public PlayerInfoDto(int level, String nickname, String nicknameColor, int title, int avatar) {
+    public PlayerInfoDto(int id, int level, String nickname, String nicknameColor, String title,
+        int characterId) {
+        this.id = id;
         this.level = level;
         this.nickname = nickname;
         this.nicknameColor = nicknameColor;
         this.title = title;
-        this.avatar = avatar;
+        this.characterId = characterId;
     }
 }

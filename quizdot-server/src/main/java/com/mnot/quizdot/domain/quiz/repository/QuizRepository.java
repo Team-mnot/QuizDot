@@ -12,7 +12,7 @@ public interface QuizRepository extends JpaRepository<Quiz, Integer>, QuizReposi
         + "FROM quiz q "
         + "WHERE q.id NOT IN :quizList "
         + "AND (:category is NULL OR q.category = :category) "
-        + "ORDER BY RAND() "
+        + "ORDER BY RAND()"
         + "LIMIT :maxCount ", nativeQuery = true)
     List<Integer> getRandomQuizIdsByQuizParam(@Param("category") String category,
         @Param("maxCount") int maxCount, @Param("quizList") List<Integer> quizList);

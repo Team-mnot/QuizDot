@@ -1,6 +1,6 @@
 package com.mnot.quizdot.domain.quiz.dto;
 
-import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +13,7 @@ import lombok.Setter;
 public class RoomEnterRes {
 
     // 대기실 내 회원 목록
-    List<PlayerInfoDto> players;
+    Map<String, PlayerInfoDto> players;
 
     // 대기실 정보
     RoomInfoDto roomInfo;

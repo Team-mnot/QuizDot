@@ -15,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -68,9 +69,11 @@ public class SecurityConfig {
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
                         //얼마나 허용할 지
                         configuration.setMaxAge(3600L);
-
+                        configuration.addExposedHeader("access");
+                        configuration.addExposedHeader("Set-Cookie");
                         //Authorization에 jwt담아서 보내기 때문
-                        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+                        configuration.setExposedHeaders(
+                            Arrays.asList("Authorization", "Set-Cookie"));
 
                         return configuration;
                     }
@@ -79,6 +82,10 @@ public class SecurityConfig {
         //csrf
         http
             .csrf((auth) -> auth.disable());
+
+        //X-frame-options
+        http
+            .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
 
         //jwt 방식으로 로그인을 할 것이기 때문에 formLogin과 http basic 인증 방식 disable하기
         http

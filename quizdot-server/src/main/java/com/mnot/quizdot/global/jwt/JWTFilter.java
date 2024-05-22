@@ -27,7 +27,7 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
 
-        //request에서 Authorization 헤더 찾기
+        //request에서 access 헤더 찾기
         String authorization = request.getHeader("access");
 
         //헤더 검증
@@ -42,9 +42,7 @@ public class JWTFilter extends OncePerRequestFilter {
         } catch (ExpiredJwtException e) {
             PrintWriter writer = response.getWriter();
             writer.println("access token 만료");
-
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
         }
 
         String category = jwtUtil.getCategory(authorization);
@@ -60,10 +58,12 @@ public class JWTFilter extends OncePerRequestFilter {
         String memberId = jwtUtil.getUsername(authorization);
         String role = jwtUtil.getRole(authorization);
         int id = jwtUtil.getId(authorization);
+        String nickname = jwtUtil.getNickname(authorization);
 
         Member member = Member.builder()
             .memberId(memberId)
             .role(Role.valueOf(Role.class, role))
+            .nickname(nickname)
             .build();
 
         member.setId(id);

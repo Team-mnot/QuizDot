@@ -111,6 +111,25 @@ public class Member {
         this.titleId = titleId;
     }
 
+    public void updatePoint(int point) {
+        this.point = point;
+    }
+
+    public void updateNicknameColor(String nicknameColor) {
+        this.nicknameColor = nicknameColor;
+    }
+
+    public int updateReward(int point, int exp) {
+        int curLevel = this.level;
+        this.point += point;
+        this.exp += exp;
+        while (this.exp >= 1000) {
+            this.exp -= 1000;
+            this.level += 1;
+        }
+        return this.level - curLevel;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
