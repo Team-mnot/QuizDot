@@ -1,8 +1,0 @@
-{
-  "editor.formatOnSave": true,
-  "css.lint.unknownAtRules": "ignore",
-  "css.customData": [".vscode/css_custom_data.json"],
-  "files.associations": {
-    "*.css": "postcss"
-  }
-}
