@@ -111,6 +111,7 @@ public class RoomServiceImpl implements RoomService {
                 player));
         messagingTemplate.convertAndSend(ROOM_CHAT_DESTINATION + roomId,
             MessageDto.of(SERVER_SENDER, player.getNickname() + "님이 입장하셨습니다.", MessageType.CHAT));
+        roomInfoDto.setEnterPeople(players.size());
         return new RoomEnterRes(players, roomInfoDto);
     }
 

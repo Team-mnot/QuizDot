@@ -45,10 +45,13 @@ public class RoomInfoDto {
     // 초대 링크
     private String inviteLink;
 
+    // 방 입장 인원
+    private long enterPeople;
+
     @Builder
     public RoomInfoDto(int roomId, String title, boolean open, String password,
         String gameMode, int maxPeople, String category, int maxQuestion, int hostId,
-        GameState state, String inviteLink) {
+        GameState state, String inviteLink, long enterPeople) {
         this.roomId = roomId;
         this.title = title;
         this.open = open;
@@ -60,6 +63,7 @@ public class RoomInfoDto {
         this.hostId = hostId;
         this.state = state;
         this.inviteLink = inviteLink;
+        this.enterPeople = enterPeople;
     }
 
     public void modifyInfo(RoomReq roomReq) {
