@@ -394,27 +394,71 @@ QUIZDOT을 통해 사용자들은 다양한 분야의 상식을 조금 더 재�
 ```
 QUIZDOT-CLIENT
 ├─app
+├─images
 ├─pages
-│  ├─lobby
+│  ├─channel
+│  │  ├─api
+│  │  ├─components
+│  │  └─hooks
+│  ├─findPwd
 │  │  ├─api
 │  │  └─components
-│  └─main
+│  ├─ilgito
+│  │  ├─api
+│  │  └─components
+│  ├─invitingLink
+│  │  ├─api
+│  │  └─components
+│  ├─lobby
+│  │  ├─api
+│  │  ├─components
+│  │  └─hooks
+│  ├─logIn
+│  │  ├─api
+│  │  └─components
+│  ├─main
+│  │  ├─api
+│  │  └─components
+│  ├─multi
+│  │  ├─api
+│  │  ├─components
+│  │  └─hooks
+│  ├─resetPwd
+│  │  ├─api
+│  │  └─components
+│  ├─signUp
+│  │  ├─api
+│  │  └─components
+│  ├─survival
+│  │  ├─api
+│  │  ├─components
+│  │  └─hooks
+│  └─waitingRoom
 │      ├─api
 │      └─components
 ├─shared
 │  ├─apis
+│  ├─components
+│  ├─css
 │  ├─hooks
 │  ├─stores
+│  │  ├─connectionStore
 │  │  └─userStore
-│  └─ui
+│  ├─ui
+│  └─utils
 └─widgets
+    ├─myPage
+    │  ├─api
+    │  └─components
+    └─userInfo
+        ├─api
+        └─components
 ```
 
 ### Back-end
 
 ```
 QUIZDOT-SERVER
-C:.
 ├─java
 │  └─com
 │      └─mnot
