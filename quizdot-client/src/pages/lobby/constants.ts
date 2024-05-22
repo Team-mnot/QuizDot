@@ -3,7 +3,7 @@ const openList = { 1: '공개', 0: '비공개' } as { [key: number]: string };
 const modeList = {
   NORMAL: '일반 모드',
   SURVIVAL: '서바이벌 모드',
-  ILGITO: '일기토 모드',
+  ILGITO: '일대일 모드',
 } as { [key: string]: string };
 
 const maxPeopleList = {
@@ -23,7 +23,7 @@ const categoryList = {
   CULTURE: '문화',
   PRIVIEW: '시사',
   ECONOMY: '경제',
-  GRAMMAR: '한국어',
+  GRAMMER: '한국어',
 } as { [key: string]: string };
 
 const maxQuestionList = { 30: 30, 20: 20, 10: 10 } as {
