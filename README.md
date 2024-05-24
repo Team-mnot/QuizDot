@@ -4,7 +4,7 @@
   <br />
   <h2>다양한 상식을 재밌게 익힐 수 있는 퀴즈 게임 서비스</h2>
 <h3>삼성 청년 소프트웨어 아카데미 자율 프로젝트 </h3>
-  <a href="https://10d211.p.ssafy.io/">
+  <a href="https://k10d102.p.ssafy.io/">
    <img src="https://img.shields.io/badge/-QuizDot-important?style=flat&logo=githubsponsors&logoColor=white&labelColor=6B54C4&color=white"/>
   </a>
   <a href="https://www.figma.com/design/6RUZRL3CBLDXE10Ioum1Cw/%EC%9E%90%EC%9C%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8?node-id=0%3A1&t=ZDyFrRXHB0Eb99M1-1">
