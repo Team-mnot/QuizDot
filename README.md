@@ -240,26 +240,26 @@ QUIZDOT을 통해 사용자들은 다양한 분야의 상식을 조금 더 재�
 <table style="word-break: keep-all;">
 <tr ><th style="text-align:center;"> 기능 </th><th> 내용 </th></tr>
 <tr>
-  <td style="text-align:center;">노말 모드
+  <td style="text-align:center; white-space: nowrap;">노말 모드
   </td>
   <td>주어진 문제를 풀고 정답을 맞춘 순서에 따라 점수를 산정하고 게임이 끝났을 때 합산한 점수를 통해 순위가 정해집니다.</td>
 </tr>
 <tr>
-  <td style="text-align:center;">서바이벌 모드</td>
+  <td style="text-align:center; white-space: nowrap;">서바이벌 모드</td>
   <td>문제를 풀었을 때 정답 여부에 따라 생존과 탈락이 구분되며 만약 생존자들이 모두 틀렸을경우 탈락자 중 정답자가 존재한다면 해당 정답자를 부활시킵니다. 최후의 1인이 남게 되었을 때 게임이 종료됩니다.</td>
 </tr>
 <tr>
-  <td style="text-align:center;">일기토 모드</td>
+  <td style="text-align:center; white-space: nowrap;">일기토 모드</td>
   <td>상대방이 풀게 될 문제를 직접 선택하여 진행하게 됩니다. 선택한 문제를 풀지 못하면 체력이 감소하게 되며 체력이 모두 소진되면 게임이 종료됩니다. </td>
 </tr>
 
 <tr>
-  <td style="text-align:center;">리워드</td>
+  <td style="text-align:center; white-space: nowrap;">리워드</td>
   <td>게임을 통해 얻을 수 있는 코인을 통해 캐릭터 뽑기나 닉네임 색상 랜덤 변경권을 구매할 수 있습니다.</td>
 </tr>
 
 <tr>
-  <td style="text-align:center;">도전과제</td>
+  <td style="text-align:center; white-space: nowrap;">도전과제</td>
   <td>주어진 도전과제를 달성하게 될 경우 해당 도전과제에 대한 칭호를 해금시킵니다. 해금된 칭호는 장착할 수 있습니다.</td>
 </tr>
 
