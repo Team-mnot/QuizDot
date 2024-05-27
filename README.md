@@ -284,6 +284,7 @@ QUIZDOT을 통해 사용자들은 다양한 분야의 상식을 조금 더 재�
   <tr style="text-align:center;">
     <td> 회원가입 </td>
     <td> 메인 화면 </td>
+    <td> 로그인 </td>
   </tr>
   <tr>
    <td>
@@ -292,7 +293,48 @@ QUIZDOT을 통해 사용자들은 다양한 분야의 상식을 조금 더 재�
     <td>
  <img src="./assets/메인화면.gif" alt="=" width="200px" />
     </td>
+    <td>
+  <img src="./assets/로그인.gif" alt="=" width="200px" />
+    </td>
   </tr>
+
+
+  <tr style="text-align:center;">
+    <td> 마이페이지 / 닉네임 변경 </td>
+    <td> 마이페이지 / 캐릭터 뽑기 </td>
+    <td> 마이페이지 / 캐릭터 변경 </td>
+  </tr>
+
+  <tr>
+   <td>
+     <img src="./assets/마이페이지_닉네임변경_비밀번호변경_회원탈퇴.gif.gif" alt="=" width="200px" />
+    </td>
+    <td>
+ <img src="./assets/마이페이지_뽑기.gif" alt="=" width="200px" />
+    </td>
+    <td>
+  <img src="./assets/마이페이지_캐릭터칭호변경.gif" alt="=" width="200px" />
+    </td>
+  </tr>
+
+<tr style="text-align:center;">
+    <td> 마이페이지 / 닉네임 변경 </td>
+    <td> 마이페이지 / 캐릭터 뽑기 </td>
+    <td> 마이페이지 / 캐릭터 변경 </td>
+  </tr>
+
+  <tr>
+   <td>
+     <img src="./assets/마이페이지_닉네임변경_비밀번호변경_회원탈퇴.gif.gif" alt="=" width="200px" />
+    </td>
+    <td>
+ <img src="./assets/마이페이지_뽑기.gif" alt="=" width="200px" />
+    </td>
+    <td>
+  <img src="./assets/마이페이지_캐릭터칭호변경.gif" alt="=" width="200px" />
+    </td>
+  </tr>
+
 </table>
 
 <br/>
