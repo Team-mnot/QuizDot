@@ -417,7 +417,7 @@ QUIZDOT을 통해 사용자들은 다양한 분야의 상식을 조금 더 재�
       </a>
     </td>
      <td align="center">
-      <a href="https://github.com/LEEJUNSU11" target="_blank">
+      <a href="https://github.com/junsutaro" target="_blank">
        이준수
       </a>
     </td> 
